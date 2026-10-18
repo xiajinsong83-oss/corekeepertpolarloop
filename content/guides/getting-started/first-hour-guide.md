@@ -9,6 +9,13 @@ related:
   - { title: "Core Keeper Resource Guide — Ore Tiers and Where to Find Them", url: "/guides/resources/ore-tier-guide/" }
   - { title: "Core Keeper Boss Guide — All 7 Bosses, Drops and Strategies", url: "/guides/combat-bosses/boss-guide/" }
   - { title: "Seed Finder", url: "/tools/seed-finder/" }
+faq:
+  - q: "Can I change my world's difficulty later?"
+    a: "No — name, icon and difficulty can't be modified in-game."
+  - q: "How many players can join a world?"
+    a: "Native multiplayer supports more than the official 8-player limit; boss health scales with connected players (with diminishing returns per additional player)."
+  - q: "What do I craft first?"
+    a: "Torch, Wood Pickaxe, Wood Shovel, then the Basic Workbench."
 ---
 
 The Core Keeper **getting started** experience is built around one loop: craft a workbench, make stronger tools, mine tougher walls, find better ores, and repeat. This guide walks through world creation, the first hour, and the three early bosses you need to beat before the Core powers up.

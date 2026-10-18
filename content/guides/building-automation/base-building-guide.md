@@ -9,6 +9,13 @@ related:
   - { title: "Base Layout Planner", url: "/tools/base-layout-planner/" }
   - { title: "Core Keeper Resource Guide", url: "/guides/resources/ore-tier-guide/" }
   - { title: "Buildings Database", url: "/database/buildings/" }
+faq:
+  - q: "Why won't an NPC move into my room?"
+    a: "Check the three conditions: size between 2×2 and 8×8, a door + bed, the NPC's required item, and nobody within 30 tiles for about a minute."
+  - q: "Can rooms be bigger than 8×8?"
+    a: "They can exist, but they won't register as a valid room for NPC purposes — split large halls into separate rooms."
+  - q: "How do I change my spawn point?"
+    a: "Sleep in a bed. Your respawn switches to that bed until you sleep somewhere else."
 ---
 
 A good Core Keeper base is more than a pile of chests. This base building guide covers the room system, NPC move-in rules, bed mechanics and the automation basics that keep your underground hub running while you explore.

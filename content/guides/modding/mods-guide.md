@@ -9,6 +9,13 @@ related:
   - { title: "Mods Hub", url: "/mods/" }
   - { title: "First Hour Guide", url: "/guides/getting-started/first-hour-guide/" }
   - { title: "News — latest patches", url: "/patches/" }
+faq:
+  - q: "Is modding supported officially?"
+    a: "Yes — Core Keeper has official Steam Workshop and mod.io integration, plus the community CoreLib framework."
+  - q: "Do mods break achievements or multiplayer?"
+    a: "Most QoL mods are client-side and don't block achievements; server mods must be installed by the host. Check each mod's description."
+  - q: "Mods stop working after an update — what now?"
+    a: "Patch updates (like the 1.3 Riders of the Underground line) often break older mods. Update CoreLib, then check each mod's page for a compatible release."
 ---
 
 Core Keeper supports official modding through Steam Workshop and mod.io, with community content managed by the CoreLib framework. This modding guide covers where to find mods, how to install them, and the most useful quality-of-life mods.

@@ -9,6 +9,13 @@ related:
   - { title: "Boss Drop Finder", url: "/tools/boss-drop-finder/" }
   - { title: "First Hour Guide", url: "/guides/getting-started/first-hour-guide/" }
   - { title: "Creatures Database", url: "/database/creatures/" }
+faq:
+  - q: "How do I beat Glurch?"
+    a: "Tin gear or better, keep distance and dodge its jumps. Drop a bed nearby first so death isn't a long run back."
+  - q: "Where is the Hive Mother?"
+    a: "In the Larva Hive, a sub-biome of the Clay Caves ~330 tiles from the Core. Use the Hive Mother Scanner (crafted at Glurch's effigy) to locate it."
+  - q: "What is the boss order in Core Keeper?"
+    a: "Glurch → Ghorm → Hive Mother → Core activation → Malugaz (optional) → Azeos → Omoroth."
 ---
 
 Core Keeper's boss order follows your tool progression: three bosses around the Core must fall before it powers up, then the outer-ring titans open endgame content. This Core Keeper boss guide lists every boss, where they spawn, how to summon them and what they drop.

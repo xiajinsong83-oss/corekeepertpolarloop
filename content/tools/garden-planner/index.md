@@ -3,6 +3,11 @@ title: "Garden Planner"
 description: "Core Keeper garden planner — every crop, its required ground type, growing stages and harvest chance gear."
 icon: "/img/app-icons/tool-garden-planner.png"
 updated: "2026-10-18"
+faq:
+  - q: "Can I get double harvests?"
+    a: "Yes — stack the Farmer's Hat, Petal Rings, Eostre Necklace and a Kelp Dumpling; full level-19 gear reaches 182.4% harvest chance."
+  - q: "Does harvesting give XP?"
+    a: "Only manual harvests of fully grown plants award Gardening experience — wood doesn't count."
 ---
 
 Plan your Core Keeper farm: browse all 14 crops, filter by ground type, and see the exact growing timeline — every watered seed takes 10 minutes to become harvestable.

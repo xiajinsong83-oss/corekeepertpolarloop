@@ -10,6 +10,13 @@ related:
   - { title: "Seed Finder tool", url: "/tools/seed-finder/" }
   - { title: "Ore and resource guide", url: "/guides/resources/ore-tier-guide/" }
   - { title: "Boss guide", url: "/guides/combat-bosses/boss-guide/" }
+faq:
+  - q: "Does the seed change the map shape?"
+    a: "The ring bands are fixed; the seed changes where biomes and bosses sit within them."
+  - q: "Can I see my world's seed after creating it?"
+    a: "The seed is shown at world creation; keep it noted for sharing or re-creating the world."
+  - q: "Do seeds work across versions?"
+    a: "Generation can shift between major updates — always note the game version a seed was tested on (check [Patch Notes](/patches/) for version numbers)."
 ---
 
 Every Core Keeper world is generated from a **seed** — the number you pick at world creation. The seed decides where each biome ring sits, which direction you find the Clay Caves, and roughly where the early bosses spawn. This guide explains how seed generation works and how to use seeds with friends.

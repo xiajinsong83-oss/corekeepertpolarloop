@@ -3,6 +3,13 @@ title: "Mining Matrix"
 description: "Core Keeper mining matrix — every pickaxe tier with mining damage and durability, and which blocks each one can mine."
 icon: "/img/app-icons/tool-mining-matrix.png"
 updated: "2026-10-18"
+faq:
+  - q: "Which pickaxe do I need for stone?"
+    a: "Stone blocks need 67+ mining damage — a Tin Pickaxe (83) is the first tool that works."
+  - q: "When do I get Iron?"
+    a: "The Iron Pickaxe (167) unlocks grass and scarlet-grade walls (147+), and is the standard mid-game tool."
+  - q: "Is the Ancient Pickaxe worth it?"
+    a: "It's a strong early skip dropped by Azeos the Sky Titan — 354 damage at the point you'd otherwise still be on Scarlet."
 ---
 
 Check which pickaxe can mine which block in Core Keeper. Pick your tool from the list and see every block you can dig — from early soft walls up to Scarlet-grade structures.

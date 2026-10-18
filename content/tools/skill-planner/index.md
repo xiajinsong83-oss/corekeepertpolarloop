@@ -3,6 +3,13 @@ title: "Skill Planner"
 description: "Core Keeper skill planner — plan skill levels across all 12 skills, see bonus per level and total skill points."
 icon: "/img/app-icons/tool-skill-planner.png"
 updated: "2026-10-18"
+faq:
+  - q: "Which skill should I level first?"
+    a: "Mining is the universal opener — faster digging shortens every early loop. Vitality is a close second for survival."
+  - q: "What is the max level?"
+    a: "Every skill caps at level 100, worth 20 skill points each (100 points if you max all 10 skill-point skills)."
+  - q: "Do points reset?"
+    a: "Yes — spending 200 Cave Delicacies lets you reset and reallocate points in a tree at any time."
 ---
 
 Plan your Core Keeper skill build before you commit XP. Drag the sliders for all 12 skills to see the exact bonus each level grants, and how many **skill points** (1 per 5 levels, 20 at level 100) your build unlocks.

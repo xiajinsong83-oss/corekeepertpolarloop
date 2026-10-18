@@ -3,6 +3,13 @@ title: "Cooking Guide"
 description: "Core Keeper cooking guide — every ingredient's cooked effect, from health regen to magic, boss and minion buffs, with combining rules."
 icon: "/img/app-icons/tool-cooking-guide.png"
 updated: "2026-10-18"
+faq:
+  - q: "What gives the most food?"
+    a: "Bloat Oat is the raw food king at +43 food; Golden variants trade a little food for big buffs."
+  - q: "Best boss-fighting food?"
+    a: "Golden Puffungi cuts boss damage taken by 9% and adds +14% boss damage — plus regen."
+  - q: "Melee or magic buffs?"
+    a: "Pinegrapple/Golden Pinegrapple for melee, Sunrice for magic damage, Lunacorn for minions, Pewpaya for ranged."
 ---
 
 Find the right Core Keeper cooking ingredients for any buff. Search by effect — health, magic, boss, melee, glow — or browse all 29 ingredients with their exact cooked values.

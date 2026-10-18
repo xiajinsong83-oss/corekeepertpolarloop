@@ -1,0 +1,28 @@
+{{/* related-links.html — 同栏目自动内链推荐（SEO 规范） */}}
+{{ $current := . }}
+{{ $related := slice }}
+{{ range where .Site.RegularPages "Section" .Section }}
+  {{ if and (ne .Permalink $current.Permalink) (lt (len $related) 3) }}
+    {{ $related = $related | append . }}
+  {{ end }}
+{{ end }}
+{{ $need := sub 3 (len $related) }}
+{{ if gt $need 0 }}
+  {{ range first $need (where .Site.RegularPages "Permalink" "ne" $current.Permalink) }}
+    {{ $related = $related | append . }}
+  {{ end }}
+{{ end }}
+{{ if gt (len $related) 0 }}
+<h2 style="font-size:23px;color:#fff;margin:26px 0 10px">Related Guides</h2>
+<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0 20px">
+  {{ range first 3 $related }}
+  <a href="{{ .RelPermalink }}" style="display:flex;gap:10px;align-items:center;background:#1a2621;border:1px solid #2e423a;padding:10px 12px;text-decoration:none">
+    {{ with .Params.icon }}<img src="{{ . }}" alt="" style="width:40px;height:40px;object-fit:cover;image-rendering:pixelated;flex:none;background:#000">{{ end }}
+    <span>
+      <strong style="color:#fff;font-size:15px">{{ .Title }}</strong>
+      {{ with .Description }}<br><span style="font-size:13px;color:#a9b8b0">{{ . | truncate 80 }}</span>{{ end }}
+    </span>
+  </a>
+  {{ end }}
+</div>
+{{ end }}

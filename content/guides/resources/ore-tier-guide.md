@@ -9,6 +9,13 @@ related:
   - { title: "Core Keeper First Hour Guide", url: "/guides/getting-started/first-hour-guide/" }
   - { title: "Resource Efficiency Calculator", url: "/tools/resource-efficiency/" }
   - { title: "Biomes Database", url: "/database/biomes/" }
+faq:
+  - q: "Where is tin ore in Core Keeper?"
+    a: "Tin is in The Clay Caves (inner ring, 150–450 tiles). If you hit Forgotten Ruins first, go the opposite direction from the Core."
+  - q: "What pickaxe do I need for iron?"
+    a: "A Tin Pickaxe. Iron is found in The Forgotten Ruins."
+  - q: "Can I mine gold with an iron pickaxe?"
+    a: "Yes — the Iron Pickaxe mines gold and scarlet ore."
 ---
 
 Core Keeper's world is generated in **rings around the Core**, and each ring holds different ores. This Core Keeper ore guide maps every ore to the pickaxe tier and biome you need — so you never waste time mining with the wrong tool.

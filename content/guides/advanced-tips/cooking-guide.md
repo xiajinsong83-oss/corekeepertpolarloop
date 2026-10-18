@@ -9,6 +9,13 @@ related:
   - { title: "Item Calculator", url: "/tools/item-calculator/" }
   - { title: "Boss Guide", url: "/guides/combat-bosses/boss-guide/" }
   - { title: "Items Database", url: "/database/items/" }
+faq:
+  - q: "Do food buffs stack in Core Keeper?"
+    a: "Different buff slots stack; the same buff type takes the highest value rather than summing."
+  - q: "What's the best healing food?"
+    a: "Bloat Oat gives the biggest food value and strongest HP/s; Heart Berry adds max health on top."
+  - q: "How do I get better food ingredients?"
+    a: "Gardening grows crops (including Heart Berries), fishing catches fish (Riftian Lampfish in the Sunken Sea), and mushrooms spawn around the underground."
 ---
 
 Food in Core Keeper isn't just hunger — the right dishes are pre-boss loadouts. This cooking guide explains how food buffs work, which ingredients give the strongest effects, and the best combos before each fight.
