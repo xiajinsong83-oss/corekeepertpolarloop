@@ -38,6 +38,13 @@ jobs:
           echo "fetch exit code: $?" >> "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
 
+      - name: Fetch wiki updates (atma.gg, P1-1; 限流自动退避重试)
+        id: fetch-wiki
+        run: |
+          python scripts/fetch_wiki.py
+          echo "wiki fetch exit code: $?" >> "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+
       - name: Build site
         run: |
           bash build.sh
