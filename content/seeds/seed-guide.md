@@ -43,6 +43,9 @@ We're building a curated seed library on this page — seed entries are added fr
 
 **Got a seed worth sharing?** Submit the seed number plus the version and what you found — verified entries get added to the library with your name attached.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Does the seed change the map shape?** The ring bands are fixed; the seed changes where biomes and bosses sit within them.

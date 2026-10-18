@@ -71,6 +71,9 @@ Tip: craft the **Hive Mother Scanner** after activating Glurch's effigy to locat
 - **Hunger** doesn't kill you: it only reduces max health and stats.
 - **NPCs move in** when a room is 2×2 to 8×8 tiles, has a door, a bed and the NPC's required item, and no players are within 30 tiles for about a minute.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Can I change my world's difficulty later?** No — name, icon and difficulty can't be modified in-game.

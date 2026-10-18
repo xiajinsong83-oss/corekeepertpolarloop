@@ -45,6 +45,9 @@ For mod.io or manual installs, drop mod folders into your mods directory (usuall
 
 Always check a mod's **game version compatibility** — after a patch (e.g. 1.3.0.x hotfixes), mods may lag behind. Watch the [Patch Notes](/patches/) page to know when to re-check your mod list.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Is modding supported officially?** Yes — Core Keeper has official Steam Workshop and mod.io integration, plus the community CoreLib framework.

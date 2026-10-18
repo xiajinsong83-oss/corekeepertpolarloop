@@ -50,6 +50,9 @@ Boss health and characteristics scale with the number of connected players (each
 - Heart of the Hive Mother → Hive Mother effigy
 - All three active → **Core powers up**
 
+{{< ad >}}
+
+
 ## FAQ
 
 **How do I beat Glurch?** Tin gear or better, keep distance and dodge its jumps. Drop a bed nearby first so death isn't a long run back.

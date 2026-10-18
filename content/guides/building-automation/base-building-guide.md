@@ -44,6 +44,9 @@ Your spawn point is the Core or your most recently slept-in **bed**. Two practic
 - **Farming**: hoe the ground, plant seeds, water regularly — crops restore food and fuel cooking. Gardening skill shortens grow times as it levels.
 - **Later-game conveyor belts**: belts and automation machines unlock in later tiers; the [Base Layout Planner](/tools/base-layout-planner/) helps you sketch conveyor layouts before you commit resources.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Why won't an NPC move into my room?** Check the three conditions: size between 2×2 and 8×8, a door + bed, the NPC's required item, and nobody within 30 tiles for about a minute.

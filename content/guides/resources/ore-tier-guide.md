@@ -48,6 +48,9 @@ The inner and outer biomes are placed at **seed-dependent angles** around the Co
 - **Repair cheaply**: craft low-tier equipment and salvage it for scrap parts — a cheap repair source early on.
 - **Gold drops early**: you can find Gold Ore while mining Clay Caves and Forgotten Ruins, before you can use it — stockpile it for Tier 3.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Where is tin ore in Core Keeper?** Tin is in The Clay Caves (inner ring, 150–450 tiles). If you hit Forgotten Ruins first, go the opposite direction from the Core.

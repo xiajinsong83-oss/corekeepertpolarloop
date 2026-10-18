@@ -50,6 +50,9 @@ Cooking Pot recipes combine ingredients; the Chef background starts with a Cooki
 
 Keep cooked food in a chest by the arena and re-apply before the fight — regen and short buffs run out mid-encounter.
 
+{{< ad >}}
+
+
 ## FAQ
 
 **Do food buffs stack in Core Keeper?** Different buff slots stack; the same buff type takes the highest value rather than summing.
