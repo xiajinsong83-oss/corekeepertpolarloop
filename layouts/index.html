@@ -16,6 +16,9 @@
       <div class="versionbar">Site data targets game version <strong>{{ .Site.Params.gameVersion }}</strong> (Steam build <strong>{{ .Site.Params.gameBuild }}</strong>) · last checked {{ .Site.Params.dataUpdatedAt }}</div>
     </section>
 
+    <!-- 首页广告位 1（slot 5756703562，同意后由 JS 随机保留 1–2 个） -->
+    {{ partial "ad.html" . }}
+
     <!-- 工具矩阵（对标 rimworldtools） -->
     <h2 class="section-title">Tools</h2>
     <div class="grid g3">
@@ -70,7 +73,8 @@
       {{ end }}
     </ul>
 
-    {{ partial "ad.html" . }}
+    <!-- 首页广告位 2（slot 9761643165） -->
+    {{ partial "ad2.html" . }}
   </div>
 </main>
 {{ partial "footer.html" . }}

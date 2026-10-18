@@ -1,0 +1,10 @@
+{{ $slot := .Site.Params.adsenseSlot2 | default "0000000000" }}
+<div class="adslot" style="text-align:center">
+  <!-- 广告位 2：独立广告单元（与 ad.html 的 slot 区分，避免同 slot 同页重复） -->
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="ca-pub-3866829862674413"
+       data-ad-slot="{{ $slot }}"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+</div>

@@ -24,6 +24,9 @@
       {{ range .Params.related }}<li><a href="{{ .url }}">{{ .title }}</a></li>{{ end }}
     </ul>
     {{ end }}
+
+    <!-- 单页广告位 2（slot 9761643165；正文内嵌广告为 slot 1） -->
+    {{ partial "ad2.html" . }}
   </div>
 </main>
 {{ partial "footer.html" . }}
