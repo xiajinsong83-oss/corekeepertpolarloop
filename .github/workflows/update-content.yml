@@ -26,13 +26,22 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.128.0"
+
       - name: Fetch Steam news (continue-on-error: 单源失败不阻塞整条管道)
         id: fetch
-        run: python scripts/fetch_steam.py
+        run: |
+          python scripts/fetch_steam.py
+          echo "fetch exit code: $?" >> "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
 
       - name: Build site
-        run: bash build.sh
+        run: |
+          bash build.sh
+          echo "build exit code: $?" >> "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
 
       - name: Check for changes
