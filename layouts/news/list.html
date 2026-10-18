@@ -1,0 +1,33 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · {{ .Title }}</nav>
+    <h1 style="font-size:30px;color:#fff;margin-bottom:8px">{{ .Title }}</h1>
+    {{ if .Content }}<div class="article" style="max-width:760px">{{ .Content }}</div>{{ end }}
+
+    <h2 class="section-title">Latest Updates</h2>
+    <ul class="postlist">
+      {{ $pages := .RegularPages }}
+      {{ range $pages }}
+      <li>
+        <div class="news-head">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <span class="tag">{{ with .Params.feedlabel }}{{ . }}{{ else }}News{{ end }}</span>
+          {{ if eq .Params.type "patch" }}<span class="tag patch">Patch</span>{{ end }}
+        </div>
+        <div class="meta">
+          {{ with .Date }}{{ .Format "2006-01-02" }} · {{ end }}{{ .Description }}
+        </div>
+      </li>
+      {{ end }}
+    </ul>
+
+    {{ partial "ad.html" . }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>

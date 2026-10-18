@@ -19,6 +19,10 @@ pygmentsUseClasses = true
   contact_email = "merrysee888@qq.com"
   siteDescription = "Core Keeper tools, seeds, wiki database and guides — seed finder, crafting calculator, boss drops and more."
   siteKeywords = ["Core Keeper", "Core Keeper seed", "Core Keeper wiki", "Core Keeper guide", "Core Keeper tools"]
+  # 版本可信度基建（P0-3）：本站数据对应的游戏版本与 Steam build 号
+  gameVersion = "1.3.0.6"
+  gameBuild = "1.3.0.6-6e73"
+  dataUpdatedAt = "2026-10-18"
   # 跨站矩阵（与既有沙盒站互导流）
   sister_sites = [
     { name = "Stardew Valley Hub", url = "https://www.stardewvalleyhub.wiki" },

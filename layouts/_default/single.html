@@ -13,7 +13,9 @@
     {{ end }}
     <h1>{{ .Title }}</h1>
     {{ if .Params.icon }}<img src="{{ .Params.icon }}" alt="{{ .Title }} icon" style="width:64px;height:64px;image-rendering:pixelated;margin:8px 0 12px">{{ end }}
-    {{ if .Params.updated }}<div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Last updated: {{ .Params.updated }}</div>{{ end }}
+    {{ $ts := "" }}
+    {{ if .Params.updated }}{{ $ts = .Params.updated }}{{ else if .Lastmod }}{{ $ts = .Lastmod.Format "2006-01-02" }}{{ end }}
+    {{ if $ts }}<div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Last updated: {{ $ts }}</div>{{ end }}
     {{ .Content }}
 
     {{ if and .Params.related (gt (len .Params.related) 0) }}

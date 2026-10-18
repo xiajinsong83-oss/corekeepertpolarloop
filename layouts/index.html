@@ -13,6 +13,7 @@
         <input type="text" name="seed" placeholder="Enter a world seed to preview...">
         <button type="submit">Search Seed</button>
       </form>
+      <div class="versionbar">Site data targets game version <strong>{{ .Site.Params.gameVersion }}</strong> (Steam build <strong>{{ .Site.Params.gameBuild }}</strong>) · last checked {{ .Site.Params.dataUpdatedAt }}</div>
     </section>
 
     <!-- 工具矩阵（对标 rimworldtools） -->
@@ -44,6 +45,18 @@
       </a>
       {{ end }}
     </div>
+
+    <!-- 最新更新（P0-2 自动追踪管道：Steam 官方新闻，每 6 小时刷新） -->
+    <h2 class="section-title">Latest Updates</h2>
+    <ul class="postlist">
+      {{ $news := where site.RegularPages "Section" "news" }}
+      {{ range first 5 $news }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Date }}<div class="meta">{{ .Format "2006-01-02" }}</div>{{ end }}
+      </li>
+      {{ end }}
+    </ul>
 
     <!-- 最新攻略（Wiki 风格） -->
     <h2 class="section-title">Latest Guides</h2>

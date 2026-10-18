@@ -1,0 +1,24 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap article">
+    <nav class="crumb">
+      <a href="/">Home</a> · <a href="/news/">News</a> · {{ .Title }}
+    </nav>
+    <h1>{{ .Title }}</h1>
+    {{ if .Date }}<div style="font-size:13px;color:#a9b8b0;margin-bottom:8px">{{ .Date.Format "2006-01-02" }}{{ with .Params.feedlabel }} · {{ . }}{{ end }}</div>{{ end }}
+    {{ if eq .Params.type "patch" }}<span class="tag patch">Patch Note</span>{{ end }}
+
+    {{ .Content }}
+
+    {{ if .Params.link }}
+    <p style="margin-top:18px"><a class="read-more" href="{{ .Params.link }}" rel="nofollow noopener" target="_blank">Read the original announcement on Steam →</a></p>
+    {{ end }}
+    <p style="font-size:13px;color:#a9b8b0;margin-top:8px">This page is a summary and link-out to the official source. We do not re-host full changelogs.</p>
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>
