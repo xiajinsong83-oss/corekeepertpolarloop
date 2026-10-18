@@ -47,4 +47,4 @@ updated: "2026-10-18"
 
 **更新资讯在哪看？** 本站 News 与 Patches 板块自动追踪 Steam 官方公告（[News](/news/) · [Patches](/patches/)），中文资讯可关注官方 B 站号。
 
-{{ partial "ad2.html" . }}
+{{< ad2 >}}
