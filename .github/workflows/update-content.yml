@@ -45,6 +45,13 @@ jobs:
           echo "wiki fetch exit code: $?" >> "$GITHUB_STEP_SUMMARY"
         continue-on-error: true
 
+      - name: Fetch Reddit hot posts (r/CoreKeeper, P2-1; 本地不可达但 runner 通常可达)
+        id: fetch-reddit
+        run: |
+          python scripts/fetch_reddit.py
+          echo "reddit fetch exit code: $?" >> "$GITHUB_STEP_SUMMARY"
+        continue-on-error: true
+
       - name: Build site
         run: |
           bash build.sh
