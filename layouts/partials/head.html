@@ -6,8 +6,8 @@
 {{ if .Params.canonical }}<link rel="canonical" href="{{ .Params.canonical }}">{{ else }}<link rel="canonical" href="{{ .Permalink }}">{{ end }}
 {{ with .OutputFormats.Get "rss" }}<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">{{ end }}
 
-<!-- Google AdSense 统一发布商（全站生效） -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3866829862674413" crossorigin="anonymous"></script>
+<!-- Google AdSense 发布商配置（脚本由 Cookie 同意条在用户 Accept 后动态加载，广告 Cookie 需同意） -->
+<meta name="google-adsense-account" content="ca-pub-3866829862674413">
 
 <!-- favicon（AI 生成像素水晶图标） -->
 <link rel="icon" href="/favicon.png" type="image/png">

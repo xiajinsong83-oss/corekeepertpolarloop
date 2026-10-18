@@ -1,0 +1,84 @@
+<!-- Cookie 同意浮动条（参考图复刻）：Essential cookies 常开，广告 Cookie 需同意，AdSense，Privacy Policy，Accept。
+     合规要点：广告脚本 adsbygoogle.js 默认不加载，用户 Accept 后才动态注入并执行广告 push。 -->
+<div id="ck-cookie-bar" class="ck-bar" role="dialog" aria-label="Cookie consent">
+  <div class="ck-bar-inner">
+    <img src="/img/app-icons/cookie.png" alt="Cookie" class="ck-bar-icon">
+    <p class="ck-bar-text">
+      We use cookies to make our site work and to serve relevant advertising (Google AdSense).
+      Essential cookies are always on; advertising cookies are only placed with your consent.
+      We never collect or store personal data ourselves.
+      <a href="/legal/privacy/" class="ck-bar-link">Privacy Policy</a>
+    </p>
+    <div class="ck-bar-actions">
+      <button type="button" id="ck-accept" class="ck-btn ck-btn-accept">Accept</button>
+      <button type="button" id="ck-decline" class="ck-btn ck-btn-decline">Decline</button>
+    </div>
+  </div>
+</div>
+<style>
+  /* Cookie 浮动条（参考图：浅灰底 + 饼干图标 + 文案 + 橙色 Accept） */
+  .ck-bar{position:fixed;left:0;right:0;bottom:0;z-index:9999;background:#f2f3f4;border-top:1px solid #dfe3e4;
+    box-shadow:0 -2px 12px rgba(0,0,0,.12);display:none;font-family:inherit}
+  .ck-bar.show{display:block}
+  .ck-bar-inner{max-width:1100px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .ck-bar-icon{width:36px;height:36px;image-rendering:pixelated;flex:0 0 auto}
+  .ck-bar-text{flex:1 1 320px;margin:0;font-size:14px;line-height:1.5;color:#333}
+  .ck-bar-link{color:#1a7f5a;font-weight:600;text-decoration:underline}
+  .ck-bar-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .ck-btn{border:none;cursor:pointer;font-size:14px;font-weight:700;padding:9px 26px;border-radius:4px;transition:filter .15s}
+  .ck-btn:hover{filter:brightness(1.06)}
+  .ck-btn-accept{background:#f07b1f;color:#fff}  /* 参考图橙色 Accept */
+  .ck-btn-decline{background:transparent;color:#666;padding:9px 12px;font-weight:500}
+  @media (max-width:640px){
+    .ck-bar-inner{flex-direction:column;align-items:flex-start;gap:10px;padding:14px 16px}
+    .ck-bar-actions{width:100%}
+    .ck-btn-accept{flex:1}
+  }
+  /* 广告容器默认隐藏，同意后由 JS 显示（合规：广告 Cookie 需用户同意） */
+  .adslot{display:none}
+  body.ck-ads-ok .adslot{display:block}
+</style>
+<script>
+(function () {
+  var KEY = 'ck_cookie_consent';
+  var bar = document.getElementById('ck-cookie-bar');
+  function getState() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function setState(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  function loadAds() {
+    if (window.__ckAdsLoaded) { return; }
+    window.__ckAdsLoaded = true;
+    var s = document.createElement('script');
+    s.async = true;
+    s.crossOrigin = 'anonymous';
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3866829862674413';
+    s.onload = function () {
+      document.body.classList.add('ck-ads-ok');
+      if (window.CK_AD_QUEUE) {
+        window.CK_AD_QUEUE.forEach(function (fn) { try { fn(); } catch (e) {} });
+        window.CK_AD_QUEUE = [];
+      }
+    };
+    document.head.appendChild(s);
+  }
+
+  var state = getState();
+  if (state === 'accepted') {
+    loadAds();
+  } else if (state === 'declined') {
+    /* 不加载广告脚本，浮动条不再展示 */
+  } else {
+    if (bar) { bar.classList.add('show'); }
+    document.addEventListener('click', function (e) {
+      if (e.target.id === 'ck-accept') {
+        setState('accepted');
+        if (bar) { bar.classList.remove('show'); }
+        loadAds();
+      } else if (e.target.id === 'ck-decline') {
+        setState('declined');
+        if (bar) { bar.classList.remove('show'); }
+      }
+    });
+  }
+})();
+</script>
