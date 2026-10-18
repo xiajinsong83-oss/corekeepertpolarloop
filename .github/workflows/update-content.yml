@@ -1,0 +1,56 @@
+# Core Keeper Hub - 内容每日更新管道（P0-2 Patch Notes 自动追踪）
+# 每 6 小时拉取 Steam 官方新闻 → 生成 news 页面 → 有变化才 commit+push → CF Pages 自动重建
+# 关键教训（Lagos Life 案例）：fetch → build → deploy → 最后 commit；commit 顺序错误会导致永远不更新
+name: Update Content
+
+on:
+  schedule:
+    # 分钟位错开整点（17 分），避免与大量定时任务撞车
+    - cron: "17 */6 * * *"
+  workflow_dispatch: # 手动触发兜底（GitHub 可能暂停长期无 commit 的 cron）
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch Steam news (continue-on-error: 单源失败不阻塞整条管道)
+        id: fetch
+        run: python scripts/fetch_steam.py
+        continue-on-error: true
+
+      - name: Build site
+        run: bash build.sh
+        continue-on-error: true
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "--- git status ---"
+          git status --short
+
+      - name: Commit and push (only when changed)
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "ckhub-bot"
+          git config user.email "merrysee888@qq.com"
+          git add -A
+          git commit -m "chore(news): auto-update from Steam feed ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+          git push
