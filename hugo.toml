@@ -1,0 +1,31 @@
+baseURL = "https://www.polarloop.cn/"
+title = "Core Keeper Hub"
+defaultContentLanguage = "en"
+enableRobotsTXT = false
+pygmentsUseClasses = true
+
+# 自动生成 sitemap / RSS / JSON
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[params]
+  # Google AdSense 统一发布商（所有站点共用，勿改动）
+  adsensePublisher = "ca-pub-3866829862674413"
+  adsenseId = "pub-3866829862674413"
+  adsenseSlotPlaceholder = "0000000000"
+  # 站点声明与联系
+  footer_copyright = "© 2026 Core Keeper Hub · Powered by fansweb"
+  contact_email = "merrysee888@qq.com"
+  siteDescription = "Core Keeper tools, seeds, wiki database and guides — seed finder, crafting calculator, boss drops and more."
+  siteKeywords = ["Core Keeper", "Core Keeper seed", "Core Keeper wiki", "Core Keeper guide", "Core Keeper tools"]
+  # 跨站矩阵（与既有沙盒站互导流）
+  sister_sites = [
+    { name = "Stardew Valley Hub", url = "https://www.stardewvalleyhub.wiki" },
+    { name = "Chunkscope", url = "https://www.chunkscope.com" },
+  ]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

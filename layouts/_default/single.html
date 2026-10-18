@@ -1,0 +1,29 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap article">
+    {{ if not .IsHome }}
+    <nav class="crumb">
+      <a href="/">Home</a>
+      {{ with .Parent }} · <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}
+      {{ if and .Title (not .IsSection) }} · {{ .Title }}{{ end }}
+    </nav>
+    {{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ if .Params.icon }}<img src="{{ .Params.icon }}" alt="{{ .Title }} icon" style="width:64px;height:64px;image-rendering:pixelated;margin:8px 0 12px">{{ end }}
+    {{ if .Params.updated }}<div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Last updated: {{ .Params.updated }}</div>{{ end }}
+    {{ .Content }}
+
+    {{ if and .Params.related (gt (len .Params.related) 0) }}
+    <h2>Related</h2>
+    <ul class="postlist">
+      {{ range .Params.related }}<li><a href="{{ .url }}">{{ .title }}</a></li>{{ end }}
+    </ul>
+    {{ end }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>

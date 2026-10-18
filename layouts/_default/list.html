@@ -1,0 +1,29 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · {{ .Title }}</nav>
+    <h1 style="font-size:30px;color:#fff;margin-bottom:8px">{{ .Title }}</h1>
+    {{ if .Content }}<div class="article" style="max-width:760px">{{ .Content }}</div>{{ end }}
+
+    {{ $pages := .Pages }}
+    {{ if eq .Kind "section" }}{{ $pages = .RegularPages }}{{ end }}
+
+    {{ if gt (len $pages) 0 }}
+    <h2 class="section-title">Pages</h2>
+    <ul class="postlist">
+      {{ range $pages }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Description }}<div class="meta">{{ . }}</div>{{ end }}
+      </li>
+      {{ end }}
+    </ul>
+    {{ end }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>

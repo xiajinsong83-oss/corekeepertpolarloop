@@ -1,0 +1,11 @@
+{{ $icon := .Get "icon" | default "/img/app-icons/default.png" }}
+{{ $title := .Get "title" }}
+{{ $desc := .Get "desc" }}
+{{ $href := .Get "href" | default "#" }}
+<div class="card" style="border:1px solid #2e423a;background:#1a2621;padding:16px;display:flex;gap:12px;align-items:flex-start;margin:10px 0">
+  <img src="{{ $icon }}" alt="{{ $title }} icon" style="width:56px;height:56px;object-fit:cover;image-rendering:pixelated;flex:none">
+  <div>
+    <a href="{{ $href }}" style="font-size:16px;color:#fff;font-weight:700">{{ $title }}</a>
+    <p style="font-size:14px;color:#a9b8b0;margin-top:4px">{{ $desc }}</p>
+  </div>
+</div>

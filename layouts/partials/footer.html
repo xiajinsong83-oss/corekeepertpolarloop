@@ -1,0 +1,16 @@
+<footer class="site-footer">
+  <div class="wrap">
+    <div>{{ .Site.Params.footer_copyright }}</div>
+    <div>
+      <a href="/legal/privacy/">Privacy</a> ·
+      <a href="/legal/terms/">Terms</a> ·
+      <a href="/legal/dmca/">DMCA</a> ·
+      <a href="mailto:{{ .Site.Params.contact_email }}">Contact</a>
+    </div>
+    <div>
+      {{ range $i, $s := .Site.Params.sister_sites }}
+        <a href="{{ $s.url }}" target="_blank" rel="noopener">{{ $s.name }}</a>{{ if lt $i (sub (len $.Site.Params.sister_sites) 1) }} · {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,5 @@
+{{ $type := .Get "type" | default "info" }}
+{{ $text := .Get "text" }}
+<div style="border-left:4px solid {{ if eq $type "warn" }}#e07a6a{{ else if eq $type "tip" }}#7fd6a0{{ else }}#e6b34d{{ end }};background:#1a2621;border:1px solid #2e423a;border-left-width:4px;padding:12px 14px;margin:12px 0;color:#a9b8b0;font-size:14.5px">
+  {{ $text | safeHTML }}
+</div>
