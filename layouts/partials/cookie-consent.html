@@ -53,10 +53,14 @@
     s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3866829862674413';
     s.onload = function () {
+      // 每页随机保留 1–2 个广告位（其余移除），再统一 push
+      var slots = document.querySelectorAll('.adslot');
+      var keep = Math.random() < 0.5 ? 1 : 2;
+      for (var i = slots.length - 1; i >= keep; i--) { slots[i].remove(); }
       document.body.classList.add('ck-ads-ok');
-      if (window.CK_AD_QUEUE) {
-        window.CK_AD_QUEUE.forEach(function (fn) { try { fn(); } catch (e) {} });
-        window.CK_AD_QUEUE = [];
+      var units = document.querySelectorAll('.adslot .adsbygoogle');
+      for (var j = 0; j < units.length; j++) {
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
       }
     };
     document.head.appendChild(s);
