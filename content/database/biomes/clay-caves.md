@@ -2,10 +2,7 @@
 title: "The Clay Caves"
 description: "Core Keeper The Clay Caves biome — tin ore, clay, Larva Hive and the inner ring (150–450 tiles)."
 icon: "/img/app-icons/biome-clay.png"
-ring: "Inner ring"
-distance: "150–450 tiles"
-danger: "Medium"
-resources: ["Clay", "Tin Ore", "Iron Ore", "Larva Hive entrance"]
+key: "The Clay Caves"
 updated: "2026-10-18"
 ---
 

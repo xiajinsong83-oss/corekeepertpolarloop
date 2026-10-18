@@ -2,13 +2,7 @@
 title: "Caveling"
 description: "Core Keeper Caveling — stats, drops and spawn biome for the basic underground mob."
 icon: "/img/app-icons/creature-caveling.png"
-biome: "The Undergrounds"
-hp: "60"
-damage: "8"
-type: "Hostile"
-drops:
-  - { item: "Caveling Remains", chance: "Common" }
-  - { item: "Copper Ore", chance: "Common" }
+key: "Caveling"
 updated: "2026-10-18"
 ---
 

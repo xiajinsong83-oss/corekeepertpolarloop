@@ -1,0 +1,98 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · <a href="/database/{{ lower .Parent.Title }}/">{{ .Parent.Title }}</a> · {{ .Title }}</nav>
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+      {{ with .Params.icon }}<img src="{{ . }}" alt="{{ $.Title }} icon" style="width:80px;height:80px;image-rendering:pixelated;background:#000">{{ end }}
+      <div style="flex:1;min-width:240px">
+        <h1 style="font-size:30px;color:#fff;margin-bottom:6px">{{ .Title }}</h1>
+        <div style="font-size:13.5px;color:#a9b8b0;margin-bottom:14px">Last updated: {{ .Params.updated | default "—" }}</div>
+      </div>
+    </div>
+
+    {{/* P1-4 数据驱动词条：以 key 匹配对应 data yaml 渲染，避免手写与数据不一致 */}}
+    {{ $kind := .Parent.Title | default "" }}
+    {{ $key := .Params.key | default .Title }}
+    {{ $entry := dict }}
+    {{ if eq $kind "Items" }}{{ range site.Data.items.items }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
+    {{ if eq $kind "Creatures" }}{{ range site.Data.creatures.creatures }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
+    {{ if eq $kind "Biomes" }}{{ range site.Data.biomes.biomes }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
+
+    {{ if eq $kind "Items" }}
+      {{ with $entry }}
+      <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+        <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+        <tbody>
+          {{ with .type }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Type</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .rarity }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Rarity</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .workbench }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Workbench</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .durability }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Durability</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .sell }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Sell value</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .stats }}
+          <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Stats</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">
+            {{ if .attack }}Attack: {{ .attack }}<br>{{ end }}{{ if .attackSpeed }}Speed: {{ .attackSpeed }}<br>{{ end }}{{ if .mineDamage }}+{{ .mineDamage }} mining damage{{ end }}
+          </td></tr>
+          {{ end }}
+          {{ with .use }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Use</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ with .materials }}
+      <h2 style="font-size:22px;color:#fff;margin:20px 0 10px">Recipe</h2>
+      <table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px">
+        <thead><tr style="background:#1a2621"><th style="border:1px solid #2e423a;padding:8px;color:#fff">Material</th><th style="border:1px solid #2e423a;padding:8px;color:#fff">Qty</th></tr></thead>
+        <tbody>
+          {{ range . }}<tr><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .item }}</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .qty }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ end }}
+      <div style="font-size:12.5px;color:#6d7f76;margin-top:10px">Verified against game version {{ site.Params.gameVersion | default "latest" }} — source: corekeeper.atma.gg.</div>
+      {{ end }}
+    {{ else if eq $kind "Creatures" }}
+      {{ with $entry }}
+      <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+        <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+        <tbody>
+          {{ with .biome }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Biome</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .type }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Type</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .hp }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Health</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .damage }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Damage</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .note }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Note</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ with .drops }}
+      <h2 style="font-size:22px;color:#fff;margin:20px 0 10px">Drops</h2>
+      <table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px">
+        <thead><tr style="background:#1a2621"><th style="border:1px solid #2e423a;padding:8px;color:#fff">Item</th><th style="border:1px solid #2e423a;padding:8px;color:#fff">Chance</th></tr></thead>
+        <tbody>
+          {{ range . }}<tr><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .item }}</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .chance }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ end }}
+      <div style="font-size:12.5px;color:#6d7f76;margin-top:10px">Verified against game version {{ site.Params.gameVersion | default "latest" }} — source: corekeeper.atma.gg.</div>
+      {{ end }}
+    {{ else if eq $kind "Biomes" }}
+      {{ with $entry }}
+      <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+        <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+        <tbody>
+          {{ with .ring }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Ring</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .distance }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Distance from Core</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .danger }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Danger</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .resources }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Resources</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ delimit . ", " }}</td></tr>{{ end }}
+          {{ with .note }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Note</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      <div style="font-size:12.5px;color:#6d7f76;margin-top:10px">Verified against game version {{ site.Params.gameVersion | default "latest" }} — source: corekeeper.atma.gg.</div>
+      {{ end }}
+    {{ end }}
+
+    <div class="article" style="max-width:760px">{{ .Content }}</div>
+    {{ partial "ad2.html" . }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>

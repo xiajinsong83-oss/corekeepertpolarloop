@@ -2,17 +2,11 @@
 title: "Iron Pickaxe"
 description: "Core Keeper Iron Pickaxe — third mining tool, recipe, materials and which ores it mines."
 icon: "/img/app-icons/item-iron-pickaxe.png"
-item_type: "Tool"
-workbench: "Iron Anvil"
-source: "Crafted"
-rarity: "Uncommon"
-materials:
-  - { item: "Iron Bar", qty: 8 }
-  - { item: "Wood", qty: 10 }
+key: "Iron Pickaxe"
 updated: "2026-10-18"
 ---
 
-The **Iron Pickaxe** is the tier-3 mining tool in Core Keeper, crafted at the Iron Anvil after you reach The Forgotten Ruins. It unlocks gold and scarlet ore mining, the gateway to late-early-game equipment.
+The **Iron Pickaxe** is the tier-3 mining tool in Core Keeper, crafted at the Iron Workbench after you reach The Forgotten Ruins. It unlocks gold and scarlet ore mining, the gateway to late-early-game equipment.
 
 ## Use
 

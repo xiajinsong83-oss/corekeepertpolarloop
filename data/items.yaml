@@ -8,6 +8,13 @@ items:
   - name: "Copper Pickaxe"
     icon: "/img/app-icons/item-copper-pickaxe.png"
     type: "Tool"
+    rarity: "Common"
+    durability: "400"
+    sell: "3"
+    stats:
+      attack: "26-30 physical damage (melee)"
+      attackSpeed: "2.5 attacks per second"
+      mineDamage: "42"
     workbench: "Copper Workbench"
     materials:
       - { item: "Wood", qty: 4 }

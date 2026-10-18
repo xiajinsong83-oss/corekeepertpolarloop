@@ -4,6 +4,7 @@ creatures:
   - name: "Caveling"
     icon: "/img/app-icons/creature-caveling.png"
     biome: "The Undergrounds"
+    type: "Hostile"
     hp: "60"
     damage: "8"
     drops:
@@ -13,6 +14,7 @@ creatures:
   - name: "Caveling Brute"
     icon: "/img/app-icons/creature-brute.png"
     biome: "The Undergrounds / Clay Caves"
+    type: "Hostile"
     hp: "140"
     damage: "16"
     drops:

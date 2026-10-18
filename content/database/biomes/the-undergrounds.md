@@ -2,10 +2,7 @@
 title: "The Undergrounds"
 description: "Core Keeper The Undergrounds biome — the safe starting ring, resources and dangers."
 icon: "/img/app-icons/biome-dirt.png"
-ring: "Center"
-distance: "0–140 tiles"
-danger: "Low"
-resources: ["Copper Ore", "Tin Ore", "Wood", "Stone", "Food crops"]
+key: "The Undergrounds"
 updated: "2026-10-18"
 ---
 
