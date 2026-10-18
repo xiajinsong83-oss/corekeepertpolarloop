@@ -31,7 +31,7 @@ jobs:
         with:
           hugo-version: "0.128.0"
 
-      - name: Fetch Steam news (continue-on-error: 单源失败不阻塞整条管道)
+      - name: "Fetch Steam news (continue-on-error: 单源失败不阻塞整条管道)"
         id: fetch
         run: |
           python scripts/fetch_steam.py
