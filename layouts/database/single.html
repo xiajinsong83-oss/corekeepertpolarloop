@@ -20,17 +20,26 @@
     {{ if eq $kind "Items" }}{{ range site.Data.items.items }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
     {{ if eq $kind "Creatures" }}{{ range site.Data.creatures.creatures }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
     {{ if eq $kind "Biomes" }}{{ range site.Data.biomes.biomes }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
+    {{ if eq $kind "Bosses" }}{{ range site.Data.bosses.bosses }}{{ if eq .name $key }}{{ $entry = . }}{{ end }}{{ end }}{{ end }}
 
     {{ if eq $kind "Items" }}
       {{ with $entry }}
       <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
         <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
         <tbody>
+          {{ with .category }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Category</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .type }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Type</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .lvl }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Level</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .damage }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Damage</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .aps }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Attacks / sec</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .rarity }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Rarity</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .workbench }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Workbench</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .durability }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Durability</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .sell }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Sell value</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .food }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Food</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .effects }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Effects</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .source }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Source</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .note }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Note</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
           {{ with .stats }}
           <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Stats</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">
             {{ if .attack }}Attack: {{ .attack }}<br>{{ end }}{{ if .attackSpeed }}Speed: {{ .attackSpeed }}<br>{{ end }}{{ if .mineDamage }}+{{ .mineDamage }} mining damage{{ end }}
@@ -85,6 +94,27 @@
           {{ with .note }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Note</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
         </tbody>
       </table>
+      <div style="font-size:12.5px;color:#6d7f76;margin-top:10px">Verified against game version {{ site.Params.gameVersion | default "latest" }} — source: corekeeper.atma.gg.</div>
+      {{ end }}
+    {{ else if eq $kind "Bosses" }}
+      {{ with $entry }}
+      <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+        <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+        <tbody>
+          {{ with .biome }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Biome</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .tier }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Tier</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+          {{ with .unlock }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">How to spawn</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ with .drops }}
+      <h2 style="font-size:22px;color:#fff;margin:20px 0 10px">Drops</h2>
+      <table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px">
+        <thead><tr style="background:#1a2621"><th style="border:1px solid #2e423a;padding:8px;color:#fff">Item</th><th style="border:1px solid #2e423a;padding:8px;color:#fff">Chance</th><th style="border:1px solid #2e423a;padding:8px;color:#fff">Note</th></tr></thead>
+        <tbody>
+          {{ range . }}<tr><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .item }}</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .chance }}</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .note }}</td></tr>{{ end }}
+        </tbody>
+      </table>
+      {{ end }}
       <div style="font-size:12.5px;color:#6d7f76;margin-top:10px">Verified against game version {{ site.Params.gameVersion | default "latest" }} — source: corekeeper.atma.gg.</div>
       {{ end }}
     {{ end }}
