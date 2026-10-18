@@ -1,6 +1,6 @@
 ---
 title: "Seed Finder"
-description: "Core Keeper seed finder — browse curated starting, rich ore, boss-near and rare terrain seeds for your world."
+description: "Core Keeper seed finder — preview world ring layout from a seed, browse curated starting, rich ore, boss-near and rare terrain seeds."
 icon: "/img/app-icons/seed-finder.png"
 keywords: ["Core Keeper seed finder", "Core Keeper seed preview", "Core Keeper starting seed", "Core Keeper world seed"]
 related:
@@ -9,11 +9,11 @@ related:
   - { title: "Biomes Database", url: "/database/biomes/" }
 ---
 
-The Core Keeper **seed finder** helps you pick a good world seed before you start. Core Keeper worlds are generated deterministically from a hidden seed — biome rotation, boss spawn arcs and fixed scenes all depend on it, while terrain details are generated chunk-by-chunk as you explore.
+The Core Keeper **seed finder** helps you pick a good world seed before you start. Every world is generated from a numeric seed — it determines biome rotation, boss spawn arcs and fixed scenes, while terrain details are generated chunk-by-chunk as you explore.
 
 ## How to use
 
-Enter a numeric seed to jump to curated seeds with similar traits, or browse the full seed library by tag (starting / rich ore / boss-near / rare terrain).
+Enter a numeric seed and hit **Preview Layout** to see the deterministic ring structure: the Core in the center, the inner ring (Clay Caves + Forgotten Ruins, 150–450 tiles), the Great Wall (450–520) and the three outer biomes (520–1200). The **biome angles rotate with your seed** — the preview shows the approximation so you know roughly which direction to explore first. Use **Browse Seeds** to jump to the curated seed library.
 
 {{< seed-finder >}}
 
@@ -23,10 +23,15 @@ Enter a numeric seed to jump to curated seeds with similar traits, or browse the
 - **Boss spawn arcs** — fixed-distance arcs with random angles for all main and optional bosses
 - **Fixed scenes** — the Core, first-three-boss spawns and NPC merchant scenes
 
+## Seed library & community submissions
+
+Curated seeds are listed in the [Seed Library](/seeds/), each tagged **starting / rich ore / boss-near / rare terrain** with the game version it was tested on. Found a seed worth sharing? Email the seed number, version and what makes it interesting to **merrysee888@qq.com** — verified entries get added with your name.
+
 {{< ad >}}
 
 ## FAQ
 
-- **Does Core Keeper use seeds?** Yes — every world is created from a hidden random seed that determines biome rotation and boss positions.
-- **Are seeds version-dependent?** Yes. Major updates can change generation, so check the version tag on each seed page.
-- **Can I preview terrain from a seed?** Not fully — terrain needs the game's generation algorithm. This tool focuses on the deterministic high-level layout.
+- **Does Core Keeper use seeds?** Yes — every world is created from a numeric seed that determines biome rotation and boss positions.
+- **Are seeds version-dependent?** Yes. Major updates can change generation, so always check the version tag on each seed.
+- **Can I preview terrain from a seed?** Terrain needs the game's generation algorithm — this tool previews the deterministic high-level ring layout and approximates biome angles.
+- **How do I share a good seed?** Email the seed, game version and what you found to merrysee888@qq.com, or check the Seed Library for the submission note.

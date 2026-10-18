@@ -1,33 +1,113 @@
-{{ $id := printf "seedsearch-%s" (md5 .Page.Title | truncate 8) }}
+{{ $id := printf "seedpreview-%s" (md5 .Page.Title | truncate 8) }}
 <div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:4px">Enter a world seed</div>
-  <div style="font-size:13px;color:#a9b8b0;margin-bottom:10px">Find curated seeds matching your goal — starting, rich ore, boss-near or rare terrain.</div>
+  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:4px">World seed preview</div>
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:10px">Enter a numeric seed to preview the deterministic ring layout — biome angles are seed-dependent and shown as an approximation (game algorithm is version-specific).</div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <input id="{{ $id }}-seed" type="text" placeholder="e.g. 12345 or leave empty to browse all" style="flex:1;min-width:200px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
-    <button id="{{ $id }}-go" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Browse Seeds</button>
+    <input id="{{ $id }}-seed" type="text" placeholder="e.g. 12345" style="flex:1;min-width:200px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
+    <button id="{{ $id }}-preview" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Preview Layout</button>
+    <button id="{{ $id }}-browse" type="button" style="padding:12px 20px;font-size:16px;background:#2e423a;color:#e9efe9;border:1px solid #2e423a;cursor:pointer">Browse Seeds</button>
   </div>
   <div id="{{ $id }}-msg" style="font-size:13px;color:#7fd6a0;margin-top:8px;display:none"></div>
+  <div id="{{ $id }}-chart" style="margin-top:14px;display:none"></div>
 </div>
 <script>
 (function(){
   var seed = document.getElementById('{{ $id }}-seed');
-  var go = document.getElementById('{{ $id }}-go');
+  var preview = document.getElementById('{{ $id }}-preview');
+  var browse = document.getElementById('{{ $id }}-browse');
   var msg = document.getElementById('{{ $id }}-msg');
-  if(!seed || !go || !msg) return;
-  go.addEventListener('click', function(){
-    var v = seed.value.trim();
-    var base = '/seeds/';
-    var sep = base.indexOf('?') === -1 ? '?' : '&';
-    if(v === ''){ window.location.href = base; return; }
-    if(/^\d+$/.test(v)){
-      msg.style.display = 'block';
-      msg.textContent = 'Seed preview is being built — for now, browse curated seeds with similar traits below.';
-      window.location.href = base + sep + 'q=' + encodeURIComponent(v);
-    } else {
-      msg.style.display = 'block';
-      msg.textContent = 'Seeds are numeric. Enter digits, or leave empty to browse all curated seeds.';
-    }
+  var chart = document.getElementById('{{ $id }}-chart');
+  if(!seed || !preview || !browse || !msg || !chart) return;
+
+  browse.addEventListener('click', function(){
+    window.location.href = '/seeds/';
   });
-  seed.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+
+  preview.addEventListener('click', function(){
+    var v = seed.value.trim();
+    if(v === '' || !/^\d+$/.test(v)){
+      msg.style.display = 'block';
+      msg.textContent = 'Seeds are numeric — enter digits to preview the ring layout.';
+      return;
+    }
+    msg.style.display = 'none';
+    render(v);
+  });
+  seed.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); preview.click(); } });
+
+  function hashNum(s){
+    var h = 0;
+    for (var i = 0; i < s.length; i++){ h = ((h << 5) - h + s.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+
+  function render(seedVal){
+    var S = 480, C = S / 2;
+    var inner = [
+      { name: 'Clay Caves',       color: '#c98a4b' },
+      { name: 'Forgotten Ruins',  color: '#8a8f98' }
+    ];
+    var outer = [
+      { name: "Azeos' Wilderness", color: '#6fae5a' },
+      { name: 'The Sunken Sea',     color: '#4b7fae' },
+      { name: 'The Mold',           color: '#7a5f4b' }
+    ];
+    var h = hashNum(seedVal);
+    var rotInner = h % 360;
+    var rotOuter = (h >> 8) % 360;
+
+    var svg = '<svg viewBox="0 0 ' + S + ' ' + S + '" style="width:100%;max-width:520px;height:auto;background:#101613;border:1px solid #2e423a" role="img" aria-label="Seed ' + seedVal + ' ring layout preview">';
+
+    // Great Wall ring (annulus between inner and outer)
+    svg += ring(C, C, 56, 86, '#1a2621', '#2e423a');
+
+    // Inner ring: Clay Caves + Forgotten Ruins halves
+    var rIn = 66;
+    svg += '<path d="' + arcPath(C, C, rIn, rotInner, rotInner + 180) + '" fill="' + inner[0].color + '" fill-opacity=".55" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, rIn, rotInner + 180, rotInner + 360) + '" fill="' + inner[1].color + '" fill-opacity=".55" stroke="#2e423a"/>';
+
+    // Outer ring: three biomes (120° each)
+    var rOut = 120;
+    var a0 = rotOuter, a1 = a0 + 120, a2 = a1 + 120;
+    svg += '<path d="' + arcPath(C, C, rOut, a0, a1) + '" fill="' + outer[0].color + '" fill-opacity=".5" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, rOut, a1, a2) + '" fill="' + outer[1].color + '" fill-opacity=".5" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, rOut, a2, a0 + 360) + '" fill="' + outer[2].color + '" fill-opacity=".5" stroke="#2e423a"/>';
+
+    // The Core
+    svg += '<circle cx="' + C + '" cy="' + C + '" r="30" fill="#7fd6a0" fill-opacity=".85"/>';
+    svg += '<text x="' + C + '" y="' + (C + 4) + '" text-anchor="middle" font-size="11" fill="#101613" font-weight="700">CORE</text>';
+
+    // Ring labels
+    svg += '<text x="' + C + '" y="' + (C - 40) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Clay / Ruins 150-450</text>';
+    svg += '<text x="' + C + '" y="' + (C - 98) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Outer biomes 520-1200</text>';
+    svg += '<text x="' + C + '" y="' + (C + 130) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Great Wall 450-520</text>';
+    svg += '<text x="' + C + '" y="' + (S - 12) + '" text-anchor="middle" font-size="10" fill="#6d7f76">Seed ' + seedVal + ' · angles are approximations (version-dependent)</text>';
+    svg += '</svg>';
+
+    chart.innerHTML = svg;
+    chart.style.display = 'block';
+  }
+
+  function ring(cx, cy, r0, r1, fill, stroke){
+    // Draw annulus via two circles with mask-like approach: outer circle + inner cut using fill-rule evenodd
+    return '<path d="M' + (cx - r1) + ',' + cy + 'a' + r1 + ',' + r1 + ' 0 1,0 ' + (r1 * 2) + ',0a' + r1 + ',' + r1 + ' 0 1,0 ' + (-r1 * 2) + ',0' +
+           'M' + (cx - r0) + ',' + cy + 'a' + r0 + ',' + r0 + ' 0 1,0 ' + (r0 * 2) + ',0a' + r0 + ',' + r0 + ' 0 1,0 ' + (-r0 * 2) + ',0' +
+           '" fill="' + fill + '" fill-rule="evenodd" stroke="' + stroke + '"/>';
+  }
+
+  function arcPath(cx, cy, r, a0, a1){
+    var p = [];
+    var step = 12;
+    for (var a = a0; a <= a1; a += step){
+      var rad = a * Math.PI / 180;
+      p.push((p.length ? 'L' : 'M') + (cx + r * Math.cos(rad)).toFixed(1) + ' ' + (cy + r * Math.sin(rad)).toFixed(1));
+    }
+    if ((a1 - a0) % step !== 0){
+      var rad2 = a1 * Math.PI / 180;
+      p.push('L' + (cx + r * Math.cos(rad2)).toFixed(1) + ' ' + (cy + r * Math.sin(rad2)).toFixed(1));
+    }
+    p.push('Z');
+    return p.join(' ');
+  }
 })();
 </script>
