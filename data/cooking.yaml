@@ -1,0 +1,32 @@
+# Core Keeper Cooking ingredient data (P2-4) — source: corekeeper.atma.gg/en/Cooking, verified 2026-10-18
+# Regular 档效果（食材组合时：永久最大HP加成叠加，其余效果取两者最高值）
+ingredients:
+  - { name: "Mushroom", food: "+19", effects: "+4.2 health every sec for 20 sec", tags: "health" }
+  - { name: "Giant Mushroom", food: "+31", effects: "+25 max health (once) · +24 max health for 10 min", tags: "health maxhealth" }
+  - { name: "Moorshroom", food: "+20", effects: "+6.6 health every sec for 20 sec · +4 glow for 10 min", tags: "health glow" }
+  - { name: "Glowing Mushroom", food: "+20", effects: "+4 purple glow for 10 min · +34% explosion damage for 10 min", tags: "glow explosion" }
+  - { name: "Heart Berry", food: "+19", effects: "+25 max health for 10 min · +2.8 health every sec for 20 sec", tags: "health maxhealth" }
+  - { name: "Golden Heart Berry", food: "+18", effects: "+50 max health for 10 min · +4.4 health every sec for 20 sec · +17.1% melee damage for 10 min", tags: "health maxhealth melee" }
+  - { name: "Glow Tulip", food: "+2", effects: "+5 blue glow for 10 min · +1.4 mana every sec for 10 min", tags: "glow mana" }
+  - { name: "Golden Glow Tulip", food: "+2", effects: "+6 blue glow · +2.3 mana every sec · +25 max mana for 10 min", tags: "glow mana" }
+  - { name: "Bomb Pepper", food: "+10", effects: "+21% movement speed for 1 min", tags: "speed" }
+  - { name: "Golden Bomb Pepper", food: "+11", effects: "+26.9% movement speed for 1 min · +8.9% melee attack speed for 10 min", tags: "speed melee" }
+  - { name: "Carrock", food: "+15", effects: "+23 armor for 10 min", tags: "armor" }
+  - { name: "Golden Carrock", food: "+13", effects: "+26 armor for 10 min · +18% knockback chance for 2 min", tags: "armor melee" }
+  - { name: "Puffungi", food: "+10", effects: "+6% reduced boss damage for 10 min · +5.5 health every sec for 20 sec", tags: "boss health" }
+  - { name: "Golden Puffungi", food: "+10", effects: "+9% reduced boss damage · +7.9 health every sec · +14% boss damage for 1 min", tags: "boss health" }
+  - { name: "Bloat Oat", food: "+43", effects: "+9.1 health every sec for 20 sec", tags: "health" }
+  - { name: "Golden Bloat Oat", food: "+42", effects: "+12.1 health every sec · +10% less food drained when running", tags: "health stamina" }
+  - { name: "Pewpaya", food: "+20", effects: "+6.3 health every sec · +22.4% range damage for 10 min", tags: "health range" }
+  - { name: "Golden Pewpaya", food: "+21", effects: "+8.2 health every sec · +28.2% range damage · +8.4% range attack speed", tags: "health range" }
+  - { name: "Pinegrapple", food: "+20", effects: "+5.4 health every sec · +22.4% melee damage for 10 min", tags: "health melee" }
+  - { name: "Golden Pinegrapple", food: "+21", effects: "+9 health every sec · +28.2% melee damage · +8.4% melee attack speed", tags: "health melee" }
+  - { name: "Sunrice", food: "+13", effects: "+4 glow · +30% magic damage for 10 min", tags: "glow magic" }
+  - { name: "Golden Sunrice", food: "+13", effects: "+4 glow · +43.3% magic damage · +91 magic barrier", tags: "glow magic" }
+  - { name: "Lunacorn", food: "+13", effects: "+4 blue glow · +30% minion damage for 10 min", tags: "glow summoning" }
+  - { name: "Golden Lunacorn", food: "+14", effects: "+4 blue glow · +39.5% minion damage", tags: "glow summoning" }
+  - { name: "Terra Trilobite", food: "+19", effects: "+103 max health for 10 min · +344 mining damage for 10 min", tags: "maxhealth mining" }
+  - { name: "Litho Trilobite", food: "+22", effects: "+5.5 health every sec · +69 max mana · +79 magic barrier", tags: "health mana magic" }
+  - { name: "Greenhorn Pico", food: "+21", effects: "+6.6 health every sec for 40 sec · +36.8% minion attack speed · +12% minion crit", tags: "health summoning" }
+  - { name: "Pinkhorn Pico", food: "+20", effects: "+9.5 health every sec · +52.1% minion damage for 10 min", tags: "health summoning" }
+  - { name: "Riftian Lampfish", food: "+19", effects: "+7.2 health every sec · +58 max mana · +27.6% magic damage · +5 blue glow", tags: "health mana magic glow" }

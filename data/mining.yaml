@@ -1,0 +1,17 @@
+# Core Keeper Mining data (P2-4) — source: corekeeper.atma.gg/en/Mining, verified 2026-10-18
+# 镐挖掘伤害 >= 墙体所需挖掘伤害即可开采
+pickaxes:
+  - { name: "Wood Pickaxe", damage: 15, durability: 200, source: "Crafted by hand" }
+  - { name: "Copper Pickaxe", damage: 39, durability: 400, source: "Copper Workbench" }
+  - { name: "Tin Pickaxe", damage: 83, durability: 550, source: "Tin Workbench" }
+  - { name: "Iron Pickaxe", damage: 167, durability: 800, source: "Iron Workbench" }
+  - { name: "Scarlet Pickaxe", damage: 282, durability: 800, source: "Scarlet Workbench" }
+  - { name: "Ancient Pickaxe", damage: 354, durability: 800, source: "Dropped by Azeos the Sky Titan" }
+  - { name: "Octarine Pickaxe", damage: 403, durability: 800, source: "Octarine Workbench" }
+  - { name: "Galaxite Pickaxe", damage: 556, durability: 800, source: "Galaxite Workbench" }
+  - { name: "Solarite Pickaxe", damage: 715, durability: 800, source: "Solarite Workbench" }
+  - { name: "Soul Seeker", damage: 769, durability: "Unbreakable", source: "Crafted with Cipher Parchment" }
+walls:
+  - { name: "Paintable Wall / Eerie Wall", hardness: 13, note: "Early soft walls" }
+  - { name: "Stone Block / Dark Stone Block / Stone Bricks Wall", hardness: 67, note: "Standard stone — Tin pickaxe and up" }
+  - { name: "Grass Block / Scarlet Wall", hardness: 147, note: "Iron pickaxe and up" }

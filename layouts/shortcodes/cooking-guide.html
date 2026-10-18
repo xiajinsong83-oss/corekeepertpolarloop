@@ -1,0 +1,47 @@
+{{/* P2-4 Cooking Guide：食材效果搜索/筛选（data/cooking.yaml 驱动） */}}
+<div id="cook-guide" style="margin:18px 0">
+  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <input id="cg-q" type="search" placeholder="Search effect (health, magic, boss, melee, glow...)" style="background:#0f1713;color:#fff;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px;flex:1;min-width:200px">
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    <button class="cg-tag" data-tag="all" style="padding:5px 12px;border-radius:16px;cursor:pointer;border:1px solid #f2cc7a;background:#1a2621;color:#f2cc7a;font-weight:700;font-size:12.5px">All</button>
+    {{ range (slice "health" "maxhealth" "melee" "range" "magic" "summoning" "boss" "speed" "armor" "glow" "mana" "mining" "stamina") }}
+    <button class="cg-tag" data-tag="{{ . }}" style="padding:5px 12px;border-radius:16px;cursor:pointer;border:1px solid #2e423a;background:#1a2621;color:#a9b8b0;font-size:12.5px">{{ . }}</button>
+    {{ end }}
+  </div>
+  <div id="cg-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
+    {{ range site.Data.cooking.ingredients }}
+    <div class="cg-item" data-tags="{{ .tags }}" data-name="{{ .name }}" style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px">
+      <div style="color:#fff;font-weight:700;font-size:14px">{{ .name }} <span style="color:#f2cc7a;font-weight:400">(+{{ .food }} food)</span></div>
+      <div style="color:#a9b8b0;font-size:13px;margin-top:5px;line-height:1.5">{{ .effects }}</div>
+    </div>
+    {{ end }}
+  </div>
+  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-top:14px;font-size:13px;color:#a9b8b0">
+    <strong style="color:#f2cc7a">How combining works:</strong> cooked dishes combine both ingredients' hidden effects — permanent max-health boosts add up; every other effect keeps only the highest value. Skills like <em>Utilizing every nutrient</em>, <em>Fast food</em> and <em>Long-lasting food</em> boost results retroactively.
+  </div>
+  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Regular-rarity values shown; rare & epic tiers scale up · source: corekeeper.atma.gg/en/Cooking · game version {{ site.Params.gameVersion | default "latest" }}</div>
+</div>
+<script>
+(function(){
+  var cur = "all";
+  function filter(){
+    var q = document.getElementById("cg-q").value.trim().toLowerCase();
+    document.querySelectorAll("#cg-list .cg-item").forEach(function(it){
+      var tags = it.getAttribute("data-tags");
+      var okT = (cur === "all") || (" " + tags + " ").indexOf(" " + cur + " ") >= 0;
+      var okQ = !q || it.getAttribute("data-name").toLowerCase().indexOf(q) >= 0 || it.textContent.toLowerCase().indexOf(q) >= 0;
+      it.style.display = (okT && okQ) ? "" : "none";
+    });
+  }
+  document.querySelectorAll(".cg-tag").forEach(function(b){
+    b.addEventListener("click", function(){
+      cur = this.getAttribute("data-tag");
+      document.querySelectorAll(".cg-tag").forEach(function(x){ x.style.borderColor="#2e423a"; x.style.color="#a9b8b0"; });
+      this.style.borderColor="#f2cc7a"; this.style.color="#f2cc7a";
+      filter();
+    });
+  });
+  document.getElementById("cg-q").addEventListener("input", filter);
+})();
+</script>

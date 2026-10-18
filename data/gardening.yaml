@@ -1,0 +1,28 @@
+# Core Keeper Gardening data (P2-4) — source: corekeeper.atma.gg/en/Gardening, verified 2026-10-18
+# 生长时间：浇水种子→10分钟成熟（2分发芽 + 4分预熟 + 4分可收）；基础3%变黄金作物
+growing_minutes: 10
+stages:
+  - { name: "Watered seed → sprout", minutes: 2 }
+  - { name: "Sprout → pre-harvest", minutes: 4 }
+  - { name: "Pre-harvest → harvestable", minutes: 4 }
+crops:
+  - { seed: "Root Seed", harvest: "Wood", ground: "Any", note: "Spreads wood around it as it matures" }
+  - { seed: "Heart Berry Seed", harvest: "Heart Berry / Golden Heart Berry", ground: "Any", note: "" }
+  - { seed: "Glow Tulip Seed", harvest: "Glow Tulip / Golden Glow Tulip", ground: "Any", note: "" }
+  - { seed: "Bomb Pepper Seed", harvest: "Bomb Pepper / Golden Bomb Pepper", ground: "Any", note: "" }
+  - { seed: "Grub Kapok Seed", harvest: "Fiber", ground: "Any", note: "" }
+  - { seed: "Carrock Seed", harvest: "Carrock / Golden Carrock", ground: "Stone Block", note: "" }
+  - { seed: "Puffungi Seed", harvest: "Puffungi / Golden Puffungi", ground: "Mold Block", note: "" }
+  - { seed: "Bloat Oat Seed", harvest: "Bloat Oat / Golden Bloat Oat", ground: "Any", note: "" }
+  - { seed: "Coral Seed", harvest: "Coral Wood", ground: "Beach Block", note: "" }
+  - { seed: "Pewpaya Seed", harvest: "Pewpaya / Golden Pewpaya", ground: "Beach Block", note: "" }
+  - { seed: "Pinegrapple Seed", harvest: "Pinegrapple / Golden Pinegrapple", ground: "Beach Block", note: "" }
+  - { seed: "Grumpkin Seed", harvest: "Grumpkin / Golden Grumpkin", ground: "Any", note: "Creepy Costume Party event only" }
+  - { seed: "Sunrice Seed", harvest: "Sunrice / Golden Sunrice", ground: "Crystal Block", note: "" }
+  - { seed: "Lunacorn Seed", harvest: "Lunacorn / Golden Lunacorn", ground: "Crystal Block", note: "" }
+harvest_gear:
+  - { name: "Gardening skill", effect: "+0.4% harvest chance per level (40% at 100)" }
+  - { name: "Farmer's Hat", effect: "+10.1% (+1.5% reinforced); 20.8% at level 19" }
+  - { name: "Petal Ring", effect: "+22.7%; stackable, 45.4% with both; 42.2% each at level 19" }
+  - { name: "Eostre Necklace", effect: "+10.3%; 19.1% at level 19" }
+  - { name: "Kelp Dumpling", effect: "+15% for 10 minutes" }
