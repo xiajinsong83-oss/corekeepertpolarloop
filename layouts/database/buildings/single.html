@@ -1,0 +1,28 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · <a href="/database/buildings/">Buildings</a> · {{ .Title }}</nav>
+    <h1 style="font-size:30px;color:#fff;margin-bottom:6px">{{ .Title }}</h1>
+    <div style="font-size:13.5px;color:#a9b8b0;margin-bottom:14px">Last updated: {{ .Params.updated | default "—" }}</div>
+
+    {{ if .Params.cost }}
+    <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <tbody>
+        <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Function</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .Params.function }}</td></tr>
+        <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Cost</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .Params.cost }}</td></tr>
+        {{ with .Params.energy }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Energy</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+      </tbody>
+    </table>
+    {{ end }}
+
+    <div class="article" style="max-width:760px">{{ .Content }}</div>
+    {{ partial "ad.html" . }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>

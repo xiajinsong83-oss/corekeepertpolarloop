@@ -1,0 +1,32 @@
+{{ $data := site.Data.creatures.creatures }}
+{{ $id := printf "creaturelookup-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
+  <input id="{{ $id }}-search" type="text" placeholder="Search creature..." style="width:100%;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a;margin-bottom:12px">
+  <div id="{{ $id }}-grid" style="display:grid;grid-template-columns:1fr;gap:10px">
+    {{ range $data }}
+    <div class="ck-creature" data-name="{{ .name }}" style="border:1px solid #2e423a;background:#101613;padding:12px">
+      <div style="font-size:15px;color:#f2cc7a;font-weight:700">{{ .name }}</div>
+      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Biome:</b> {{ .biome }} · <b style="color:#fff">HP:</b> {{ .hp }} · <b style="color:#fff">Dmg:</b> {{ .damage }}</div>
+{{ $drops := slice }}
+{{ range .drops }}{{ $drops = $drops | append (printf "%s (%s)" .item .chance) }}{{ end }}
+      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Drops:</b> {{ delimit $drops ", " }}
+      </div>
+      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Note:</b> {{ .note }}</div>
+    </div>
+    {{ end }}
+  </div>
+</div>
+<script>
+(function(){
+  var inp = document.getElementById('{{ $id }}-search');
+  if(!inp) return;
+  inp.addEventListener('input', function(){
+    var q = inp.value.trim().toLowerCase();
+    var cards = document.querySelectorAll('#{{ $id }}-grid .ck-creature');
+    for(var i=0;i<cards.length;i++){
+      var show = q==='' || cards[i].getAttribute('data-name').toLowerCase().indexOf(q) !== -1;
+      cards[i].style.display = show ? 'block' : 'none';
+    }
+  });
+})();
+</script>

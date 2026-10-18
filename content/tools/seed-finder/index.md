@@ -1,24 +1,32 @@
 ---
 title: "Seed Finder"
-description: "Preview a Core Keeper world seed: biomes, boss locations and key points of interest."
+description: "Core Keeper seed finder — browse curated starting, rich ore, boss-near and rare terrain seeds for your world."
 icon: "/img/app-icons/seed-finder.png"
-keywords: ["Core Keeper seed finder", "Core Keeper seed preview", "Core Keeper map seed"]
+keywords: ["Core Keeper seed finder", "Core Keeper seed preview", "Core Keeper starting seed", "Core Keeper world seed"]
+related:
+  - { title: "Boss Drop Finder", url: "/tools/boss-drop-finder/" }
+  - { title: "Seeds Library", url: "/seeds/" }
+  - { title: "Biomes Database", url: "/database/biomes/" }
 ---
 
-## What it does
-
-Enter a world seed to preview its ring layout: biome order, boss spawn arcs and fixed scenes.
+The Core Keeper **seed finder** helps you pick a good world seed before you start. Core Keeper worlds are generated deterministically from a hidden seed — biome rotation, boss spawn arcs and fixed scenes all depend on it, while terrain details are generated chunk-by-chunk as you explore.
 
 ## How to use
 
-1. Copy your world seed (shown on the world creation screen).
-2. Enter it below and preview the generated layout.
+Enter a numeric seed to jump to curated seeds with similar traits, or browse the full seed library by tag (starting / rich ore / boss-near / rare terrain).
 
-{{< note type="info" text="Ring distances are approximate; verify against in-game data before relying on exact positions." >}}
+{{< seed-finder >}}
+
+## What a seed controls
+
+- **Biome rotation** — which direction Clay Caves / Forgotten Ruins sit, and the counter-clockwise order of the three outer biomes
+- **Boss spawn arcs** — fixed-distance arcs with random angles for all main and optional bosses
+- **Fixed scenes** — the Core, first-three-boss spawns and NPC merchant scenes
 
 {{< ad >}}
 
 ## FAQ
 
-- **Does the seed preview show exact terrain?** No — terrain details require the game's generation algorithm; this tool shows the deterministic high-level layout (biome rings, boss arcs, fixed scenes).
-- **Are seeds version-dependent?** Yes. Seeds created in older versions may generate differently after major updates.
+- **Does Core Keeper use seeds?** Yes — every world is created from a hidden random seed that determines biome rotation and boss positions.
+- **Are seeds version-dependent?** Yes. Major updates can change generation, so check the version tag on each seed page.
+- **Can I preview terrain from a seed?** Not fully — terrain needs the game's generation algorithm. This tool focuses on the deterministic high-level layout.

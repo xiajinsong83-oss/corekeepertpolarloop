@@ -1,0 +1,74 @@
+# Core Keeper Boss 数据（阶段2 初始集，含掉落与解锁条件）
+# 数据来源：社区 Wiki（corekeeper.atma.gg）；数值随版本更新，发布前需核对
+bosses:
+  - name: "Glurch the Abominable Mass"
+    icon: "/img/app-icons/boss-glurch.png"
+    biome: "The Undergrounds (Dirt)"
+    tier: "Main Boss 1"
+    unlock: "Summoned at the Core via Glurch Summoning Idol, or found in the first ring"
+    drops:
+      - { item: "Glurch Eye", chance: "100%", note: "Required for progression" }
+      - { item: "Copper Ore", chance: "Common", note: "" }
+      - { item: "Tin Ore", chance: "Common", note: "" }
+      - { item: "Copper Ring", chance: "Uncommon", note: "" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Ghorm the Devourer"
+    icon: "/img/app-icons/boss-ghorm.png"
+    biome: "The Undergrounds (Dirt ring path)"
+    tier: "Main Boss 2"
+    unlock: "Find its track in the dirt ring and follow it; summon via Ghorm Summoning Idol"
+    drops:
+      - { item: "Ghorm's Horn", chance: "100%", note: "Required for progression" }
+      - { item: "Iron Ore", chance: "Common", note: "" }
+      - { item: "Ancient Gem", chance: "Uncommon", note: "" }
+      - { item: "Ghorm's Jaw", chance: "Rare", note: "Melee weapon" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Hive Mother"
+    icon: "/img/app-icons/boss-hivemother.png"
+    biome: "Larva Hive (within Clay Caves)"
+    tier: "Main Boss 3"
+    unlock: "Found inside the Larva Hive dungeon in the Clay Caves"
+    drops:
+      - { item: "Hive Mother Cell", chance: "100%", note: "Required for progression" }
+      - { item: "Larva Hive Chest", chance: "Guaranteed", note: "Loot room after fight" }
+      - { item: "Golden Larva", chance: "Rare", note: "Pet" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Malugaz the Corrupted"
+    icon: "/img/app-icons/boss-malugaz.png"
+    biome: "Forgotten Ruins"
+    tier: "Optional Boss"
+    unlock: "Summoned at the Corrupted Core in the Forgotten Ruins"
+    drops:
+      - { item: "Malugaz's Skull", chance: "100%", note: "" }
+      - { item: "Corrupted Chest", chance: "Guaranteed", note: "" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Azeos the Sky Titan"
+    icon: "/img/app-icons/boss-azeos.png"
+    biome: "Azeos' Wilderness"
+    tier: "Main Boss 4"
+    unlock: "Summoned via Azeos Summoning Idol at its arena in the Wilderness"
+    drops:
+      - { item: "Azeos' Claw", chance: "100%", note: "Required for progression" }
+      - { item: "Sky Chest", chance: "Guaranteed", note: "" }
+      - { item: "Azeos' Feather", chance: "Rare", note: "" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Omoroth the Sea Titan"
+    icon: "/img/app-icons/boss-omoroth.png"
+    biome: "The Sunken Sea"
+    tier: "Main Boss 5"
+    unlock: "Summoned via Omoroth Summoning Idol in the Sunken Sea"
+    drops:
+      - { item: "Omoroth's Eye", chance: "100%", note: "Required for progression" }
+      - { item: "Ocean Chest", chance: "Guaranteed", note: "" }
+      - { item: "Omoroth's Scale", chance: "Rare", note: "" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]
+  - name: "Ra-Akar the Sand Titan"
+    icon: "/img/app-icons/boss-raakar.png"
+    biome: "The Desert of Beginnings"
+    tier: "Main Boss 6"
+    unlock: "Summoned via Ra-Akar Summoning Idol in the Desert of Beginnings"
+    drops:
+      - { item: "Ra-Akar's Wing", chance: "100%", note: "Required for progression" }
+      - { item: "Sand Chest", chance: "Guaranteed", note: "" }
+      - { item: "Ra-Akar's Core", chance: "Rare", note: "" }
+    related: ["/tools/boss-drop-finder/", "/guides/combat-bosses/"]

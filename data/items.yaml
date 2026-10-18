@@ -1,0 +1,67 @@
+# Core Keeper 物品合成数据（阶段2 初始集）
+# 数据来源：社区 Wiki；发布前需核对最新版本
+items:
+  - name: "Copper Pickaxe"
+    icon: "/img/app-icons/item-copper-pickaxe.png"
+    type: "Tool"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Copper Bar", qty: 8 }
+      - { item: "Wood", qty: 10 }
+    use: "Mining copper and tin ore"
+  - name: "Tin Pickaxe"
+    icon: "/img/app-icons/item-tin-pickaxe.png"
+    type: "Tool"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Tin Bar", qty: 8 }
+      - { item: "Wood", qty: 10 }
+    use: "Mining iron ore"
+  - name: "Iron Pickaxe"
+    icon: "/img/app-icons/item-iron-pickaxe.png"
+    type: "Tool"
+    workbench: "Iron Anvil"
+    materials:
+      - { item: "Iron Bar", qty: 8 }
+      - { item: "Wood", qty: 10 }
+    use: "Mining gold and scarlet ore"
+  - name: "Gold Pickaxe"
+    icon: "/img/app-icons/item-gold-pickaxe.png"
+    type: "Tool"
+    workbench: "Gold Anvil"
+    materials:
+      - { item: "Gold Bar", qty: 8 }
+      - { item: "Wood", qty: 10 }
+    use: "Mining harder ores, faster"
+  - name: "Scarlet Pickaxe"
+    icon: "/img/app-icons/item-scarlet-pickaxe.png"
+    type: "Tool"
+    workbench: "Scarlet Workbench"
+    materials:
+      - { item: "Scarlet Bar", qty: 8 }
+      - { item: "Wood", qty: 10 }
+    use: "Best tier mining speed before endgame"
+  - name: "Copper Sword"
+    icon: "/img/app-icons/item-copper-sword.png"
+    type: "Weapon"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Copper Bar", qty: 5 }
+      - { item: "Wood", qty: 6 }
+    use: "Early melee weapon"
+  - name: "Iron Sword"
+    icon: "/img/app-icons/item-iron-sword.png"
+    type: "Weapon"
+    workbench: "Iron Anvil"
+    materials:
+      - { item: "Iron Bar", qty: 5 }
+      - { item: "Wood", qty: 6 }
+    use: "Mid-game melee weapon"
+  - name: "Basic Workbench"
+    icon: "/img/app-icons/item-workbench.png"
+    type: "Station"
+    workbench: "Crafting (anywhere)"
+    materials:
+      - { item: "Wood", qty: 15 }
+      - { item: "Copper Bar", qty: 3 }
+    use: "First crafting station"

@@ -1,0 +1,33 @@
+{{ $id := printf "seedsearch-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
+  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:4px">Enter a world seed</div>
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:10px">Find curated seeds matching your goal — starting, rich ore, boss-near or rare terrain.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <input id="{{ $id }}-seed" type="text" placeholder="e.g. 12345 or leave empty to browse all" style="flex:1;min-width:200px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
+    <button id="{{ $id }}-go" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Browse Seeds</button>
+  </div>
+  <div id="{{ $id }}-msg" style="font-size:13px;color:#7fd6a0;margin-top:8px;display:none"></div>
+</div>
+<script>
+(function(){
+  var seed = document.getElementById('{{ $id }}-seed');
+  var go = document.getElementById('{{ $id }}-go');
+  var msg = document.getElementById('{{ $id }}-msg');
+  if(!seed || !go || !msg) return;
+  go.addEventListener('click', function(){
+    var v = seed.value.trim();
+    var base = '/seeds/';
+    var sep = base.indexOf('?') === -1 ? '?' : '&';
+    if(v === ''){ window.location.href = base; return; }
+    if(/^\d+$/.test(v)){
+      msg.style.display = 'block';
+      msg.textContent = 'Seed preview is being built — for now, browse curated seeds with similar traits below.';
+      window.location.href = base + sep + 'q=' + encodeURIComponent(v);
+    } else {
+      msg.style.display = 'block';
+      msg.textContent = 'Seeds are numeric. Enter digits, or leave empty to browse all curated seeds.';
+    }
+  });
+  seed.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+})();
+</script>

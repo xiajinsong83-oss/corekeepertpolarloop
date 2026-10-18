@@ -1,0 +1,59 @@
+# Core Keeper 生物群系数据（阶段2 初始集，环带结构）
+# 环带距离参考官方 Wiki（corekeeper.atma.gg/en/World），发布前需按版本核对
+biomes:
+  - name: "The Undergrounds"
+    icon: "/img/app-icons/biome-dirt.png"
+    ring: "Center"
+    distance: "0–140 tiles"
+    danger: "Low"
+    resources: ["Copper Ore", "Tin Ore", "Wood", "Stone", "Food crops"]
+    note: "Default biome; safe starting area around The Core"
+  - name: "The Clay Caves"
+    icon: "/img/app-icons/biome-clay.png"
+    ring: "Inner ring"
+    distance: "150–450 tiles"
+    danger: "Medium"
+    resources: ["Clay", "Iron Ore", "Larva Hive entrance"]
+    note: "Angular position varies by seed"
+  - name: "The Forgotten Ruins"
+    icon: "/img/app-icons/biome-ruins.png"
+    ring: "Inner ring"
+    distance: "150–450 tiles"
+    danger: "Medium"
+    resources: ["Stone", "Scarlet Ore", "Ruins chests"]
+    note: "Also called the stone biome; position varies by seed"
+  - name: "The Great Wall"
+    icon: "/img/app-icons/biome-wall.png"
+    ring: "Gate ring"
+    distance: "450–520 tiles"
+    danger: "High"
+    resources: ["None (barrier)"]
+    note: "Gates access to outer biomes until progression is met"
+  - name: "Azeos' Wilderness"
+    icon: "/img/app-icons/biome-azeos.png"
+    ring: "Outer ring"
+    distance: "520–1200 tiles"
+    danger: "High"
+    resources: ["Gold Ore", "Mold sub-biome", "Azeos arena"]
+    note: "One of three outer biomes; counter-clockwise order by seed"
+  - name: "The Sunken Sea"
+    icon: "/img/app-icons/biome-sea.png"
+    ring: "Outer ring"
+    distance: "520–1200 tiles"
+    danger: "High"
+    resources: ["Fish", "Coral", "Omoroth arena"]
+    note: "Water-filled outer biome"
+  - name: "The Desert of Beginnings"
+    icon: "/img/app-icons/biome-desert.png"
+    ring: "Outer ring"
+    distance: "520–1200 tiles"
+    danger: "High"
+    resources: ["Sand", "Cactus", "Ra-Akar arena"]
+    note: "Hottest outer biome"
+  - name: "The Passage"
+    icon: "/img/app-icons/biome-passage.png"
+    ring: "Beyond outer ring"
+    distance: "≈1200+ tiles"
+    danger: "Very High"
+    resources: ["Endgame materials", "Titan arenas"]
+    note: "Endgame area; reachable after main progression"

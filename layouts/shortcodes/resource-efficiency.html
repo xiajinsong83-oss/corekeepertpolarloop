@@ -1,0 +1,41 @@
+{{ $id := printf "reseff-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
+  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:10px">Resource gathering estimate</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+    <select id="{{ $id }}-ore" style="flex:1;min-width:160px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
+      <option value="copper" data-base="12">Copper Ore</option>
+      <option value="tin" data-base="11">Tin Ore</option>
+      <option value="iron" data-base="9">Iron Ore</option>
+      <option value="gold" data-base="7">Gold Ore</option>
+      <option value="scarlet" data-base="6">Scarlet Ore</option>
+    </select>
+    <select id="{{ $id }}-tool" style="flex:1;min-width:160px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
+      <option value="1" data-mult="1">Copper Pickaxe</option>
+      <option value="2" data-mult="1.35">Tin Pickaxe</option>
+      <option value="3" data-mult="1.8">Iron Pickaxe</option>
+      <option value="4" data-mult="2.4">Gold Pickaxe</option>
+      <option value="5" data-mult="3.2">Scarlet Pickaxe</option>
+    </select>
+    <button id="{{ $id }}-calc" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Estimate</button>
+  </div>
+  <div id="{{ $id }}-result" style="font-size:14px;color:#a9b8b0;display:none;border-top:1px solid #2e423a;padding-top:10px"></div>
+</div>
+<script>
+(function(){
+  var ore = document.getElementById('{{ $id }}-ore');
+  var tool = document.getElementById('{{ $id }}-tool');
+  var btn = document.getElementById('{{ $id }}-calc');
+  var out = document.getElementById('{{ $id }}-result');
+  if(!ore || !tool || !btn || !out) return;
+  btn.addEventListener('click', function(){
+    var base = parseFloat(ore.options[ore.selectedIndex].getAttribute('data-base'));
+    var mult = parseFloat(tool.options[tool.selectedIndex].getAttribute('data-mult'));
+    var perMin = Math.round(base * mult);
+    var perHour = perMin * 60;
+    out.innerHTML = '<b style="color:#f2cc7a">' + ore.options[ore.selectedIndex].text + '</b> with <b style="color:#f2cc7a">' + tool.options[tool.selectedIndex].text + '</b>: ' +
+      '~<b style="color:#7fd6a0">' + perMin + '</b> ore/min · <b style="color:#7fd6a0">' + perHour + '</b> ore/hour. ' +
+      '<span style="color:#a9b8b0">Estimates only — skills and gear affect real rates.</span>';
+    out.style.display = 'block';
+  });
+})();
+</script>

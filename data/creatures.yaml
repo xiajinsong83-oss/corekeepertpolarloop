@@ -1,0 +1,55 @@
+# Core Keeper 生物数据（阶段2 初始集）
+# 数据来源：社区 Wiki；数值随版本更新，发布前需核对
+creatures:
+  - name: "Caveling"
+    icon: "/img/app-icons/creature-caveling.png"
+    biome: "The Undergrounds"
+    hp: "60"
+    damage: "8"
+    drops:
+      - { item: "Caveling Remains", chance: "Common" }
+      - { item: "Copper Ore", chance: "Common" }
+    note: "Basic hostile mob near the start"
+  - name: "Caveling Brute"
+    icon: "/img/app-icons/creature-brute.png"
+    biome: "The Undergrounds / Clay Caves"
+    hp: "140"
+    damage: "16"
+    drops:
+      - { item: "Caveling Remains", chance: "Common" }
+      - { item: "Iron Ore", chance: "Common" }
+    note: "Slower but hits hard; dodge its swings"
+  - name: "Caveling Shaman"
+    icon: "/img/app-icons/creature-shaman.png"
+    biome: "Clay Caves"
+    hp: "120"
+    damage: "12 (ranged)"
+    drops:
+      - { item: "Caveling Remains", chance: "Common" }
+      - { item: "Ancient Gem Shard", chance: "Uncommon" }
+    note: "Heals nearby enemies; kill it first"
+  - name: "Larva"
+    icon: "/img/app-icons/creature-larva.png"
+    biome: "Larva Hive"
+    hp: "40"
+    damage: "6"
+    drops:
+      - { item: "Larva Meat", chance: "Common" }
+    note: "Swarm enemy inside the Hive"
+  - name: "Mold Slime"
+    icon: "/img/app-icons/creature-mold.png"
+    biome: "Mold (sub-biome of Azeos' Wilderness)"
+    hp: "80"
+    damage: "10"
+    drops:
+      - { item: "Mold", chance: "Common" }
+      - { item: "Moldy Core", chance: "Uncommon" }
+    note: "Splits when hit if not finished"
+  - name: "Geobot Miner"
+    icon: "/img/app-icons/creature-geobot.png"
+    biome: "Breaker's Reach (1.3+ Void & Voltage biome)"
+    hp: "100"
+    damage: "12"
+    drops:
+      - { item: "Scrap Metal", chance: "Common" }
+    note: "Introduced with the Void & Voltage update"

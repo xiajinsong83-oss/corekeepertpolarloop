@@ -1,0 +1,44 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · <a href="/database/creatures/">Creatures</a> · {{ .Title }}</nav>
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+      {{ with .Params.icon }}<img src="{{ . }}" alt="{{ $.Title }} icon" style="width:80px;height:80px;image-rendering:pixelated;background:#000">{{ end }}
+      <div style="flex:1;min-width:240px">
+        <h1 style="font-size:30px;color:#fff;margin-bottom:6px">{{ .Title }}</h1>
+        <div style="font-size:13.5px;color:#a9b8b0;margin-bottom:14px">Last updated: {{ .Params.updated | default "—" }}</div>
+      </div>
+    </div>
+
+    {{ if .Params.hp }}
+    <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px">
+      <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+      <tbody>
+        <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Biome</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .Params.biome }}</td></tr>
+        <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Health</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .Params.hp }}</td></tr>
+        <tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Damage</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .Params.damage }}</td></tr>
+        {{ with .Params.type }}<tr><th style="border:1px solid #2e423a;padding:8px;background:#1a2621;color:#fff">Type</th><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ . }}</td></tr>{{ end }}
+      </tbody>
+    </table>
+    {{ end }}
+
+    {{ with .Params.drops }}
+    <h2 style="font-size:22px;color:#fff;margin:20px 0 10px">Drops</h2>
+    <table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:14.5px">
+      <thead><tr style="background:#1a2621"><th style="border:1px solid #2e423a;padding:8px;color:#fff">Item</th><th style="border:1px solid #2e423a;padding:8px;color:#fff">Chance</th></tr></thead>
+      <tbody>
+        {{ range . }}<tr><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .item }}</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">{{ .chance }}</td></tr>{{ end }}
+      </tbody>
+    </table>
+    {{ end }}
+
+    <div class="article" style="max-width:760px">{{ .Content }}</div>
+    {{ partial "ad.html" . }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>
