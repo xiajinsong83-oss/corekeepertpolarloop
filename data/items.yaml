@@ -1,61 +1,65 @@
-# Core Keeper 物品合成数据（阶段2 初始集）
-# 数据来源：社区 Wiki；发布前需核对最新版本
+# Core Keeper 物品合成数据（P1-2 合成树扩充版）
+# 数据来源：官方 Wiki corekeeper.atma.gg（1.3.0.6 版本核对，2026-10-18）
+# - 工具配方：wiki Craft 表格核验（Iron/Gold Bar 数量以 wiki 页面为准，个别标注待复核）
+# - Bar 熔炼：Furnace / Smelter Kiln 1:1（Ore→Bar），用时见 workbench 字段
+# - 底层原料（无 materials 字段）= 直接采集获得（挖矿/砍树/采集/挖土），合成树展开终点
 items:
+  # ── 工具（wiki 核验 2026-10-18）──
   - name: "Copper Pickaxe"
     icon: "/img/app-icons/item-copper-pickaxe.png"
     type: "Tool"
-    workbench: "Basic Workbench"
+    workbench: "Copper Workbench"
     materials:
-      - { item: "Copper Bar", qty: 8 }
-      - { item: "Wood", qty: 10 }
+      - { item: "Wood", qty: 4 }
+      - { item: "Copper Bar", qty: 2 }
     use: "Mining copper and tin ore"
   - name: "Tin Pickaxe"
     icon: "/img/app-icons/item-tin-pickaxe.png"
     type: "Tool"
-    workbench: "Basic Workbench"
+    workbench: "Tin Workbench"
     materials:
-      - { item: "Tin Bar", qty: 8 }
-      - { item: "Wood", qty: 10 }
+      - { item: "Wood", qty: 4 }
+      - { item: "Tin Bar", qty: 2 }
     use: "Mining iron ore"
   - name: "Iron Pickaxe"
     icon: "/img/app-icons/item-iron-pickaxe.png"
     type: "Tool"
-    workbench: "Iron Anvil"
+    workbench: "Iron Workbench"
     materials:
-      - { item: "Iron Bar", qty: 8 }
-      - { item: "Wood", qty: 10 }
+      - { item: "Wood", qty: 4 }
+      - { item: "Iron Bar", qty: 4 }
+      - { item: "Gold Bar", qty: 1 }
     use: "Mining gold and scarlet ore"
   - name: "Gold Pickaxe"
     icon: "/img/app-icons/item-gold-pickaxe.png"
     type: "Tool"
-    workbench: "Gold Anvil"
+    workbench: "Gold Workbench"
     materials:
-      - { item: "Gold Bar", qty: 8 }
-      - { item: "Wood", qty: 10 }
+      - { item: "Wood", qty: 4 }
+      - { item: "Gold Bar", qty: 2 }
     use: "Mining harder ores, faster"
   - name: "Scarlet Pickaxe"
     icon: "/img/app-icons/item-scarlet-pickaxe.png"
     type: "Tool"
     workbench: "Scarlet Workbench"
     materials:
-      - { item: "Scarlet Bar", qty: 8 }
-      - { item: "Wood", qty: 10 }
+      - { item: "Tin Bar", qty: 4 }
+      - { item: "Scarlet Bar", qty: 6 }
     use: "Best tier mining speed before endgame"
   - name: "Copper Sword"
     icon: "/img/app-icons/item-copper-sword.png"
     type: "Weapon"
-    workbench: "Basic Workbench"
+    workbench: "Copper Anvil"
     materials:
       - { item: "Copper Bar", qty: 5 }
-      - { item: "Wood", qty: 6 }
     use: "Early melee weapon"
   - name: "Iron Sword"
     icon: "/img/app-icons/item-iron-sword.png"
     type: "Weapon"
     workbench: "Iron Anvil"
     materials:
-      - { item: "Iron Bar", qty: 5 }
-      - { item: "Wood", qty: 6 }
+      - { item: "Iron Bar", qty: 8 }
+      - { item: "Gold Bar", qty: 1 }
     use: "Mid-game melee weapon"
   - name: "Basic Workbench"
     icon: "/img/app-icons/item-workbench.png"
@@ -65,3 +69,88 @@ items:
       - { item: "Wood", qty: 15 }
       - { item: "Copper Bar", qty: 3 }
     use: "First crafting station"
+  # ── 精炼中间材料（Furnace / Smelter Kiln 1:1，wiki 核验）──
+  - name: "Copper Bar"
+    icon: "/img/app-icons/item-copper-pickaxe.png"
+    type: "Refined Material"
+    workbench: "Furnace (7s)"
+    materials:
+      - { item: "Copper Ore", qty: 1 }
+    use: "Smelted from copper ore in a Furnace"
+  - name: "Tin Bar"
+    icon: "/img/app-icons/item-tin-pickaxe.png"
+    type: "Refined Material"
+    workbench: "Furnace (12s)"
+    materials:
+      - { item: "Tin Ore", qty: 1 }
+    use: "Smelted from tin ore in a Furnace"
+  - name: "Iron Bar"
+    icon: "/img/app-icons/item-iron-pickaxe.png"
+    type: "Refined Material"
+    workbench: "Furnace (17s)"
+    materials:
+      - { item: "Iron Ore", qty: 1 }
+    use: "Smelted from iron ore in a Furnace"
+  - name: "Gold Bar"
+    icon: "/img/app-icons/item-gold-pickaxe.png"
+    type: "Refined Material"
+    workbench: "Smelter Kiln (22s)"
+    materials:
+      - { item: "Gold Ore", qty: 1 }
+    use: "Smelted from gold ore in a Smelter Kiln"
+  - name: "Scarlet Bar"
+    icon: "/img/app-icons/item-scarlet-pickaxe.png"
+    type: "Refined Material"
+    workbench: "Smelter Kiln (27s)"
+    materials:
+      - { item: "Scarlet Ore", qty: 1 }
+    use: "Smelted from scarlet ore in a Smelter Kiln"
+  # ── 底层原料（直接采集，合成树终点）──
+  - name: "Wood"
+    icon: "/img/app-icons/item-wood.png"
+    type: "Raw Material"
+    workbench: "Gathered (trees)"
+    materials: []
+    use: "Chopped from trees"
+  - name: "Fiber"
+    icon: "/img/app-icons/item-fiber.png"
+    type: "Raw Material"
+    workbench: "Gathered (plants)"
+    materials: []
+    use: "Gathered from plants"
+  - name: "Dirt Block"
+    icon: "/img/app-icons/item-dirt.png"
+    type: "Raw Material"
+    workbench: "Gathered (ground)"
+    materials: []
+    use: "Dug from the ground"
+  - name: "Copper Ore"
+    icon: "/img/app-icons/item-copper-ore.png"
+    type: "Raw Material"
+    workbench: "Mined (pickaxe)"
+    materials: []
+    use: "Mined from copper ore walls"
+  - name: "Tin Ore"
+    icon: "/img/app-icons/item-tin-ore.png"
+    type: "Raw Material"
+    workbench: "Mined (Copper Pickaxe+)"
+    materials: []
+    use: "Mined from tin ore walls"
+  - name: "Iron Ore"
+    icon: "/img/app-icons/item-iron-ore.png"
+    type: "Raw Material"
+    workbench: "Mined (Tin Pickaxe+)"
+    materials: []
+    use: "Mined from iron ore walls"
+  - name: "Gold Ore"
+    icon: "/img/app-icons/item-gold-ore.png"
+    type: "Raw Material"
+    workbench: "Mined (Iron Pickaxe+)"
+    materials: []
+    use: "Mined from gold ore walls"
+  - name: "Scarlet Ore"
+    icon: "/img/app-icons/item-scarlet-ore.png"
+    type: "Raw Material"
+    workbench: "Mined (Scarlet Pickaxe+)"
+    materials: []
+    use: "Mined from scarlet ore walls"

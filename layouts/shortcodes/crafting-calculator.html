@@ -4,41 +4,84 @@
   <label for="{{ $id }}-select" style="font-size:15px;color:#fff;font-weight:700;display:block;margin-bottom:8px">Pick an item to craft</label>
   <select id="{{ $id }}-select" style="width:100%;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a;margin-bottom:12px">
     <option value="">— Choose an item —</option>
-    {{ range $data }}<option value="{{ .name }}" data-qty="1">{{ .name }}</option>{{ end }}
+    {{ range $data }}{{ if .materials }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}{{ end }}
   </select>
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
     <label for="{{ $id }}-qty" style="font-size:14px;color:#fff">Quantity</label>
     <input id="{{ $id }}-qty" type="number" min="1" max="999" value="1" style="width:90px;padding:10px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
   </div>
+  <div style="font-size:12.5px;color:#6d7f76;margin-bottom:10px">Crafting tree expands every intermediate material down to raw ingredients (Ore → Bar → tool). Recipe data: community wiki, game 1.3.0.6.</div>
   <div id="{{ $id }}-result" style="display:none"></div>
 </div>
 <script>
 (function(){
   var data = {{ jsonify $data }};
+  var byName = {};
+  for (var i = 0; i < data.length; i++){ byName[data[i].name] = data[i]; }
   var sel = document.getElementById('{{ $id }}-select');
   var qty = document.getElementById('{{ $id }}-qty');
   var out = document.getElementById('{{ $id }}-result');
   if(!sel || !qty || !out) return;
+
   function render(){
     var name = sel.value;
     if(!name){ out.style.display='none'; out.innerHTML=''; return; }
     var n = parseInt(qty.value,10); if(isNaN(n)||n<1) n=1;
-    var it = null;
-    for(var i=0;i<data.length;i++){ if(data[i].name===name){ it=data[i]; break; } }
+    var it = byName[name];
     if(!it){ out.style.display='none'; return; }
+
+    // 递归展开合成树
+    var totals = {};      // 底层原料汇总 {name: qty}
+    var tree = [];        // 树节点 {name, qty, workbench, depth, leaf}
+    var visiting = {};    // 防环
+    function expand(itemName, q, depth){
+      var node = byName[itemName];
+      if(!node){ totals[itemName] = (totals[itemName]||0) + q; tree.push({name:itemName, qty:q, workbench:'', depth:depth, leaf:true}); return; }
+      if(!node.materials || node.materials.length === 0){
+        totals[itemName] = (totals[itemName]||0) + q;
+        tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:true});
+        return;
+      }
+      if(visiting[itemName]){ totals[itemName] = (totals[itemName]||0) + q; tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:true}); return; }
+      visiting[itemName] = true;
+      tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:false});
+      for (var j = 0; j < node.materials.length; j++){
+        expand(node.materials[j].item, q * node.materials[j].qty, depth + 1);
+      }
+      delete visiting[itemName];
+    }
+    expand(name, n, 0);
+
     var h = '<div style="border-bottom:1px solid #2e423a;padding-bottom:10px;margin-bottom:10px">';
     h += '<div style="font-size:18px;color:#f2cc7a;font-weight:700">'+it.name+' × '+n+'</div>';
-    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Type:</b> '+it.type+' · <b style="color:#fff">Workbench:</b> '+it.workbench+'</div>';
-    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Use:</b> '+it.use+'</div></div>';
-    h += '<div style="font-size:14px;color:#fff;font-weight:700;margin-bottom:6px">Materials needed</div>';
-    h += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#101613"><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Material</th><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Qty × '+n+'</th></tr></thead><tbody>';
-    for(var j=0;j<it.materials.length;j++){
-      var m=it.materials[j];
-      h += '<tr><td style="border:1px solid #2e423a;padding:8px;color:#e9efe9">'+m.item+'</td><td style="border:1px solid #2e423a;padding:8px;color:#7fd6a0">'+m.qty*n+'</td></tr>';
+    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Type:</b> '+it.type+' · <b style="color:#fff">Station:</b> '+it.workbench+'</div>';
+    if(it.use){ h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Use:</b> '+it.use+'</div>'; }
+    h += '</div>';
+
+    // 底层原料汇总
+    var keys = Object.keys(totals).sort(function(a,b){ return totals[b]-totals[a]; });
+    h += '<div style="font-size:14px;color:#fff;font-weight:700;margin:12px 0 6px">Raw ingredients needed</div>';
+    h += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#101613"><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Ingredient</th><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Total</th></tr></thead><tbody>';
+    for (var k = 0; k < keys.length; k++){
+      h += '<tr><td style="border:1px solid #2e423a;padding:8px;color:#e9efe9">'+keys[k]+'</td><td style="border:1px solid #2e423a;padding:8px;color:#7fd6a0">'+totals[keys[k]]+'</td></tr>';
     }
     h += '</tbody></table>';
+
+    // 合成树层级
+    h += '<div style="font-size:14px;color:#fff;font-weight:700;margin:14px 0 6px">Crafting tree</div>';
+    h += '<div style="font-family:monospace;font-size:13px;line-height:1.6">';
+    for (var t = 0; t < tree.length; t++){
+      var nd = tree[t];
+      var prefix = '';
+      for (var d = 0; d < nd.depth; d++){ prefix += '&nbsp;&nbsp;'; }
+      if(nd.depth > 0){ prefix += '└─ '; }
+      var leafMark = nd.leaf ? ' <span style="color:#6d7f76">(raw)</span>' : ' <span style="color:#a9b8b0">@ '+nd.workbench+'</span>';
+      h += '<div>'+prefix+'<span style="color:'+(nd.leaf?'#a9b8b0':'#f2cc7a')+'">'+nd.name+'</span> × '+nd.qty+leafMark+'</div>';
+    }
+    h += '</div>';
+
     out.innerHTML = h;
-    out.style.display='block';
+    out.style.display = 'block';
   }
   sel.addEventListener('change', render);
   qty.addEventListener('input', render);
