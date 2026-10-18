@@ -1,38 +1,151 @@
-{{/* P2-4 Mining Matrix：选镐 → 显示可挖掘墙体（data/mining.yaml 驱动） */}}
-<div id="mine-matrix" style="margin:18px 0">
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <label style="color:#a9b8b0;font-size:14px">Your pickaxe</label>
-    <select id="mm-pick" style="background:#0f1713;color:#f2cc7a;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px">
-      {{ range site.Data.mining.pickaxes }}<option value="{{ .damage }}" data-dup="{{ .durability }}" data-src="{{ .source }}">{{ .name }} ({{ .damage }} mining dmg)</option>{{ end }}
-    </select>
-    <span id="mm-info" style="color:#6d7f76;font-size:13px"></span>
+{{/* Mining Matrix：选镐 → 显示可开采墙体（data/mining.yaml 驱动，只读） */}}
+{{ $id := printf "minmatrix-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div class="tool-app__title">Mining Matrix</div>
+    <span class="tool-badge tool-badge--blue">pickaxe vs walls</span>
   </div>
-  <h2 style="font-size:20px;color:#fff;margin:14px 0 10px">Blocks you can mine</h2>
-  <div id="mm-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
-    {{ range site.Data.mining.walls }}
-    <div class="mm-wall" data-hard="{{ .hardness }}" style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;opacity:.45">
-      <div style="color:#fff;font-weight:700;font-size:14px">{{ .name }}</div>
-      <div style="color:#a9b8b0;font-size:12.5px;margin-top:4px">Needs {{ .hardness }}+ mining damage{{ with .note }} · {{ . }}{{ end }}</div>
+  <p class="tool-app__desc">Rule of thumb: a pickaxe mines any wall whose required mining damage is ≤ the pickaxe's damage stat. Pick yours and see what opens up.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Your pickaxe</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-pick">Pickaxe</label>
+        <select id="{{ $id }}-pick" class="tool-select" aria-label="Select your pickaxe">
+          {{ range site.Data.mining.pickaxes }}<option value="{{ .damage }}">{{ .name }}</option>{{ end }}
+        </select>
+      </div>
+      <div class="tool-field tool-field--grow">
+        <div class="tool-label">Details</div>
+        <div id="{{ $id }}-info" class="tool-card__desc"></div>
+      </div>
     </div>
-    {{ end }}
   </div>
-  <div style="font-size:12px;color:#6d7f76;margin-top:10px">A pickaxe can mine any block whose required mining damage is ≤ its damage stat · source: corekeeper.atma.gg/en/Mining · game version {{ site.Params.gameVersion | default "latest" }}</div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Mineable blocks</div>
+    <div class="tool-stats tool-mb">
+      <div class="tool-stat">
+        <div class="tool-stat__num" id="{{ $id }}-count">–</div>
+        <div class="tool-stat__label">walls mineable</div>
+      </div>
+      <div class="tool-stat" style="flex:2 1 220px;text-align:left">
+        <div class="tool-progress" style="margin-top:6px"><div class="tool-progress__fill" id="{{ $id }}-pbar"></div><div class="tool-progress__label" id="{{ $id }}-plabel"></div></div>
+        <div class="tool-card__desc" style="margin-top:6px">share of all wall types unlocked</div>
+      </div>
+    </div>
+    <div class="tool-flex tool-mb">
+      <button type="button" class="tool-chip is-active" data-filter="all" aria-pressed="true">All walls</button>
+      <button type="button" class="tool-chip" data-filter="mine" aria-pressed="false">Mineable only</button>
+      <span style="flex:1"></span>
+      <button type="button" class="tool-btn tool-btn--ghost" id="{{ $id }}-sort" aria-label="Toggle wall sort order">Hardness ↑</button>
+    </div>
+    <div id="{{ $id }}-hint" class="tool-msg tool-hidden"></div>
+    <div id="{{ $id }}-grid" class="tool-grid tool-mt-sm"></div>
+    <div id="{{ $id }}-empty" class="tool-empty tool-hidden">No wall data loaded.</div>
+  </div>
+
+  <div class="tool-footnote">Rule: pickaxe mining damage ≥ wall hardness · source: corekeeper.atma.gg/en/Mining · game version {{ site.Params.gameVersion | default "latest" }}</div>
 </div>
 <script>
 (function(){
-  var sel = document.getElementById("mm-pick");
-  var info = document.getElementById("mm-info");
+  var DATA = {{ jsonify site.Data.mining }};
+  DATA = (typeof DATA === 'string') ? JSON.parse(DATA) : DATA;
+  var root = document.getElementById('{{ $id }}');
+  var sel = document.getElementById('{{ $id }}-pick');
+  var info = document.getElementById('{{ $id }}-info');
+  var countEl = document.getElementById('{{ $id }}-count');
+  var pbar = document.getElementById('{{ $id }}-pbar');
+  var plabel = document.getElementById('{{ $id }}-plabel');
+  var grid = document.getElementById('{{ $id }}-grid');
+  var hint = document.getElementById('{{ $id }}-hint');
+  var empty = document.getElementById('{{ $id }}-empty');
+  var sortBtn = document.getElementById('{{ $id }}-sort');
+  if(!root || !sel || !grid) return;
+
+  var pickaxes = (DATA.pickaxes || []).slice().sort(function(a,b){ return a.damage - b.damage; });
+  var walls = (DATA.walls || []).slice();
+  var dir = 'asc';
+  var filter = 'all';
+
   function paint(){
-    var dmg = parseInt(sel.value, 10);
+    var dmg = parseInt(sel.value, 10) || 0;
     var opt = sel.selectedOptions[0];
-    info.textContent = "Durability " + opt.getAttribute("data-dup") + " · " + opt.getAttribute("data-src");
-    document.querySelectorAll("#mm-list .mm-wall").forEach(function(w){
-      var need = parseInt(w.getAttribute("data-hard"), 10);
-      w.style.opacity = dmg >= need ? "1" : ".45";
-      w.style.borderColor = dmg >= need ? "#5aa9a9" : "#2e423a";
+    var name = opt ? opt.text : '';
+    var pinfo = null;
+    for (var i = 0; i < pickaxes.length; i++){
+      if (pickaxes[i].damage === dmg){ pinfo = pickaxes[i]; break; }
+    }
+    info.textContent = pinfo
+      ? name + ' — damage ' + pinfo.damage + ' · durability ' + pinfo.durability + ' · ' + pinfo.source
+      : (name + ' — damage ' + dmg);
+
+    var mineable = walls.filter(function(w){ return w.hardness <= dmg; });
+    var total = walls.length;
+    var pct = total ? Math.round(mineable.length / total * 100) : 0;
+    countEl.textContent = mineable.length + ' / ' + total;
+    pbar.style.width = pct + '%';
+    plabel.textContent = pct + '%';
+
+    // hint: next stronger pickaxe that unlocks more walls
+    hint.classList.add('tool-hidden');
+    for (var j = 0; j < pickaxes.length; j++){
+      if (pickaxes[j].damage > dmg){
+        var next = pickaxes[j];
+        var nextCount = walls.filter(function(w){ return w.hardness <= next.damage; }).length;
+        if (nextCount > mineable.length){
+          hint.textContent = 'Next upgrade: ' + next.name + ' (' + next.damage + ' dmg) unlocks ' + nextCount + ' / ' + total + ' walls — one tier ahead of your current ' + mineable.length + '.';
+          hint.classList.remove('tool-hidden');
+        }
+        break;
+      }
+    }
+
+    if (!total){
+      empty.classList.remove('tool-hidden');
+      grid.innerHTML = '';
+      return;
+    }
+    empty.classList.add('tool-hidden');
+
+    var list = walls.slice().sort(function(a,b){
+      return dir === 'asc' ? a.hardness - b.hardness : b.hardness - a.hardness;
     });
+    var h = '';
+    list.forEach(function(w){
+      var ok = w.hardness <= dmg;
+      if (filter === 'mine' && !ok){ return; }
+      h += '<div class="tool-card ' + (ok ? 'is-active' : 'is-dim') + '">';
+      h += '<div class="tool-card__title">' + CK.esc(w.name) + '</div>';
+      h += '<div class="tool-card__meta">Needs ' + w.hardness + '+ mining damage' + (w.note ? ' · ' + CK.esc(w.note) : '') + '</div>';
+      h += '<div class="tool-card__foot">';
+      h += ok ? '<span class="tool-badge tool-badge--green">mineable</span>'
+              : '<span class="tool-badge tool-badge--dim">locked</span>';
+      h += '<span class="tool-tag">hardness ' + w.hardness + '</span>';
+      h += '</div></div>';
+    });
+    grid.innerHTML = h;
   }
-  sel.addEventListener("change", paint);
+
+  sel.addEventListener('change', paint);
+  sortBtn.addEventListener('click', function(){
+    dir = (dir === 'asc') ? 'desc' : 'asc';
+    sortBtn.textContent = dir === 'asc' ? 'Hardness ↑' : 'Hardness ↓';
+    sortBtn.setAttribute('aria-label', 'Sort walls by hardness ' + (dir === 'asc' ? 'descending' : 'ascending'));
+    paint();
+  });
+  root.querySelectorAll('[data-filter]').forEach(function(c){
+    c.addEventListener('click', function(){
+      filter = c.getAttribute('data-filter');
+      root.querySelectorAll('[data-filter]').forEach(function(x){
+        var on = x === c;
+        x.classList.toggle('is-active', on);
+        x.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      paint();
+    });
+  });
   paint();
 })();
 </script>

@@ -1,39 +1,83 @@
-{{ $id := printf "seedpreview-%s" (md5 .Page.Title | truncate 8) }}
-<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:4px">World seed preview</div>
-  <div style="font-size:13px;color:#a9b8b0;margin-bottom:10px">Enter a numeric seed to preview the deterministic ring layout — biome angles are seed-dependent and shown as an approximation (game algorithm is version-specific).</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <input id="{{ $id }}-seed" type="text" placeholder="e.g. 12345" style="flex:1;min-width:200px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
-    <button id="{{ $id }}-preview" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Preview Layout</button>
-    <button id="{{ $id }}-browse" type="button" style="padding:12px 20px;font-size:16px;background:#2e423a;color:#e9efe9;border:1px solid #2e423a;cursor:pointer">Browse Seeds</button>
+{{ $id := printf "seedpreview-%s" (md5 .Page.Title | truncate 8 | replaceRE "[^a-zA-Z0-9]" "") }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <span class="tool-app__title">World seed preview</span>
+    <span class="tool-badge tool-badge--dim">Deterministic rings</span>
   </div>
-  <div id="{{ $id }}-msg" style="font-size:13px;color:#7fd6a0;margin-top:8px;display:none"></div>
-  <div id="{{ $id }}-chart" style="margin-top:14px;display:none"></div>
+  <p class="tool-app__desc">Enter a numeric seed to preview the deterministic ring layout — biome angles are seed-dependent and shown as an approximation (game algorithm is version-specific).</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Controls</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-seed">World seed (digits only)</label>
+        <input class="tool-input" id="{{ $id }}-seed" type="text" inputmode="numeric" placeholder="e.g. 12345" aria-label="World seed number">
+      </div>
+      <button class="tool-btn tool-btn--gold" id="{{ $id }}-preview" type="button">Preview layout</button>
+      <button class="tool-btn" id="{{ $id }}-random" type="button">Random seed</button>
+      <button class="tool-btn tool-btn--ghost" id="{{ $id }}-copy" type="button" disabled>Copy seed</button>
+      <button class="tool-btn tool-btn--ghost" id="{{ $id }}-browse" type="button">Browse seeds</button>
+    </div>
+    <div class="tool-error tool-hidden" id="{{ $id }}-err" role="alert"></div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title" id="{{ $id }}-rtitle">No seed yet</div>
+    <div id="{{ $id }}-body">
+      <div class="tool-empty">Enter a numeric seed above and press <strong>Preview layout</strong> — or hit <strong>Random seed</strong> — to draw the ring structure around The Core.</div>
+    </div>
+  </div>
 </div>
 <script>
 (function(){
-  var seed = document.getElementById('{{ $id }}-seed');
-  var preview = document.getElementById('{{ $id }}-preview');
-  var browse = document.getElementById('{{ $id }}-browse');
-  var msg = document.getElementById('{{ $id }}-msg');
-  var chart = document.getElementById('{{ $id }}-chart');
-  if(!seed || !preview || !browse || !msg || !chart) return;
+  var root   = document.getElementById('{{ $id }}');
+  if(!root) return;
+  var seedInp = root.querySelector('#{{ $id }}-seed');
+  var preview = root.querySelector('#{{ $id }}-preview');
+  var random  = root.querySelector('#{{ $id }}-random');
+  var copy    = root.querySelector('#{{ $id }}-copy');
+  var browse  = root.querySelector('#{{ $id }}-browse');
+  var errBox  = root.querySelector('#{{ $id }}-err');
+  var rtitle  = root.querySelector('#{{ $id }}-rtitle');
+  var body    = root.querySelector('#{{ $id }}-body');
+  if(!seedInp || !preview || !random || !copy || !errBox || !rtitle || !body) return;
 
-  browse.addEventListener('click', function(){
-    window.location.href = '/seeds/';
+  var currentSeed = '';
+
+  browse.addEventListener('click', function(){ window.location.href = '/seeds/'; });
+
+  random.addEventListener('click', function(){
+    var n = String(Math.floor(Math.random() * 1e9));
+    seedInp.value = n;
+    errBox.classList.add('tool-hidden');
+    render(n);
   });
 
-  preview.addEventListener('click', function(){
-    var v = seed.value.trim();
-    if(v === '' || !/^\d+$/.test(v)){
-      msg.style.display = 'block';
-      msg.textContent = 'Seeds are numeric — enter digits to preview the ring layout.';
+  copy.addEventListener('click', function(){
+    if(currentSeed){ CK.copy(currentSeed, copy); }
+  });
+
+  preview.addEventListener('click', function(){ submit(); });
+  seedInp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); submit(); }
+  });
+  seedInp.addEventListener('input', function(){ errBox.classList.add('tool-hidden'); });
+
+  function submit(){
+    var v = seedInp.value.trim();
+    if(v === ''){
+      errBox.textContent = 'Enter a seed number first — seeds are whole numbers (digits only).';
+      errBox.classList.remove('tool-hidden');
       return;
     }
-    msg.style.display = 'none';
+    if(!/^\d+$/.test(v)){
+      errBox.textContent = 'Invalid seed — seeds are numeric; letters and symbols are not allowed.';
+      errBox.classList.remove('tool-hidden');
+      return;
+    }
+    errBox.classList.add('tool-hidden');
     render(v);
-  });
-  seed.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); preview.click(); } });
+  }
 
   function hashNum(s){
     var h = 0;
@@ -42,62 +86,77 @@
   }
 
   function render(seedVal){
+    currentSeed = seedVal;
+    copy.disabled = false;
+    var safe = CK.esc(seedVal);
+    rtitle.innerHTML = 'Ring layout — seed ' + safe + ' <span class="tool-count">· angles are version-dependent approximations</span>';
+
     var S = 480, C = S / 2;
     var inner = [
       { name: 'Clay Caves',       color: '#c98a4b' },
-      { name: 'Forgotten Ruins',  color: '#8a8f98' }
+      { name: 'Forgotten Ruins', color: '#8a8f98' }
     ];
     var outer = [
       { name: "Azeos' Wilderness", color: '#6fae5a' },
-      { name: 'The Sunken Sea',     color: '#4b7fae' },
-      { name: 'The Mold',           color: '#7a5f4b' }
+      { name: 'The Sunken Sea',    color: '#4b7fae' },
+      { name: 'The Desert…',       color: '#e0a86a' }
     ];
     var h = hashNum(seedVal);
     var rotInner = h % 360;
     var rotOuter = (h >> 8) % 360;
 
-    var svg = '<svg viewBox="0 0 ' + S + ' ' + S + '" style="width:100%;max-width:520px;height:auto;background:#101613;border:1px solid #2e423a" role="img" aria-label="Seed ' + seedVal + ' ring layout preview">';
-
-    // Great Wall ring (annulus between inner and outer)
-    svg += ring(C, C, 56, 86, '#1a2621', '#2e423a');
-
-    // Inner ring: Clay Caves + Forgotten Ruins halves
-    var rIn = 66;
-    svg += '<path d="' + arcPath(C, C, rIn, rotInner, rotInner + 180) + '" fill="' + inner[0].color + '" fill-opacity=".55" stroke="#2e423a"/>';
-    svg += '<path d="' + arcPath(C, C, rIn, rotInner + 180, rotInner + 360) + '" fill="' + inner[1].color + '" fill-opacity=".55" stroke="#2e423a"/>';
-
-    // Outer ring: three biomes (120° each)
+    var svg = '<svg class="tool-chart" viewBox="0 0 ' + S + ' ' + S + '" role="img" aria-label="Ring layout preview for seed ' + safe + '">';
+    // Great Wall annulus (450–520)
+    svg += '<path d="' + ringPath(C, C, 56, 86) + '" fill="#3a4a42" fill-rule="evenodd" stroke="#2e423a"/>';
+    // Inner ring: Clay Caves + Forgotten Ruins halves (150–450)
+    svg += '<path d="' + arcPath(C, C, 66, rotInner, rotInner + 180) + '" fill="' + inner[0].color + '" fill-opacity=".6" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, 66, rotInner + 180, rotInner + 360) + '" fill="' + inner[1].color + '" fill-opacity=".6" stroke="#2e423a"/>';
+    // Outer ring: three biomes (520–1200), 120° each
     var rOut = 120;
     var a0 = rotOuter, a1 = a0 + 120, a2 = a1 + 120;
-    svg += '<path d="' + arcPath(C, C, rOut, a0, a1) + '" fill="' + outer[0].color + '" fill-opacity=".5" stroke="#2e423a"/>';
-    svg += '<path d="' + arcPath(C, C, rOut, a1, a2) + '" fill="' + outer[1].color + '" fill-opacity=".5" stroke="#2e423a"/>';
-    svg += '<path d="' + arcPath(C, C, rOut, a2, a0 + 360) + '" fill="' + outer[2].color + '" fill-opacity=".5" stroke="#2e423a"/>';
-
+    svg += '<path d="' + arcPath(C, C, rOut, a0, a1) + '" fill="' + outer[0].color + '" fill-opacity=".55" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, rOut, a1, a2) + '" fill="' + outer[1].color + '" fill-opacity=".55" stroke="#2e423a"/>';
+    svg += '<path d="' + arcPath(C, C, rOut, a2, a0 + 360) + '" fill="' + outer[2].color + '" fill-opacity=".55" stroke="#2e423a"/>';
     // The Core
     svg += '<circle cx="' + C + '" cy="' + C + '" r="30" fill="#7fd6a0" fill-opacity=".85"/>';
     svg += '<text x="' + C + '" y="' + (C + 4) + '" text-anchor="middle" font-size="11" fill="#101613" font-weight="700">CORE</text>';
-
-    // Ring labels
-    svg += '<text x="' + C + '" y="' + (C - 40) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Clay / Ruins 150-450</text>';
-    svg += '<text x="' + C + '" y="' + (C - 98) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Outer biomes 520-1200</text>';
-    svg += '<text x="' + C + '" y="' + (C + 130) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Great Wall 450-520</text>';
-    svg += '<text x="' + C + '" y="' + (S - 12) + '" text-anchor="middle" font-size="10" fill="#6d7f76">Seed ' + seedVal + ' · angles are approximations (version-dependent)</text>';
+    // distance labels
+    svg += '<text x="' + C + '" y="' + (C - 40) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Inner ring 150–450</text>';
+    svg += '<text x="' + C + '" y="' + (C - 98) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Outer ring 520–1200</text>';
+    svg += '<text x="' + C + '" y="' + (C + 130) + '" text-anchor="middle" font-size="10" fill="#a9b8b0">Great Wall 450–520</text>';
     svg += '</svg>';
 
-    chart.innerHTML = svg;
-    chart.style.display = 'block';
+    // Legend
+    var legend = '<div class="tool-legend">'
+      + '<span class="tool-legend__item"><span class="tool-swatch" style="background:linear-gradient(135deg,#c98a4b 50%,#8a8f98 50%)"></span>Inner ring (Clay / Ruins)</span>'
+      + '<span class="tool-legend__item"><span class="tool-swatch" style="background:#3a4a42"></span>Great Wall (gate)</span>'
+      + '<span class="tool-legend__item"><span class="tool-swatch" style="background:linear-gradient(120deg,#6fae5a 33%,#4b7fae 33%,#e0a86a 66%)"></span>Outer biomes</span>'
+      + '<span class="tool-legend__item"><span class="tool-swatch" style="background:#7fd6a0"></span>The Core</span>'
+      + '</div>';
+
+    // Ring structure reference table
+    var table = '<h3 class="tool-app__title tool-mt">Ring structure reference</h3>'
+      + '<div class="tool-table-wrap tool-mt-sm"><table class="tool-table"><thead><tr>'
+      + '<th>Zone</th><th>Distance from Core</th><th>What you find</th>'
+      + '</tr></thead><tbody>'
+      + '<tr><td>The Undergrounds</td><td class="num">0–140 tiles</td><td>Copper / Tin, safe starting area around The Core</td></tr>'
+      + '<tr><td>Inner ring</td><td class="num">150–450 tiles</td><td>Clay Caves (Iron, Larva Hive) and Forgotten Ruins (Scarlet, chests) — angular sides rotate with your seed</td></tr>'
+      + '<tr><td>The Great Wall</td><td class="num">450–520 tiles</td><td>Barrier ring; gates open as main bosses are defeated</td></tr>'
+      + '<tr><td>Outer ring</td><td class="num">520–1200 tiles</td><td>Wilderness (Gold), Sunken Sea (fish / coral), Desert of Beginnings — order rotates counter-clockwise with your seed</td></tr>'
+      + '<tr><td>The Passage</td><td class="num">≈1200+ tiles</td><td>Endgame area beyond the outer ring</td></tr>'
+      + '</tbody></table></div>'
+      + '<p class="tool-footnote">Rotation angles shown are a deterministic approximation of the in-game generator for seed ' + safe + ' — major game updates can change generation.</p>';
+
+    body.innerHTML = svg + legend + table;
   }
 
-  function ring(cx, cy, r0, r1, fill, stroke){
-    // Draw annulus via two circles with mask-like approach: outer circle + inner cut using fill-rule evenodd
-    return '<path d="M' + (cx - r1) + ',' + cy + 'a' + r1 + ',' + r1 + ' 0 1,0 ' + (r1 * 2) + ',0a' + r1 + ',' + r1 + ' 0 1,0 ' + (-r1 * 2) + ',0' +
-           'M' + (cx - r0) + ',' + cy + 'a' + r0 + ',' + r0 + ' 0 1,0 ' + (r0 * 2) + ',0a' + r0 + ',' + r0 + ' 0 1,0 ' + (-r0 * 2) + ',0' +
-           '" fill="' + fill + '" fill-rule="evenodd" stroke="' + stroke + '"/>';
+  function ringPath(cx, cy, r0, r1){
+    return 'M' + (cx - r1) + ',' + cy + 'a' + r1 + ',' + r1 + ' 0 1,0 ' + (r1 * 2) + ',0a' + r1 + ',' + r1 + ' 0 1,0 ' + (-r1 * 2) + ',0' +
+           'M' + (cx - r0) + ',' + cy + 'a' + r0 + ',' + r0 + ' 0 1,0 ' + (r0 * 2) + ',0a' + r0 + ',' + r0 + ' 0 1,0 ' + (-r0 * 2) + ',0';
   }
 
   function arcPath(cx, cy, r, a0, a1){
-    var p = [];
-    var step = 12;
+    var p = [], step = 12;
     for (var a = a0; a <= a1; a += step){
       var rad = a * Math.PI / 180;
       p.push((p.length ? 'L' : 'M') + (cx + r * Math.cos(rad)).toFixed(1) + ' ' + (cy + r * Math.sin(rad)).toFixed(1));

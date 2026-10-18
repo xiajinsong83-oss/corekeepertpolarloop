@@ -74,6 +74,10 @@ a:hover{color:var(--gold2)}
 .tag.patch{color:#101613;background:var(--gold);border-color:var(--gold);font-weight:700}
 </style>
 
+<!-- 工具页共享视觉系统（12 个交互工具复用，零外部依赖） -->
+<link rel="stylesheet" href="/css/tools.css">
+<script src="/js/tools.js"></script>
+
 <!-- ===== SEO 结构化数据 JSON-LD（Google Rich Results） ===== -->
 {{ $pubDate := "2026-10-18" }}
 {{ with .Date }}{{ if ne .Year 1 }}{{ $pubDate = .Format "2006-01-02" }}{{ end }}{{ end }}

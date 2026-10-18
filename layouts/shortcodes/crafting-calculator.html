@@ -1,89 +1,181 @@
 {{ $data := site.Data.items.items }}
 {{ $id := printf "craftcalc-%s" (md5 .Page.Title | truncate 8) }}
-<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <label for="{{ $id }}-select" style="font-size:15px;color:#fff;font-weight:700;display:block;margin-bottom:8px">Pick an item to craft</label>
-  <select id="{{ $id }}-select" style="width:100%;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a;margin-bottom:12px">
-    <option value="">— Choose an item —</option>
-    {{ range $data }}{{ if .materials }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}{{ end }}
-  </select>
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-    <label for="{{ $id }}-qty" style="font-size:14px;color:#fff">Quantity</label>
-    <input id="{{ $id }}-qty" type="number" min="1" max="999" value="1" style="width:90px;padding:10px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div class="tool-app__title">Item Crafting Calculator</div>
+    <span class="tool-badge tool-badge--green">community wiki · v1.3.0.6</span>
   </div>
-  <div style="font-size:12.5px;color:#6d7f76;margin-bottom:10px">Crafting tree expands every intermediate material down to raw ingredients (Ore → Bar → tool). Recipe data: community wiki, game 1.3.0.6.</div>
-  <div id="{{ $id }}-result" style="display:none"></div>
+  <p class="tool-app__desc">Type or pick a craftable item — the recipe tree expands every intermediate material (Ore → Bar → tool) down to raw ingredients, with ring protection. Results update as you type.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Options</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-search">Item name</label>
+        <input id="{{ $id }}-search" class="tool-input" list="{{ $id }}-list" placeholder="Search craftable… e.g. Scarlet Pickaxe" autocomplete="off" aria-label="Search craftable item">
+        <datalist id="{{ $id }}-list">
+          {{ range $data }}{{ if .materials }}<option value="{{ .name }}">{{ .type }}</option>{{ end }}{{ end }}
+        </datalist>
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-qty">Quantity</label>
+        <div class="tool-flex">
+          <button type="button" class="tool-btn tool-btn--ghost" id="{{ $id }}-minus" aria-label="Decrease quantity">−</button>
+          <input id="{{ $id }}-qty" class="tool-number" type="number" min="1" max="999" value="1" aria-label="Craft quantity (1-999)">
+          <button type="button" class="tool-btn tool-btn--ghost" id="{{ $id }}-plus" aria-label="Increase quantity">+</button>
+        </div>
+      </div>
+      <button type="button" class="tool-btn tool-btn--gold" id="{{ $id }}-copy" disabled>Copy recipe</button>
+    </div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Result</div>
+    <div id="{{ $id }}-empty" class="tool-empty">Type or select an item above to see its full crafting tree, raw ingredient needs and required stations.</div>
+    <div id="{{ $id }}-body" class="tool-hidden"></div>
+  </div>
+
+  <div class="tool-footnote">Recipe data: community wiki (corekeeper.atma.gg), game 1.3.0.6 · raw materials = gatherable endpoints (mine / chop / dig).</div>
 </div>
 <script>
 (function(){
-  var data = {{ jsonify $data }};
-  var byName = {};
-  for (var i = 0; i < data.length; i++){ byName[data[i].name] = data[i]; }
-  var sel = document.getElementById('{{ $id }}-select');
+  var dataRaw = {{ jsonify $data }};
+  var data = typeof dataRaw === 'string' ? JSON.parse(dataRaw) : dataRaw;
+  var byName = {}, craftable = {};
+  for (var i = 0; i < data.length; i++){
+    byName[data[i].name] = data[i];
+    if (data[i].materials && data[i].materials.length){ craftable[data[i].name] = data[i]; }
+  }
+  var root = document.getElementById('{{ $id }}');
+  var search = document.getElementById('{{ $id }}-search');
   var qty = document.getElementById('{{ $id }}-qty');
-  var out = document.getElementById('{{ $id }}-result');
-  if(!sel || !qty || !out) return;
+  var minus = document.getElementById('{{ $id }}-minus');
+  var plus = document.getElementById('{{ $id }}-plus');
+  var copyBtn = document.getElementById('{{ $id }}-copy');
+  var empty = document.getElementById('{{ $id }}-empty');
+  var out = document.getElementById('{{ $id }}-body');
+  if(!root || !search || !qty || !out) return;
+  var lastText = '';
 
-  function render(){
-    var name = sel.value;
-    if(!name){ out.style.display='none'; out.innerHTML=''; return; }
-    var n = parseInt(qty.value,10); if(isNaN(n)||n<1) n=1;
-    var it = byName[name];
-    if(!it){ out.style.display='none'; return; }
+  function normQty(){
+    var n = parseInt(qty.value, 10);
+    if (isNaN(n) || n < 1) n = 1;
+    if (n > 999) n = 999;
+    qty.value = n;
+    return n;
+  }
 
-    // 递归展开合成树
-    var totals = {};      // 底层原料汇总 {name: qty}
-    var tree = [];        // 树节点 {name, qty, workbench, depth, leaf}
-    var visiting = {};    // 防环
+  function compute(name, n){
+    var totals = {}, tree = [], visiting = {};
     function expand(itemName, q, depth){
       var node = byName[itemName];
-      if(!node){ totals[itemName] = (totals[itemName]||0) + q; tree.push({name:itemName, qty:q, workbench:'', depth:depth, leaf:true}); return; }
-      if(!node.materials || node.materials.length === 0){
-        totals[itemName] = (totals[itemName]||0) + q;
-        tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:true});
+      if (!node || !node.materials || !node.materials.length || visiting[itemName]){
+        totals[itemName] = (totals[itemName] || 0) + q;
+        tree.push({name: itemName, qty: q, workbench: node ? node.workbench : '', depth: depth, leaf: true});
         return;
       }
-      if(visiting[itemName]){ totals[itemName] = (totals[itemName]||0) + q; tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:true}); return; }
       visiting[itemName] = true;
-      tree.push({name:itemName, qty:q, workbench:node.workbench, depth:depth, leaf:false});
+      tree.push({name: itemName, qty: q, workbench: node.workbench, depth: depth, leaf: false});
       for (var j = 0; j < node.materials.length; j++){
         expand(node.materials[j].item, q * node.materials[j].qty, depth + 1);
       }
       delete visiting[itemName];
     }
     expand(name, n, 0);
+    return { totals: totals, tree: tree };
+  }
 
-    var h = '<div style="border-bottom:1px solid #2e423a;padding-bottom:10px;margin-bottom:10px">';
-    h += '<div style="font-size:18px;color:#f2cc7a;font-weight:700">'+it.name+' × '+n+'</div>';
-    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Type:</b> '+it.type+' · <b style="color:#fff">Station:</b> '+it.workbench+'</div>';
-    if(it.use){ h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Use:</b> '+it.use+'</div>'; }
+  function render(){
+    var name = search.value.trim();
+    if (!name){
+      empty.classList.remove('tool-hidden');
+      out.classList.add('tool-hidden');
+      out.innerHTML = '';
+      copyBtn.disabled = true;
+      lastText = '';
+      return;
+    }
+    var it = craftable[name];
+    if (!it){
+      empty.classList.add('tool-hidden');
+      out.classList.remove('tool-hidden');
+      out.innerHTML = '<div class="tool-error">Unknown or non-craftable item: “' + CK.esc(name) + '”. Pick a suggestion from the dropdown.</div>';
+      copyBtn.disabled = true;
+      lastText = '';
+      return;
+    }
+    var n = normQty();
+    var res = compute(name, n);
+    var totals = res.totals, tree = res.tree;
+    var keys = Object.keys(totals).sort(function(a,b){ return totals[b] - totals[a]; });
+    var maxTotal = keys.length ? totals[keys[0]] : 1;
+    var gatherTotal = 0; keys.forEach(function(k){ gatherTotal += totals[k]; });
+    var stations = {};
+    tree.forEach(function(t){ if (!t.leaf && t.workbench){ stations[t.workbench] = 1; } });
+    var stationCount = Object.keys(stations).length;
+
+    var h = '';
+    // stats
+    h += '<div class="tool-stats tool-mb">';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + keys.length + '</div><div class="tool-stat__label">Raw ingredient types</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + gatherTotal + '</div><div class="tool-stat__label">Total gather count</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + stationCount + '</div><div class="tool-stat__label">Crafting stations</div></div>';
     h += '</div>';
 
-    // 底层原料汇总
-    var keys = Object.keys(totals).sort(function(a,b){ return totals[b]-totals[a]; });
-    h += '<div style="font-size:14px;color:#fff;font-weight:700;margin:12px 0 6px">Raw ingredients needed</div>';
-    h += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#101613"><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Ingredient</th><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Total</th></tr></thead><tbody>';
+    // raw ingredients table
+    h += '<div class="tool-card__title tool-mt-sm">Raw ingredients needed</div>';
+    h += '<div class="tool-table-wrap tool-mt-sm"><table class="tool-table"><thead><tr><th scope="col">Ingredient</th><th scope="col">Total</th><th scope="col" style="min-width:130px">Relative load</th></tr></thead><tbody>';
     for (var k = 0; k < keys.length; k++){
-      h += '<tr><td style="border:1px solid #2e423a;padding:8px;color:#e9efe9">'+keys[k]+'</td><td style="border:1px solid #2e423a;padding:8px;color:#7fd6a0">'+totals[keys[k]]+'</td></tr>';
+      var pct = Math.round(totals[keys[k]] / maxTotal * 100);
+      h += '<tr><td>' + CK.esc(keys[k]) + '</td><td class="num">' + totals[keys[k]] + '</td>';
+      h += '<td><div class="tool-bar" role="img" aria-label="' + pct + ' percent of max"><div class="tool-bar__fill" style="width:' + pct + '%"></div></div></td></tr>';
     }
-    h += '</tbody></table>';
+    h += '</tbody></table></div>';
 
-    // 合成树层级
-    h += '<div style="font-size:14px;color:#fff;font-weight:700;margin:14px 0 6px">Crafting tree</div>';
-    h += '<div style="font-family:monospace;font-size:13px;line-height:1.6">';
+    // crafting tree
+    h += '<div class="tool-card__title tool-mt">Crafting tree</div>';
+    h += '<div class="tool-tree tool-mt-sm">';
     for (var t = 0; t < tree.length; t++){
       var nd = tree[t];
-      var prefix = '';
-      for (var d = 0; d < nd.depth; d++){ prefix += '&nbsp;&nbsp;'; }
-      if(nd.depth > 0){ prefix += '└─ '; }
-      var leafMark = nd.leaf ? ' <span style="color:#6d7f76">(raw)</span>' : ' <span style="color:#a9b8b0">@ '+nd.workbench+'</span>';
-      h += '<div>'+prefix+'<span style="color:'+(nd.leaf?'#a9b8b0':'#f2cc7a')+'">'+nd.name+'</span> × '+nd.qty+leafMark+'</div>';
+      var indent = '';
+      for (var d = 0; d < nd.depth; d++){ indent += '  '; }
+      var connector = nd.depth > 0 ? '└─ ' : '';
+      var cls = nd.leaf ? 'tool-tree__leaf' : 'tool-tree__node';
+      var tag = nd.leaf ? ' <span class="tool-tree__tag">(raw)</span>'
+                        : ' <span class="tool-tree__tag">@ ' + CK.esc(nd.workbench || '') + '</span>';
+      h += '<div>' + indent + connector + '<span class="' + cls + '">' + CK.esc(nd.name) + '</span> × ' + nd.qty + tag + '</div>';
     }
     h += '</div>';
 
+    empty.classList.add('tool-hidden');
+    out.classList.remove('tool-hidden');
     out.innerHTML = h;
-    out.style.display = 'block';
+    copyBtn.disabled = false;
+    lastText = buildText(it, n, tree, keys, totals);
   }
-  sel.addEventListener('change', render);
-  qty.addEventListener('input', render);
+
+  function buildText(it, n, tree, keys, totals){
+    var lines = [it.name + ' × ' + n];
+    tree.forEach(function(nd){
+      var indent = '';
+      for (var d = 0; d < nd.depth; d++){ indent += '  '; }
+      var connector = nd.depth > 0 ? '└─ ' : '';
+      var tag = nd.leaf ? '' : ' @ ' + (nd.workbench || '');
+      lines.push(indent + connector + nd.name + ' × ' + nd.qty + tag);
+    });
+    lines.push('');
+    lines.push('Raw: ' + keys.map(function(k){ return k + ' ' + totals[k]; }).join(', '));
+    return lines.join('\n');
+  }
+
+  search.addEventListener('input', CK.debounce(render, 120));
+  search.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ render(); } });
+  qty.addEventListener('input', CK.debounce(render, 120));
+  qty.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ render(); } });
+  minus.addEventListener('click', function(){ normQty(); qty.value = Math.max(1, parseInt(qty.value,10) - 1); render(); });
+  plus.addEventListener('click', function(){ normQty(); qty.value = Math.min(999, parseInt(qty.value,10) + 1); render(); });
+  copyBtn.addEventListener('click', function(){
+    if (lastText){ CK.copy(lastText, copyBtn); }
+  });
 })();
 </script>

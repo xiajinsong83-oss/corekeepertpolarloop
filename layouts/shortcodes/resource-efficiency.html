@@ -1,41 +1,131 @@
 {{ $id := printf "reseff-%s" (md5 .Page.Title | truncate 8) }}
-<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:10px">Resource gathering estimate</div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-    <select id="{{ $id }}-ore" style="flex:1;min-width:160px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
-      <option value="copper" data-base="12">Copper Ore</option>
-      <option value="tin" data-base="11">Tin Ore</option>
-      <option value="iron" data-base="9">Iron Ore</option>
-      <option value="gold" data-base="7">Gold Ore</option>
-      <option value="scarlet" data-base="6">Scarlet Ore</option>
-    </select>
-    <select id="{{ $id }}-tool" style="flex:1;min-width:160px;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a">
-      <option value="1" data-mult="1">Copper Pickaxe</option>
-      <option value="2" data-mult="1.35">Tin Pickaxe</option>
-      <option value="3" data-mult="1.8">Iron Pickaxe</option>
-      <option value="4" data-mult="2.4">Gold Pickaxe</option>
-      <option value="5" data-mult="3.2">Scarlet Pickaxe</option>
-    </select>
-    <button id="{{ $id }}-calc" type="button" style="padding:12px 20px;font-size:16px;background:#e6b34d;color:#101613;border:none;font-weight:700;cursor:pointer">Estimate</button>
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div class="tool-app__title">Resource Gathering Efficiency</div>
+    <span class="tool-badge">estimate</span>
   </div>
-  <div id="{{ $id }}-result" style="font-size:14px;color:#a9b8b0;display:none;border-top:1px solid #2e423a;padding-top:10px"></div>
+  <p class="tool-app__desc">Estimate raw ore yield per minute / hour with a given pickaxe tier, and compare all five pick tiers on the ore you picked.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Options</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-ore">Ore</label>
+        <select id="{{ $id }}-ore" class="tool-select" aria-label="Select ore">
+          <option value="0">Copper Ore</option>
+          <option value="1">Tin Ore</option>
+          <option value="2">Iron Ore</option>
+          <option value="3">Gold Ore</option>
+          <option value="4">Scarlet Ore</option>
+        </select>
+      </div>
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-tool">Pickaxe</label>
+        <select id="{{ $id }}-tool" class="tool-select" aria-label="Select pickaxe">
+          <option value="0">Copper Pickaxe</option>
+          <option value="1">Tin Pickaxe</option>
+          <option value="2">Iron Pickaxe</option>
+          <option value="3">Gold Pickaxe</option>
+          <option value="4">Scarlet Pickaxe</option>
+        </select>
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-min">Minutes</label>
+        <input id="{{ $id }}-min" class="tool-number" type="number" min="1" max="600" value="60" aria-label="Gathering minutes (1-600)">
+      </div>
+      <button type="button" class="tool-btn tool-btn--gold" id="{{ $id }}-calc">Estimate</button>
+    </div>
+    <div id="{{ $id }}-err" class="tool-error tool-hidden"></div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Result</div>
+    <div id="{{ $id }}-empty" class="tool-empty">Pick an ore and a pickaxe, set how many minutes you will farm, then hit “Estimate”. Values are rough estimates — real rates are affected by skills and gear.</div>
+    <div id="{{ $id }}-body" class="tool-hidden"></div>
+  </div>
+
+  <div class="tool-footnote">Baseline ore yields and pickaxe multipliers: community wiki (corekeeper.atma.gg/en/Mining), game 1.3.0.6 · estimates only, skills &amp; gear shift real rates.</div>
 </div>
 <script>
 (function(){
-  var ore = document.getElementById('{{ $id }}-ore');
-  var tool = document.getElementById('{{ $id }}-tool');
+  var ORES = [
+    { name: 'Copper Ore',  base: 12 },
+    { name: 'Tin Ore',     base: 11 },
+    { name: 'Iron Ore',    base: 9  },
+    { name: 'Gold Ore',    base: 7  },
+    { name: 'Scarlet Ore', base: 6  }
+  ];
+  var TOOLS = [
+    { name: 'Copper Pickaxe', mult: 1   },
+    { name: 'Tin Pickaxe',    mult: 1.35 },
+    { name: 'Iron Pickaxe',   mult: 1.8  },
+    { name: 'Gold Pickaxe',   mult: 2.4  },
+    { name: 'Scarlet Pickaxe',mult: 3.2  }
+  ];
+  var oreSel = document.getElementById('{{ $id }}-ore');
+  var toolSel = document.getElementById('{{ $id }}-tool');
+  var minInp = document.getElementById('{{ $id }}-min');
   var btn = document.getElementById('{{ $id }}-calc');
-  var out = document.getElementById('{{ $id }}-result');
-  if(!ore || !tool || !btn || !out) return;
-  btn.addEventListener('click', function(){
-    var base = parseFloat(ore.options[ore.selectedIndex].getAttribute('data-base'));
-    var mult = parseFloat(tool.options[tool.selectedIndex].getAttribute('data-mult'));
-    var perMin = Math.round(base * mult);
+  var err = document.getElementById('{{ $id }}-err');
+  var empty = document.getElementById('{{ $id }}-empty');
+  var out = document.getElementById('{{ $id }}-body');
+  if(!oreSel || !toolSel || !minInp || !btn) return;
+
+  function calc(){
+    err.classList.add('tool-hidden');
+    var m = parseInt(minInp.value, 10);
+    if (isNaN(m) || m < 1 || m > 600){
+      err.textContent = 'Minutes must be a whole number between 1 and 600.';
+      err.classList.remove('tool-hidden');
+      return;
+    }
+    minInp.value = m;
+    var oi = parseInt(oreSel.value, 10), ti = parseInt(toolSel.value, 10);
+    var ore = ORES[oi], tool = TOOLS[ti];
+    var perMin = Math.round(ore.base * tool.mult);
     var perHour = perMin * 60;
-    out.innerHTML = '<b style="color:#f2cc7a">' + ore.options[ore.selectedIndex].text + '</b> with <b style="color:#f2cc7a">' + tool.options[tool.selectedIndex].text + '</b>: ' +
-      '~<b style="color:#7fd6a0">' + perMin + '</b> ore/min · <b style="color:#7fd6a0">' + perHour + '</b> ore/hour. ' +
-      '<span style="color:#a9b8b0">Estimates only — skills and gear affect real rates.</span>';
-    out.style.display = 'block';
-  });
+    var durOut = perMin * m;
+
+    // comparison: per-hour of this ore under every pick tier
+    var rates = TOOLS.map(function(t){ return Math.round(ore.base * t.mult) * 60; });
+    var maxR = Math.max.apply(null, rates);
+
+    var h = '';
+    h += '<div class="tool-stats tool-mb">';
+    h += '<div class="tool-stat"><div class="tool-stat__num">~' + perMin + '</div><div class="tool-stat__label">ore / minute</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">~' + perHour + '</div><div class="tool-stat__label">ore / hour</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">~' + durOut + '</div><div class="tool-stat__label">ore in ' + m + ' min</div></div>';
+    h += '</div>';
+
+    h += '<div class="tool-card__title">Hourly yield of ' + CK.esc(ore.name) + ' by pickaxe tier</div>';
+    h += '<div class="tool-chart-box">';
+    for (var i = 0; i < rates.length; i++){
+      var pct = Math.round(rates[i] / maxR * 100);
+      var fillCls = (i === ti) ? 'tool-bar__fill--gold' : 'tool-bar__fill';
+      h += '<div class="tool-flex tool-mt-sm">';
+      h += '<div class="tool-card__meta">' + CK.esc(TOOLS[i].name) + (i === ti ? ' <span class="tool-tag">selected</span>' : '') + '</div>';
+      h += '<div class="tool-bar" role="img" aria-label="' + CK.esc(TOOLS[i].name) + ' yields ' + rates[i] + ' per hour" style="flex:1"><div class="' + fillCls + '" style="width:' + pct + '%"></div></div>';
+      h += '<div class="tool-table num">' + rates[i] + '/h</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+    h += '<div class="tool-legend tool-mt-sm"><span class="tool-legend__item"><span class="tool-swatch" style="background:var(--gold)"></span>Your pickaxe</span><span class="tool-legend__item"><span class="tool-swatch" style="background:var(--green)"></span>Other tiers</span></div>';
+    h += '<div class="tool-flex tool-mt"><button type="button" class="tool-btn" id="{{ $id }}-copy">Copy result</button></div>';
+
+    empty.classList.add('tool-hidden');
+    out.classList.remove('tool-hidden');
+    out.innerHTML = h;
+
+    var copyBtn = document.getElementById('{{ $id }}-copy');
+    if (copyBtn){
+      copyBtn.addEventListener('click', function(){
+        var text = ore.name + ' with ' + tool.name + ': ~' + perMin + ' ore/min, ~' + perHour + ' ore/hour (~' + durOut + ' in ' + m + ' min). Estimate — skills & gear affect real rates.';
+        CK.copy(text, copyBtn);
+      });
+    }
+  }
+
+  btn.addEventListener('click', calc);
+  minInp.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ calc(); } });
 })();
 </script>

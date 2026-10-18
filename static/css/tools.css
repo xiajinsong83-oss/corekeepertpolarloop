@@ -1,0 +1,280 @@
+/* ============================================================
+   Core Keeper Hub — 工具页共享视觉系统 (tools.css)
+   像素深墨绿风格 · 零外部依赖 · 供全部 12 个交互工具复用
+   基础令牌继承 head.html 的 :root 变量，此处仅补充工具域变量
+   ============================================================ */
+:root{
+  --tool-panel2:#0f1713;          /* 深色内嵌面 */
+  --tool-gold-soft:rgba(230,179,77,.14);
+  --tool-green-soft:rgba(127,214,160,.14);
+  --tool-blue:#5aa9a9;
+  --tool-blue-soft:rgba(90,169,169,.16);
+  --tool-danger:#e0665a;
+  --tool-danger-soft:rgba(224,102,90,.15);
+  --tool-purple:#b48ae0;
+  --tool-purple-soft:rgba(180,138,224,.15);
+  --tool-glow-gold:0 0 0 1px rgba(230,179,77,.35), 0 0 12px rgba(230,179,77,.22);
+  --tool-glow-green:0 0 0 1px rgba(127,214,160,.35), 0 0 12px rgba(127,214,160,.2);
+}
+
+/* ---------- 容器与结构 ---------- */
+.tool-app{
+  position:relative;
+  border:1px solid var(--line);
+  background:var(--panel);
+  padding:18px 18px 16px;
+  margin:16px 0 20px;
+  /* 像素方角 + 金色角标（左上、右下） */
+  clip-path:polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+  box-shadow:inset 0 0 0 1px rgba(233,239,233,.03);
+}
+.tool-app::before,.tool-app::after{
+  content:"";position:absolute;width:7px;height:7px;background:var(--gold);
+  image-rendering:pixelated;
+}
+.tool-app::before{top:5px;left:5px;box-shadow:3px 0 0 0 var(--gold), 0 3px 0 0 var(--gold);}
+.tool-app::after{bottom:5px;right:5px;box-shadow:-3px 0 0 0 var(--gold), 0 -3px 0 0 var(--gold);}
+.tool-app__head{margin-bottom:4px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;}
+.tool-app__title{font-size:16px;color:#fff;font-weight:800;letter-spacing:.4px;}
+.tool-app__desc{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:12px;}
+.tool-app__head .tool-badge{margin-left:auto;}
+
+/* 操作区 / 结果区 分离 */
+.tool-op{border:1px solid var(--line);background:var(--bg);padding:14px;margin-bottom:14px;}
+.tool-op__title,.tool-result__title{
+  font-size:12px;font-weight:800;color:var(--gold);letter-spacing:1.2px;
+  text-transform:uppercase;margin-bottom:10px;padding-left:8px;
+  border-left:3px solid var(--gold);
+}
+.tool-result{border:1px dashed var(--line);background:var(--panel2);padding:14px;}
+.tool-result__title{color:var(--green);border-left-color:var(--green);}
+.tool-divider{border:none;border-top:1px dashed var(--line);margin:14px 0;}
+.tool-footnote{font-size:12px;color:#6d7f76;margin-top:12px;line-height:1.6;}
+
+/* ---------- 控件 ---------- */
+.tool-panel{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+  border:1px solid var(--line);background:var(--bg);padding:12px;margin-bottom:14px;
+}
+.tool-field{display:flex;flex-direction:column;gap:5px;min-width:0;}
+.tool-field--grow{flex:1 1 200px;}
+.tool-label{font-size:12px;color:var(--ink2);font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+.tool-input,.tool-select,.tool-number{
+  padding:10px 12px;font-size:15px;color:var(--ink);
+  background:var(--panel2);border:1px solid var(--line);border-radius:0;
+  min-width:0;width:100%;outline:none;transition:border-color .15s, box-shadow .15s;
+  font-family:inherit;
+}
+.tool-input::placeholder{color:#5d6f66;}
+.tool-input:focus,.tool-select:focus,.tool-number:focus{
+  border-color:var(--gold);box-shadow:var(--tool-glow-gold);
+}
+.tool-select{cursor:pointer;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--gold) 50%),linear-gradient(135deg,var(--gold) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;
+  background-size:5px 5px;background-repeat:no-repeat;padding-right:34px;
+}
+.tool-number{width:110px;}
+.tool-number::-webkit-outer-spin-button,.tool-number::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.tool-number{-moz-appearance:textfield;appearance:textfield;}
+
+.tool-btn{
+  display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  padding:10px 18px;font-size:14px;font-weight:800;letter-spacing:.6px;
+  background:var(--panel);color:var(--ink2);border:1px solid var(--line);
+  border-radius:0;cursor:pointer;transition:all .15s;text-transform:uppercase;
+  font-family:inherit;line-height:1;
+}
+.tool-btn:hover{border-color:var(--gold);color:var(--gold2);box-shadow:var(--tool-glow-gold);}
+.tool-btn:active{transform:translateY(1px);}
+.tool-btn--gold{background:var(--gold);color:#101613;border:1px solid var(--gold);}
+.tool-btn--gold:hover{background:var(--gold2);color:#101613;box-shadow:var(--tool-glow-gold);}
+.tool-btn--ghost{border-color:var(--line);color:var(--ink2);}
+.tool-btn--danger{border-color:var(--tool-danger);color:var(--tool-danger);}
+.tool-btn--danger:hover{background:var(--tool-danger-soft);border-color:var(--tool-danger);color:#ff8d83;}
+.tool-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none;}
+
+/* 像素风 range 滑块 */
+.tool-range{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;
+  background:transparent;cursor:pointer;outline:none;margin:0;
+}
+.tool-range::-webkit-slider-runnable-track{
+  height:7px;background:var(--panel2);border:1px solid var(--line);border-radius:0;
+}
+.tool-range::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:18px;height:18px;margin-top:-6px;
+  background:var(--gold);border:2px solid #101613;border-radius:0;
+  box-shadow:2px 2px 0 0 #101613, 0 0 0 1px var(--gold);
+}
+.tool-range::-moz-range-track{height:7px;background:var(--panel2);border:1px solid var(--line);border-radius:0;}
+.tool-range::-moz-range-thumb{width:18px;height:18px;background:var(--gold);border:2px solid #101613;border-radius:0;}
+
+/* 像素 checkbox */
+.tool-check{position:absolute;opacity:0;width:1px;height:1px;}
+.tool-check + span{position:relative;padding-left:26px;}
+.tool-check + span::before{
+  content:"";position:absolute;left:0;top:2px;width:16px;height:16px;
+  background:var(--panel2);border:1px solid var(--line);border-radius:0;
+}
+.tool-check:checked + span::before{background:var(--gold);border-color:var(--gold);box-shadow:var(--tool-glow-gold);}
+.tool-check:checked + span::after{
+  content:"";position:absolute;left:4px;top:6px;width:9px;height:5px;
+  border-left:2px solid #101613;border-bottom:2px solid #101613;
+  transform:rotate(-45deg);
+}
+.tool-check:focus-visible + span::before{box-shadow:var(--tool-glow-gold);}
+
+/* ---------- 徽章 / 标签 / 筛选片 ---------- */
+.tool-badge{
+  display:inline-block;padding:3px 9px;font-size:11.5px;font-weight:700;letter-spacing:.4px;
+  background:var(--panel2);color:var(--gold2);border:1px solid var(--line);
+  text-transform:uppercase;white-space:nowrap;
+}
+.tool-badge--green{color:var(--green);border-color:var(--line);background:var(--tool-green-soft);}
+.tool-badge--blue{color:var(--tool-blue);border-color:var(--line);background:var(--tool-blue-soft);}
+.tool-badge--danger{color:#ff8d83;border-color:var(--tool-danger);background:var(--tool-danger-soft);}
+.tool-badge--dim{color:#6d7f76;}
+.tool-tag{
+  display:inline-block;padding:2px 8px;font-size:11px;font-weight:700;
+  background:var(--panel2);color:var(--ink2);border:1px solid var(--line);margin:2px 2px 0 0;
+}
+.tool-chip{
+  padding:6px 14px;font-size:12.5px;font-weight:700;border-radius:0;
+  background:var(--panel);color:var(--ink2);border:1px solid var(--line);
+  cursor:pointer;transition:all .15s;font-family:inherit;line-height:1;
+}
+.tool-chip:hover{border-color:var(--gold);color:var(--gold2);}
+.tool-chip.is-active{background:var(--tool-gold-soft);border-color:var(--gold);color:var(--gold2);box-shadow:var(--tool-glow-gold);}
+
+/* ---------- 栅格与卡片 ---------- */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;}
+.tool-grid--wide{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}
+.tool-card{
+  border:1px solid var(--line);background:var(--panel);padding:12px 13px;
+  transition:border-color .15s, box-shadow .15s, transform .15s;
+}
+.tool-card:hover{border-color:var(--gold);box-shadow:var(--tool-glow-gold);}
+.tool-card--click{cursor:pointer;}
+.tool-card.is-selected{border-color:var(--gold);background:var(--tool-gold-soft);box-shadow:var(--tool-glow-gold);}
+.tool-card.is-active{border-color:var(--green);background:var(--tool-green-soft);box-shadow:var(--tool-glow-green);}
+.tool-card.is-dim{opacity:.45;}
+.tool-card__title{color:#fff;font-weight:800;font-size:14px;line-height:1.4;}
+.tool-card__meta{color:var(--ink2);font-size:12.5px;margin-top:4px;line-height:1.55;}
+.tool-card__desc{color:var(--ink2);font-size:12.5px;margin-top:6px;line-height:1.55;}
+.tool-card__foot{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+
+/* ---------- 数据表格 ---------- */
+.tool-table-wrap{overflow-x:auto;border:1px solid var(--line);}
+.tool-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px;}
+.tool-table th{
+  background:var(--panel2);color:#fff;font-weight:800;text-align:left;
+  padding:9px 11px;border-bottom:2px solid var(--gold);white-space:nowrap;
+  font-size:12.5px;letter-spacing:.4px;text-transform:uppercase;
+}
+.tool-table td{padding:8px 11px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:middle;}
+.tool-table tbody tr:last-child td{border-bottom:none;}
+.tool-table tbody tr:hover td{background:rgba(233,239,233,.03);}
+.tool-table .num{color:var(--gold2);font-weight:800;white-space:nowrap;}
+.tool-table th.sortable{cursor:pointer;user-select:none;}
+.tool-table th.sortable::after{content:" ⇅";font-size:10px;color:#6d7f76;}
+.tool-table th.sortable.asc::after{content:" ▲";color:var(--gold);}
+.tool-table th.sortable.desc::after{content:" ▼";color:var(--gold);}
+
+/* ---------- 条形图 / 进度 ---------- */
+.tool-bar{height:9px;background:var(--panel2);border:1px solid var(--line);position:relative;min-width:70px;}
+.tool-bar__fill{
+  height:100%;width:0;background:linear-gradient(90deg,var(--green),#a4e6be);
+  transition:width .35s ease;
+}
+.tool-bar__fill--gold{background:linear-gradient(90deg,var(--gold),var(--gold2));}
+.tool-bar__fill--blue{background:linear-gradient(90deg,var(--tool-blue),#7fc9c9);}
+.tool-bar__fill--danger{background:linear-gradient(90deg,#c14f44,var(--tool-danger));}
+.tool-bar__fill--purple{background:linear-gradient(90deg,#8a5cc0,var(--tool-purple));}
+.tool-progress{height:14px;background:var(--panel2);border:1px solid var(--line);position:relative;overflow:hidden;}
+.tool-progress__fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .25s ease;}
+.tool-progress__label{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;letter-spacing:.6px;color:#101613;
+}
+
+/* ---------- 统计块 ---------- */
+.tool-stats{display:flex;flex-wrap:wrap;gap:10px;}
+.tool-stat{
+  flex:1 1 120px;border:1px solid var(--line);background:var(--panel);
+  padding:10px 12px;text-align:center;
+}
+.tool-stat__num{font-size:22px;color:var(--gold2);font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums;}
+.tool-stat__label{font-size:11px;color:var(--ink2);letter-spacing:.6px;text-transform:uppercase;margin-top:2px;}
+
+/* ---------- 状态 ---------- */
+.tool-empty{
+  border:1px dashed var(--line);background:var(--panel2);padding:26px 16px;
+  text-align:center;color:#6d7f76;font-size:13.5px;
+}
+.tool-empty::before{content:"▣ ";color:var(--gold);}
+.tool-error{
+  border:1px solid var(--tool-danger);background:var(--tool-danger-soft);
+  padding:12px 14px;color:#ffb3ac;font-size:13.5px;margin:8px 0;
+}
+.tool-error::before{content:"⚠ ";font-weight:800;}
+.tool-msg{font-size:13px;color:var(--green);margin-top:8px;}
+.tool-msg.is-error{color:var(--tool-danger);}
+.tool-msg.is-info{color:var(--ink2);}
+.tool-toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);
+  background:var(--gold);color:#101613;font-size:13px;font-weight:800;
+  padding:9px 18px;border:1px solid var(--gold2);z-index:999;
+  opacity:0;transition:opacity .2s, transform .2s;letter-spacing:.4px;
+  box-shadow:0 0 0 4px rgba(230,179,77,.25), 0 6px 18px rgba(0,0,0,.5);
+}
+.tool-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.tool-count{font-size:12px;color:#6d7f76;font-weight:700;letter-spacing:.4px;}
+
+/* ---------- 图表（纯 SVG / CSS） ---------- */
+.tool-chart{
+  width:100%;height:auto;display:block;
+  background:var(--panel2);border:1px solid var(--line);
+}
+.tool-chart-box{margin-top:12px;}
+.tool-legend{display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:10px;font-size:12px;color:var(--ink2);}
+.tool-legend__item{display:inline-flex;align-items:center;gap:6px;}
+.tool-swatch{
+  width:11px;height:11px;border:1px solid rgba(233,239,233,.25);
+  display:inline-block;flex:none;image-rendering:pixelated;
+}
+.tool-tree{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.75;overflow-x:auto;white-space:pre;}
+.tool-tree__leaf{color:var(--ink2);}
+.tool-tree__node{color:var(--gold2);font-weight:700;}
+.tool-tree__tag{color:#6d7f76;font-size:11.5px;}
+
+/* ---------- 像素图标 ---------- */
+.px{image-rendering:pixelated;}
+.px-sm{width:20px;height:20px;image-rendering:pixelated;flex:none;}
+.px-md{width:34px;height:34px;image-rendering:pixelated;flex:none;background:var(--panel2);border:1px solid var(--line);}
+
+/* ---------- 工具条 / 混合布局 ---------- */
+.tool-flex{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+.tool-flex--between{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;}
+.tool-mt{margin-top:14px;}
+.tool-mb{margin-bottom:14px;}
+.tool-mt-sm{margin-top:8px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+.tool-hidden{display:none !important;}
+
+/* ---------- 滚动条（像素深色） ---------- */
+.tool-table-wrap::-webkit-scrollbar,.tool-tree::-webkit-scrollbar{height:9px;width:9px;}
+.tool-table-wrap::-webkit-scrollbar-track,.tool-tree::-webkit-scrollbar-track{background:var(--panel2);}
+.tool-table-wrap::-webkit-scrollbar-thumb,.tool-tree::-webkit-scrollbar-thumb{background:var(--line);border:1px solid var(--panel2);}
+.tool-table-wrap::-webkit-scrollbar-thumb:hover,.tool-tree::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+/* ---------- 响应式 ---------- */
+@media (max-width:640px){
+  .tool-app{padding:14px 12px;}
+  .tool-panel{align-items:stretch;}
+  .tool-field--grow{flex-basis:100%;}
+  .tool-stats .tool-stat{flex-basis:calc(50% - 10px);}
+  .tool-grid,.tool-grid--wide{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));}
+  .tool-btn{width:100%;}
+  .tool-app__head .tool-badge{margin-left:0;}
+}

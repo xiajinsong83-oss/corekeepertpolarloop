@@ -1,47 +1,155 @@
-{{/* P2-4 Cooking Guide：食材效果搜索/筛选（data/cooking.yaml 驱动） */}}
-<div id="cook-guide" style="margin:18px 0">
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <input id="cg-q" type="search" placeholder="Search effect (health, magic, boss, melee, glow...)" style="background:#0f1713;color:#fff;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px;flex:1;min-width:200px">
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
-    <button class="cg-tag" data-tag="all" style="padding:5px 12px;border-radius:16px;cursor:pointer;border:1px solid #f2cc7a;background:#1a2621;color:#f2cc7a;font-weight:700;font-size:12.5px">All</button>
-    {{ range (slice "health" "maxhealth" "melee" "range" "magic" "summoning" "boss" "speed" "armor" "glow" "mana" "mining" "stamina") }}
-    <button class="cg-tag" data-tag="{{ . }}" style="padding:5px 12px;border-radius:16px;cursor:pointer;border:1px solid #2e423a;background:#1a2621;color:#a9b8b0;font-size:12.5px">{{ . }}</button>
-    {{ end }}
-  </div>
-  <div id="cg-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px">
-    {{ range site.Data.cooking.ingredients }}
-    <div class="cg-item" data-tags="{{ .tags }}" data-name="{{ .name }}" style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px">
-      <div style="color:#fff;font-weight:700;font-size:14px">{{ .name }} <span style="color:#f2cc7a;font-weight:400">(+{{ .food }} food)</span></div>
-      <div style="color:#a9b8b0;font-size:13px;margin-top:5px;line-height:1.5">{{ .effects }}</div>
+{{/* Cooking Guide：食材效果搜索/标签筛选 + 效果标签着色 + food 排序 + Copy（data/cooking.yaml 驱动） */}}
+{{ $data := site.Data.cooking.ingredients }}
+{{ $id := printf "cook-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div>
+      <div class="tool-app__title">Cooking Guide</div>
+      <div class="tool-app__desc">Every ingredient's cooked effect — health, magic, boss, melee, glow and more. Regular-rarity values shown.</div>
     </div>
-    {{ end }}
   </div>
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-top:14px;font-size:13px;color:#a9b8b0">
-    <strong style="color:#f2cc7a">How combining works:</strong> cooked dishes combine both ingredients' hidden effects — permanent max-health boosts add up; every other effect keeps only the highest value. Skills like <em>Utilizing every nutrient</em>, <em>Fast food</em> and <em>Long-lasting food</em> boost results retroactively.
+
+  <div class="tool-op">
+    <div class="tool-op__title">Search &amp; Filter</div>
+    <div class="tool-panel" style="margin-bottom:12px">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search effect</label>
+        <input class="tool-input" id="{{ $id }}-q" type="search" placeholder="Search effect (health, magic, boss, glow...)..." aria-label="Search cooking ingredients by effect">
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-sort">Sort by</label>
+        <select class="tool-select" id="{{ $id }}-sort" aria-label="Sort ingredients by food value">
+          <option value="food-desc">Food value ↓</option>
+          <option value="food-asc">Food value ↑</option>
+          <option value="name-asc">Name A–Z</option>
+        </select>
+      </div>
+    </div>
+    <div class="tool-flex" id="{{ $id }}-chips" role="group" aria-label="Filter by effect tag"></div>
+    <div class="tool-flex tool-mt">
+      <button class="tool-btn tool-btn--gold" id="{{ $id }}-copy" aria-label="Copy effect text for shown ingredients">Copy effect text</button>
+      <span class="tool-count" id="{{ $id }}-count"></span>
+    </div>
   </div>
-  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Regular-rarity values shown; rare & epic tiers scale up · source: corekeeper.atma.gg/en/Cooking · game version {{ site.Params.gameVersion | default "latest" }}</div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Ingredients</div>
+    <div class="tool-grid tool-grid--wide" id="{{ $id }}-grid"></div>
+    <div class="tool-empty tool-hidden" id="{{ $id }}-empty">No ingredients match your search / tag.</div>
+  </div>
+
+  <div class="tool-op" style="margin-top:14px">
+    <div class="tool-op__title">How combining works</div>
+    <div style="font-size:13.5px;color:var(--ink2);line-height:1.65">
+      Cooked dishes combine both ingredients' hidden effects — <strong style="color:var(--gold2)">permanent max-health boosts add up</strong>; every other effect keeps only the <strong style="color:var(--gold2)">highest value</strong>. Skills like <em>Utilizing every nutrient</em>, <em>Fast food</em> and <em>Long-lasting food</em> boost results retroactively.
+    </div>
+  </div>
+
+  <div class="tool-footnote">Regular-rarity values shown; rare &amp; epic tiers scale up · source: corekeeper.atma.gg/en/Cooking · game version {{ site.Params.gameVersion | default "latest" }}</div>
 </div>
 <script>
 (function(){
-  var cur = "all";
-  function filter(){
-    var q = document.getElementById("cg-q").value.trim().toLowerCase();
-    document.querySelectorAll("#cg-list .cg-item").forEach(function(it){
-      var tags = it.getAttribute("data-tags");
-      var okT = (cur === "all") || (" " + tags + " ").indexOf(" " + cur + " ") >= 0;
-      var okQ = !q || it.getAttribute("data-name").toLowerCase().indexOf(q) >= 0 || it.textContent.toLowerCase().indexOf(q) >= 0;
-      it.style.display = (okT && okQ) ? "" : "none";
-    });
-  }
-  document.querySelectorAll(".cg-tag").forEach(function(b){
-    b.addEventListener("click", function(){
-      cur = this.getAttribute("data-tag");
-      document.querySelectorAll(".cg-tag").forEach(function(x){ x.style.borderColor="#2e423a"; x.style.color="#a9b8b0"; });
-      this.style.borderColor="#f2cc7a"; this.style.color="#f2cc7a";
-      filter();
+  var data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ $data | jsonify | base64Encode }}'), function(c){ return c.charCodeAt(0); })));
+  var id = '{{ $id }}';
+  var root = document.getElementById(id);
+  if(!root) return;
+  function qs(s){ return document.getElementById(s.slice(1)); }
+
+  var gridEl = qs('#' + id + '-grid'),
+      emptyEl = qs('#' + id + '-empty'),
+      countEl = qs('#' + id + '-count'),
+      chipsEl = qs('#' + id + '-chips'),
+      searchEl = qs('#' + id + '-q'),
+      sortSel = qs('#' + id + '-sort');
+
+  var curTag = 'all', q = '';
+
+  /* tag → color style */
+  var tagColors = {
+    health:    'color:#7fd6a0;background:rgba(127,214,160,.14);border-color:rgba(127,214,160,.45)',
+    maxhealth: 'color:#f2cc7a;background:rgba(230,179,77,.14);border-color:rgba(230,179,77,.45)',
+    glow:      'color:#5aa9a9;background:rgba(90,169,169,.16);border-color:rgba(90,169,169,.45)',
+    magic:     'color:#b48ae0;background:rgba(180,138,224,.15);border-color:rgba(180,138,224,.45)',
+    boss:      'color:#ff8d83;background:rgba(224,102,90,.15);border-color:rgba(224,102,90,.45)'
+  };
+
+  /* union of tags */
+  var tags = [];
+  data.forEach(function(it){
+    String(it.tags || '').split(/\s+/).forEach(function(t){
+      if(t && tags.indexOf(t) < 0) tags.push(t);
     });
   });
-  document.getElementById("cg-q").addEventListener("input", filter);
+  tags.sort();
+
+  function buildChips(){
+    var h = '<button class="tool-chip is-active" data-tag="all">All (' + data.length + ')</button>';
+    tags.forEach(function(t){
+      h += '<button class="tool-chip" data-tag="' + CK.esc(t) + '">' + CK.esc(t) + '</button>';
+    });
+    chipsEl.innerHTML = h;
+  }
+  chipsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.tool-chip');
+    if(!btn) return;
+    curTag = btn.getAttribute('data-tag');
+    Array.prototype.forEach.call(chipsEl.querySelectorAll('.tool-chip'), function(x){ x.classList.remove('is-active'); });
+    btn.classList.add('is-active');
+    render();
+  });
+
+  function foodNum(it){ return CK.pct(it.food); }
+
+  function render(){
+    var arr = data.slice();
+    var s = sortSel.value;
+    if(s === 'food-desc') arr.sort(function(a,b){ return foodNum(b) - foodNum(a); });
+    else if(s === 'food-asc') arr.sort(function(a,b){ return foodNum(a) - foodNum(b); });
+    else arr.sort(function(a,b){ return a.name.localeCompare(b.name); });
+
+    var h = '', shown = 0;
+    arr.forEach(function(it){
+      var tlist = String(it.tags || '').split(/\s+/).filter(Boolean);
+      var okT = (curTag === 'all') || (tlist.indexOf(curTag) >= 0);
+      var hay = (it.name + ' ' + it.effects + ' ' + it.tags).toLowerCase();
+      var okQ = !q || hay.indexOf(q) >= 0;
+      if(!okT || !okQ) return;
+      shown++;
+      h += '<div class="tool-card cg-item">';
+      h += '<div class="tool-card__title">' + CK.esc(it.name) + '</div>';
+      h += '<div class="tool-card__foot"><span class="tool-badge tool-badge--gold">' + CK.esc(it.food) + ' food</span></div>';
+      h += '<div class="tool-card__desc">' + CK.esc(it.effects) + '</div>';
+      h += '<div class="tool-card__foot">';
+      tlist.forEach(function(t){
+        var st = tagColors[t] || '';
+        h += '<span class="tool-tag" style="' + st + '">' + CK.esc(t) + '</span>';
+      });
+      h += '</div></div>';
+    });
+    gridEl.innerHTML = h;
+    emptyEl.classList.toggle('tool-hidden', shown > 0);
+    countEl.textContent = shown + ' ingredients';
+  }
+
+  searchEl.addEventListener('input', CK.debounce(function(e){
+    q = e.target.value.trim().toLowerCase();
+    render();
+  }, 120));
+  searchEl.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ searchEl.blur(); } });
+  sortSel.addEventListener('change', render);
+
+  qs('#' + id + '-copy').addEventListener('click', function(){
+    var lines = [];
+    Array.prototype.forEach.call(gridEl.querySelectorAll('.cg-item'), function(card){
+      var name = card.querySelector('.tool-card__title').textContent;
+      var food = card.querySelector('.tool-badge').textContent.replace(' food', '');
+      var eff = card.querySelector('.tool-card__desc').textContent;
+      lines.push(name + ' (' + food + ') — ' + eff);
+    });
+    CK.copy(lines.join('\n'), this);
+  });
+
+  buildChips();
+  render();
 })();
 </script>

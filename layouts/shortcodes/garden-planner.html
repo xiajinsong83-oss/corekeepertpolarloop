@@ -1,57 +1,148 @@
-{{/* P2-4 Garden Planner：作物表 + 地面筛选 + 生长阶段时间线（data/gardening.yaml 驱动） */}}
-<div id="garden-planner" style="margin:18px 0">
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <label style="color:#a9b8b0;font-size:14px">Ground type</label>
-    <select id="gp-ground" style="background:#0f1713;color:#f2cc7a;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px">
-      <option value="All">All grounds</option>
-      <option value="Any">Any (basic soil)</option>
-      <option value="Stone Block">Stone Block</option>
-      <option value="Mold Block">Mold Block</option>
-      <option value="Beach Block">Beach Block</option>
-      <option value="Crystal Block">Crystal Block</option>
-    </select>
-    <input id="gp-q" type="search" placeholder="Search crop..." style="background:#0f1713;color:#fff;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px;flex:1;min-width:160px">
-  </div>
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;font-size:13.5px;color:#a9b8b0">
-    <strong style="color:#f2cc7a">Growing time: {{ site.Data.gardening.growing_minutes }} minutes total</strong> — watered seed → harvestable, with a base 3% chance to become a golden crop.
-    <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">
-      {{ range site.Data.gardening.stages }}
-      <span style="background:#0f1713;padding:4px 10px;border-radius:12px;font-size:12.5px;color:#c9d4cf">{{ .name }} · {{ .minutes }} min</span>
-      {{ end }}
+{{/* Garden Planner：地面筛选 + 搜索 + 作物卡片 + 生长阶段时间线(2/4/4) + 收获装备表 + 排序/copy（data/gardening.yaml 驱动） */}}
+{{ $data := site.Data.gardening }}
+{{ $id := printf "garden-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div>
+      <div class="tool-app__title">Garden Planner</div>
+      <div class="tool-app__desc">Which seed goes on which ground, and how long until harvest.</div>
     </div>
   </div>
-  <div id="gp-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
-    {{ range site.Data.gardening.crops }}
-    <div class="gp-crop" data-ground="{{ .ground }}" data-name="{{ .seed }}" style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px">
-      <div style="color:#fff;font-weight:700;font-size:14px">{{ .seed }}</div>
-      <div style="color:#f2cc7a;font-size:13px;margin-top:3px">Harvests: {{ .harvest }}</div>
-      <div style="color:#6d7f76;font-size:12.5px;margin-top:4px">Ground: {{ .ground }}{{ with .note }} · {{ . }}{{ end }}</div>
-    </div>
-    {{ end }}
+
+  <!-- growth timeline -->
+  <div class="tool-op" style="margin-bottom:14px">
+    <div class="tool-op__title">Growing time · {{ $data.growing_minutes }} min total</div>
+    <div id="{{ $id }}-timeline"></div>
+    <div class="tool-msg is-info">Watered seed → harvestable in {{ $data.growing_minutes }} minutes, with a base <strong style="color:var(--gold2)">3% chance</strong> to become a golden crop.</div>
   </div>
-  <h2 style="font-size:20px;color:#fff;margin:20px 0 10px">Harvest chance gear</h2>
-  <table style="width:100%;border-collapse:collapse;font-size:14px">
-    <tbody>
-      {{ range site.Data.gardening.harvest_gear }}
-      <tr style="border-top:1px solid #2e423a"><td style="padding:8px 12px;color:#fff;width:38%">{{ .name }}</td><td style="padding:8px 12px;color:#a9b8b0">{{ .effect }}</td></tr>
-      {{ end }}
-    </tbody>
-  </table>
-  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Full gear + level-19 items + Kelp Dumpling can reach 182.4% harvest chance (guaranteed double, 82.4% triple) · source: corekeeper.atma.gg/en/Gardening · game version {{ site.Params.gameVersion | default "latest" }}</div>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Filter</div>
+    <div class="tool-panel" style="margin-bottom:12px">
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-ground">Ground type</label>
+        <select class="tool-select" id="{{ $id }}-ground" aria-label="Filter by ground type">
+          <option value="All">All grounds</option>
+          <option value="Any">Any (basic soil)</option>
+          <option value="Stone Block">Stone Block</option>
+          <option value="Mold Block">Mold Block</option>
+          <option value="Beach Block">Beach Block</option>
+          <option value="Crystal Block">Crystal Block</option>
+        </select>
+      </div>
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search crop</label>
+        <input class="tool-input" id="{{ $id }}-q" type="search" placeholder="Search seed or harvest..." aria-label="Search crops">
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-sort">Sort by</label>
+        <select class="tool-select" id="{{ $id }}-sort" aria-label="Sort crops">
+          <option value="seed-asc">Seed A–Z</option>
+          <option value="seed-desc">Seed Z–A</option>
+          <option value="harvest-asc">Harvest A–Z</option>
+        </select>
+      </div>
+    </div>
+    <div class="tool-flex">
+      <button class="tool-btn tool-btn--gold" id="{{ $id }}-copy" aria-label="Copy harvest list">Copy harvest list</button>
+      <span class="tool-count" id="{{ $id }}-count"></span>
+    </div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Crops <span class="tool-count" id="{{ $id }}-count2"></span></div>
+    <div class="tool-grid" id="{{ $id }}-grid"></div>
+    <div class="tool-empty tool-hidden" id="{{ $id }}-empty">No crops match your filter.</div>
+  </div>
+
+  <div class="tool-mt">
+    <div class="tool-result__title">Harvest chance gear</div>
+    <div class="tool-table-wrap">
+      <table class="tool-table">
+        <thead><tr><th>Item</th><th>Effect</th></tr></thead>
+        <tbody>
+          {{ range $data.harvest_gear }}
+          <tr><td>{{ .name }}</td><td>{{ .effect }}</td></tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="tool-footnote">Full gear + level-19 items + Kelp Dumpling can reach 182.4% harvest chance (guaranteed double, 82.4% triple) · source: corekeeper.atma.gg/en/Gardening · game version {{ site.Params.gameVersion | default "latest" }}</div>
 </div>
 <script>
 (function(){
-  function filter(){
-    var g = document.getElementById("gp-ground").value;
-    var q = document.getElementById("gp-q").value.trim().toLowerCase();
-    document.querySelectorAll("#gp-list .gp-crop").forEach(function(c){
-      var ground = c.getAttribute("data-ground");
-      var okG = (g === "All") || (g === ground) || (g === "Any" && ground === "Any");
-      var okQ = !q || c.getAttribute("data-name").toLowerCase().indexOf(q) >= 0 || c.textContent.toLowerCase().indexOf(q) >= 0;
-      c.style.display = (okG && okQ) ? "" : "none";
+  var data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ $data | jsonify | base64Encode }}'), function(c){ return c.charCodeAt(0); })));
+  var id = '{{ $id }}';
+  var root = document.getElementById(id);
+  if(!root) return;
+  function qs(s){ return document.getElementById(s.slice(1)); }
+
+  var gridEl = qs('#' + id + '-grid'),
+      emptyEl = qs('#' + id + '-empty'),
+      countEl = qs('#' + id + '-count'),
+      countEl2 = qs('#' + id + '-count2'),
+      groundSel = qs('#' + id + '-ground'),
+      searchEl = qs('#' + id + '-q'),
+      sortSel = qs('#' + id + '-sort');
+
+  /* ---- growth timeline: bars proportional to stage minutes (2 / 4 / 4) ---- */
+  (function(){
+    var colors = ['', 'tool-bar__fill--gold', 'tool-bar__fill--blue'];
+    var bar = '<div style="display:flex;gap:3px;height:16px;border:1px solid var(--line);background:var(--panel2);padding:2px">';
+    var labels = '<div style="display:flex;gap:3px;margin-top:6px">';
+    (data.stages || []).forEach(function(s, i){
+      bar += '<div class="tool-bar__fill ' + colors[i % colors.length] + '" style="flex:' + s.minutes + ' 1 0"></div>';
+      labels += '<div style="flex:' + s.minutes + ' 1 0;min-width:0;font-size:11px;color:var(--ink2);line-height:1.4">' +
+                  CK.esc(s.name) + '<br><span style="color:var(--gold2);font-weight:700">' + s.minutes + ' min</span></div>';
     });
+    qs('#' + id + '-timeline').innerHTML = bar + '</div>' + labels + '</div>';
+  })();
+
+  /* ---- crop cards ---- */
+  function render(){
+    var g = groundSel.value;
+    var qq = searchEl.value.trim().toLowerCase();
+    var arr = (data.crops || []).slice();
+    var s = sortSel.value;
+    if(s === 'seed-asc') arr.sort(function(a,b){ return a.seed.localeCompare(b.seed); });
+    else if(s === 'seed-desc') arr.sort(function(a,b){ return b.seed.localeCompare(a.seed); });
+    else arr.sort(function(a,b){ return a.harvest.localeCompare(b.harvest); });
+
+    var h = '', shown = 0;
+    arr.forEach(function(c){
+      var okG = (g === 'All') || (c.ground === g);
+      var okQ = !qq || c.seed.toLowerCase().indexOf(qq) >= 0 || c.harvest.toLowerCase().indexOf(qq) >= 0 || (c.note || '').toLowerCase().indexOf(qq) >= 0;
+      if(!okG || !okQ) return;
+      shown++;
+      h += '<div class="tool-card gp-crop" data-seed="' + CK.esc(c.seed) + '" data-harvest="' + CK.esc(c.harvest) + '">';
+      h += '<div class="tool-card__title">' + CK.esc(c.seed) + '</div>';
+      h += '<div class="tool-card__foot"><span class="tool-badge tool-badge--green">' + CK.esc(c.harvest) + '</span></div>';
+      h += '<div class="tool-card__foot"><span class="tool-tag">' + CK.esc(c.ground) + '</span>' +
+           (c.note ? '<span class="tool-tag">' + CK.esc(c.note) + '</span>' : '') + '</div>';
+      h += '</div>';
+    });
+    gridEl.innerHTML = h;
+    emptyEl.classList.toggle('tool-hidden', shown > 0);
+    countEl.textContent = shown + ' crops';
+    countEl2.textContent = '· ' + shown + '/' + arr.length;
   }
-  document.getElementById("gp-ground").addEventListener("change", filter);
-  document.getElementById("gp-q").addEventListener("input", filter);
+
+  groundSel.addEventListener('change', render);
+  sortSel.addEventListener('change', render);
+  searchEl.addEventListener('input', CK.debounce(render, 120));
+  searchEl.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ searchEl.blur(); } });
+
+  /* ---- copy harvest list ---- */
+  qs('#' + id + '-copy').addEventListener('click', function(){
+    var lines = [];
+    gridEl.querySelectorAll('.gp-crop').forEach(function(card){
+      lines.push(card.getAttribute('data-seed') + ' → ' + card.getAttribute('data-harvest'));
+    });
+    CK.copy(lines.join('\n'), this);
+  });
+
+  render();
 })();
 </script>

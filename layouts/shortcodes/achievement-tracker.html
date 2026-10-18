@@ -1,73 +1,207 @@
-{{/* P2-4 Achievement Tracker：成就勾选 + localStorage + 进度条 + 分类过滤（data/achievements.yaml 驱动） */}}
-<div id="ach-tracker" style="margin:18px 0">
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-    <div style="font-size:13px;color:#6d7f76">Completion</div>
-    <div style="flex:1;min-width:160px">
-      <div style="height:10px;background:#0f1713;border-radius:5px;overflow:hidden"><div id="ach-bar" style="height:100%;width:0%;background:#f2cc7a;transition:width .2s"></div></div>
+{{/* Achievement Tracker：成就勾选 + localStorage 持久化 + 顶部进度 + 分类chips/小进度 + 搜索/排序/copy（data/achievements.yaml 驱动） */}}
+{{ $data := site.Data.achievements.achievements }}
+{{ $id := printf "achv-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div>
+      <div class="tool-app__title">Achievement Tracker</div>
+      <div class="tool-app__desc">Tick off achievements as you earn them. Progress is saved locally in your browser.</div>
     </div>
-    <div id="ach-pct" style="font-size:24px;color:#f2cc7a;font-weight:800">0%</div>
-    <button onclick="achReset()" style="background:#2e423a;color:#fff;border:1px solid #4a6357;padding:8px 14px;border-radius:5px;cursor:pointer">Reset</button>
+    <span class="tool-badge" id="{{ $id }}-total">0/{{ len $data }}</span>
   </div>
-  <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
-    <button class="ach-f" data-cat="All" style="padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid #f2cc7a;background:#1a2621;color:#f2cc7a;font-weight:700">All</button>
-    {{ $cats := slice }}
-    {{ range site.Data.achievements.achievements }}{{ $cats = $cats | append .category }}{{ end }}
-    {{ range $cats | uniq }}
-    <button class="ach-f" data-cat="{{ . }}" style="padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid #2e423a;background:#1a2621;color:#a9b8b0">{{ . }}</button>
-    {{ end }}
+
+  <div class="tool-mb">
+    <div class="tool-flex--between" style="margin-bottom:8px">
+      <span class="tool-label">Completion</span>
+      <span class="tool-stat__num" id="{{ $id }}-pct" style="font-size:30px">0%</span>
+    </div>
+    <div class="tool-progress"><div class="tool-progress__fill" id="{{ $id }}-bar"></div></div>
   </div>
-  <div id="ach-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
-    {{ range site.Data.achievements.achievements }}
-    <label style="display:flex;gap:10px;align-items:flex-start;border:1px solid #2e423a;background:#1a2621;padding:10px 12px;border-radius:8px;cursor:pointer" data-cat="{{ .category }}">
-      <input type="checkbox" class="ach-cb" data-name="{{ .name }}" style="margin-top:3px;accent-color:#f2cc7a">
-      <span>
-        <span style="display:block;color:#fff;font-weight:700;font-size:14px">{{ .name }}</span>
-        <span style="display:block;color:#a9b8b0;font-size:12.5px;margin-top:3px;line-height:1.45">{{ .desc }}</span>
-        <span style="display:inline-block;margin-top:6px;font-size:11px;padding:2px 8px;border-radius:10px;background:#0f1713;color:#f2cc7a">{{ .category }}</span>
-      </span>
-    </label>
-    {{ end }}
+
+  <div class="tool-op">
+    <div class="tool-op__title">Track &amp; Filter</div>
+    <div class="tool-panel" style="margin-bottom:12px">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search achievements</label>
+        <input class="tool-input" id="{{ $id }}-q" type="search" placeholder="Search name or description..." aria-label="Search achievements">
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-sort">Sort by</label>
+        <select class="tool-select" id="{{ $id }}-sort" aria-label="Sort achievements">
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+          <option value="cat">Category → name</option>
+        </select>
+      </div>
+    </div>
+    <div class="tool-flex" id="{{ $id }}-chips" role="group" aria-label="Filter by category"></div>
+    <div class="tool-stats tool-mt" id="{{ $id }}-catprog"></div>
+    <div class="tool-flex tool-mt">
+      <button class="tool-btn tool-btn--gold" id="{{ $id }}-copy" aria-label="Copy progress summary">Copy progress</button>
+      <button class="tool-btn tool-btn--danger" id="{{ $id }}-reset" aria-label="Reset all progress">Reset</button>
+    </div>
   </div>
-  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Progress is saved locally in your browser · source: corekeeper.atma.gg/en/Achievements · game version {{ site.Params.gameVersion | default "latest" }}</div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Achievements <span class="tool-count" id="{{ $id }}-count"></span></div>
+    <div class="tool-grid" id="{{ $id }}-grid"></div>
+    <div class="tool-empty tool-hidden" id="{{ $id }}-empty">No achievements match your search / filter.</div>
+  </div>
+
+  <div class="tool-footnote">Progress is saved locally in your browser · source: corekeeper.atma.gg/en/Achievements · game version {{ site.Params.gameVersion | default "latest" }}</div>
 </div>
 <script>
 (function(){
-  var KEY = "ck-ach-v1";
+  var data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ $data | jsonify | base64Encode }}'), function(c){ return c.charCodeAt(0); })));
+  var id = '{{ $id }}';
+  var root = document.getElementById(id);
+  if(!root) return;
+  function qs(s){ return document.getElementById(s.slice(1)); }
+  var KEY = 'ck-ach-v1';
   var state = {};
-  try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e){}
-  function paint(){
-    var boxes = document.querySelectorAll("#ach-grid .ach-cb");
-    var done = 0, total = boxes.length;
-    boxes.forEach(function(b){
-      var on = !!state[b.getAttribute("data-name")];
-      b.checked = on;
-      if (on) done++;
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch(e){}
+
+  var cats = [];
+  data.forEach(function(a){ if(cats.indexOf(a.category) < 0) cats.push(a.category); });
+
+  var curCat = 'All', q = '', sort = 'name-asc';
+  var gridEl = qs('#' + id + '-grid'),
+      emptyEl = qs('#' + id + '-empty'),
+      countEl = qs('#' + id + '-count'),
+      pctEl = qs('#' + id + '-pct'),
+      barEl = qs('#' + id + '-bar'),
+      totalBadge = qs('#' + id + '-total'),
+      catProgEl = qs('#' + id + '-catprog'),
+      chipsEl = qs('#' + id + '-chips');
+
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+  /* ---- category chips ---- */
+  function buildChips(){
+    var h = '<button class="tool-chip is-active" data-cat="All">All (' + data.length + ')</button>';
+    cats.forEach(function(c){
+      var n = 0; data.forEach(function(a){ if(a.category === c) n++; });
+      h += '<button class="tool-chip" data-cat="' + CK.esc(c) + '">' + CK.esc(c) + ' (' + n + ')</button>';
     });
-    var pct = total ? Math.round(done/total*100) : 0;
-    document.getElementById("ach-pct").textContent = pct + "%";
-    document.getElementById("ach-bar").style.width = pct + "%";
+    chipsEl.innerHTML = h;
   }
-  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
-  document.querySelectorAll("#ach-grid .ach-cb").forEach(function(b){
-    b.addEventListener("change", function(){
-      state[this.getAttribute("data-name")] = this.checked;
-      save(); paint();
-    });
+  chipsEl.addEventListener('click', function(e){
+    var btn = e.target.closest('.tool-chip');
+    if(!btn) return;
+    curCat = btn.getAttribute('data-cat');
+    Array.prototype.forEach.call(chipsEl.querySelectorAll('.tool-chip'), function(x){ x.classList.remove('is-active'); });
+    btn.classList.add('is-active');
+    renderGrid();
   });
-  document.querySelectorAll(".ach-f").forEach(function(btn){
-    btn.addEventListener("click", function(){
-      var cat = this.getAttribute("data-cat");
-      document.querySelectorAll(".ach-f").forEach(function(x){ x.style.borderColor="#2e423a"; x.style.color="#a9b8b0"; });
-      this.style.borderColor="#f2cc7a"; this.style.color="#f2cc7a";
-      document.querySelectorAll("#ach-grid label").forEach(function(l){
-        l.style.display = (cat === "All" || l.getAttribute("data-cat") === cat) ? "flex" : "none";
-      });
+
+  /* ---- filtering + sorting ---- */
+  function filtered(){
+    return data.filter(function(a){
+      if(curCat !== 'All' && a.category !== curCat) return false;
+      if(q && a.name.toLowerCase().indexOf(q) < 0 && a.desc.toLowerCase().indexOf(q) < 0) return false;
+      return true;
     });
+  }
+  function sortArr(arr){
+    arr = arr.slice();
+    if(sort === 'name-asc') arr.sort(function(a,b){ return a.name.localeCompare(b.name); });
+    else if(sort === 'name-desc') arr.sort(function(a,b){ return b.name.localeCompare(a.name); });
+    else arr.sort(function(a,b){ return a.category.localeCompare(b.category) || a.name.localeCompare(b.name); });
+    return arr;
+  }
+
+  function renderGrid(){
+    var arr = sortArr(filtered());
+    var h = '';
+    arr.forEach(function(a){
+      var on = !!state[a.name];
+      h += '<label class="tool-card tool-card--click' + (on ? ' is-active' : '') + '" data-cat="' + CK.esc(a.category) + '">';
+      h += '<input type="checkbox" class="tool-check" data-name="' + CK.esc(a.name) + '"' + (on ? ' checked' : '') + ' aria-label="Mark achievement ' + CK.esc(a.name) + ' as done">';
+      h += '<span>';
+      h += '<div class="tool-card__title">' + CK.esc(a.name) + '</div>';
+      h += '<div class="tool-card__desc">' + CK.esc(a.desc) + '</div>';
+      h += '<div class="tool-card__foot"><span class="tool-tag">' + CK.esc(a.category) + '</span></div>';
+      h += '</span></label>';
+    });
+    gridEl.innerHTML = h;
+    emptyEl.classList.toggle('tool-hidden', arr.length > 0);
+    countEl.textContent = '· showing ' + arr.length + '/' + data.length;
+  }
+
+  /* ---- stats (over ALL achievements) ---- */
+  function paintStats(){
+    var done = 0;
+    data.forEach(function(a){ if(state[a.name]) done++; });
+    var total = data.length;
+    var p = total ? Math.round(done / total * 100) : 0;
+    pctEl.textContent = p + '%';
+    barEl.style.width = p + '%';
+    totalBadge.textContent = done + '/' + total;
+
+    var h = '';
+    cats.forEach(function(c){
+      var td = 0, tt = 0;
+      data.forEach(function(a){ if(a.category === c){ tt++; if(state[a.name]) td++; } });
+      var cp = tt ? Math.round(td / tt * 100) : 0;
+      h += '<div class="tool-stat">';
+      h += '<div class="tool-stat__num">' + td + '/' + tt + '</div>';
+      h += '<div class="tool-stat__label">' + CK.esc(c) + ' · ' + cp + '%</div>';
+      h += '<div class="tool-bar" style="margin-top:6px"><div class="tool-bar__fill" style="width:' + cp + '%"></div></div>';
+      h += '</div>';
+    });
+    catProgEl.innerHTML = h;
+  }
+
+  /* ---- checkbox toggle (delegation) ---- */
+  gridEl.addEventListener('change', function(e){
+    var cb = e.target;
+    if(!cb || !cb.classList || !cb.classList.contains('tool-check')) return;
+    var name = cb.getAttribute('data-name');
+    state[name] = cb.checked;
+    save();
+    var card = cb.closest('.tool-card');
+    if(card) card.classList.toggle('is-active', cb.checked);
+    paintStats();
+    CK.toast(cb.checked ? 'Achievement marked' : 'Achievement unchecked');
   });
-  window.achReset = function(){
-    if (!confirm("Reset all achievement progress?")) return;
-    state = {}; save(); paint();
-  };
-  paint();
+
+  /* ---- search + sort ---- */
+  qs('#' + id + '-q').addEventListener('input', CK.debounce(function(e){
+    q = e.target.value.trim().toLowerCase();
+    renderGrid();
+  }, 120));
+  qs('#' + id + '-sort').addEventListener('change', function(e){
+    sort = e.target.value;
+    renderGrid();
+  });
+
+  /* ---- copy progress ---- */
+  qs('#' + id + '-copy').addEventListener('click', function(){
+    var done = 0;
+    data.forEach(function(a){ if(state[a.name]) done++; });
+    var total = data.length;
+    var p = total ? Math.round(done / total * 100) : 0;
+    var parts = [];
+    cats.forEach(function(c){
+      var td = 0, tt = 0;
+      data.forEach(function(a){ if(a.category === c){ tt++; if(state[a.name]) td++; } });
+      parts.push(c + ' ' + td + '/' + tt);
+    });
+    CK.copy(done + '/' + total + ' (' + p + '%) · ' + parts.join(' · '), this);
+  });
+
+  /* ---- reset ---- */
+  qs('#' + id + '-reset').addEventListener('click', function(){
+    if(!window.confirm('Reset all achievement progress?')) return;
+    state = {};
+    save();
+    renderGrid();
+    paintStats();
+    CK.toast('Progress reset');
+  });
+
+  buildChips();
+  renderGrid();
+  paintStats();
 })();
 </script>

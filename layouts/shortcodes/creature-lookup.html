@@ -1,32 +1,182 @@
 {{ $data := site.Data.creatures.creatures }}
-{{ $id := printf "creaturelookup-%s" (md5 .Page.Title | truncate 8) }}
-<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <input id="{{ $id }}-search" type="text" placeholder="Search creature..." style="width:100%;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a;margin-bottom:12px">
-  <div id="{{ $id }}-grid" style="display:grid;grid-template-columns:1fr;gap:10px">
-    {{ range $data }}
-    <div class="ck-creature" data-name="{{ .name }}" style="border:1px solid #2e423a;background:#101613;padding:12px">
-      <div style="font-size:15px;color:#f2cc7a;font-weight:700">{{ .name }}</div>
-      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Biome:</b> {{ .biome }} · <b style="color:#fff">HP:</b> {{ .hp }} · <b style="color:#fff">Dmg:</b> {{ .damage }}</div>
-{{ $drops := slice }}
-{{ range .drops }}{{ $drops = $drops | append (printf "%s (%s)" .item .chance) }}{{ end }}
-      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Drops:</b> {{ delimit $drops ", " }}
-      </div>
-      <div style="font-size:13px;color:#a9b8b0;margin-top:2px"><b style="color:#fff">Note:</b> {{ .note }}</div>
-    </div>
-    {{ end }}
+{{ $id := printf "creaturelookup-%s" (md5 .Page.Title | truncate 8 | replaceRE "[^a-zA-Z0-9]" "") }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <span class="tool-app__title">Creature lookup</span>
+    <span class="tool-badge tool-badge--dim">{{ len $data }} creatures</span>
   </div>
+  <p class="tool-app__desc">Search regular mobs by name, biome or drop item. HP and damage bars are normalized against the strongest creature in this dataset.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Search &amp; filter</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search</label>
+        <input class="tool-input" id="{{ $id }}-q" type="text" placeholder="Name or drop item…" aria-label="Search creatures by name or drop item">
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-biome">Biome</label>
+        <select class="tool-select" id="{{ $id }}-biome" aria-label="Filter by biome"></select>
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-sort">Sort by</label>
+        <select class="tool-select" id="{{ $id }}-sort" aria-label="Sort creatures">
+          <option value="name">Name A–Z</option>
+          <option value="hp">HP high → low</option>
+          <option value="dmg">Damage high → low</option>
+        </select>
+      </div>
+    </div>
+    <div class="tool-label">Type</div>
+    <div class="tool-flex tool-mt-sm" id="{{ $id }}-typechips" role="group" aria-label="Filter by creature type"></div>
+  </div>
+
+  <div class="tool-stats" id="{{ $id }}-stats"></div>
+
+  <div class="tool-mb"><span class="tool-count" id="{{ $id }}-count"></span></div>
+  <div class="tool-grid" id="{{ $id }}-grid"></div>
 </div>
 <script>
 (function(){
-  var inp = document.getElementById('{{ $id }}-search');
-  if(!inp) return;
-  inp.addEventListener('input', function(){
-    var q = inp.value.trim().toLowerCase();
-    var cards = document.querySelectorAll('#{{ $id }}-grid .ck-creature');
-    for(var i=0;i<cards.length;i++){
-      var show = q==='' || cards[i].getAttribute('data-name').toLowerCase().indexOf(q) !== -1;
-      cards[i].style.display = show ? 'block' : 'none';
+  var RAW = "{{ $data | jsonify | base64Encode }}";
+  var data = [];
+  try {
+    var bin = atob(RAW);
+    var bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+    data = JSON.parse(new TextDecoder().decode(bytes));
+  } catch(e){ data = []; }
+  var root = document.getElementById('{{ $id }}');
+  if(!root) return;
+  var qInp     = root.querySelector('#{{ $id }}-q');
+  var biomeSel = root.querySelector('#{{ $id }}-biome');
+  var sortSel  = root.querySelector('#{{ $id }}-sort');
+  var typeBox  = root.querySelector('#{{ $id }}-typechips');
+  var statsEl  = root.querySelector('#{{ $id }}-stats');
+  var countEl  = root.querySelector('#{{ $id }}-count');
+  var gridEl   = root.querySelector('#{{ $id }}-grid');
+  if(!qInp || !biomeSel || !sortSel || !typeBox || !statsEl || !countEl || !gridEl) return;
+
+  var state = { q: '', biome: 'All', type: 'All', sort: 'name' };
+
+  function hpOf(c){ return CK.pct(c.hp); }
+  function dmgOf(c){ return CK.pct(c.damage); }
+  function typeOf(c){ return String(c.type || 'Other').trim(); }
+  function uniq(arr){
+    var seen = {}, out = [];
+    for(var i = 0; i < arr.length; i++){ if(!seen[arr[i]]){ seen[arr[i]] = 1; out.push(arr[i]); } }
+    return out;
+  }
+
+  var maxHp = 1, maxDmg = 1;
+  for(var i = 0; i < data.length; i++){
+    if(hpOf(data[i]) > maxHp) maxHp = hpOf(data[i]);
+    if(dmgOf(data[i]) > maxDmg) maxDmg = dmgOf(data[i]);
+  }
+
+  // Biome select options
+  var biomes = uniq(data.map(function(c){ return String(c.biome || 'Unknown'); }));
+  var bopts = '<option value="All">All biomes</option>';
+  for(var b = 0; b < biomes.length; b++){
+    bopts += '<option value="' + CK.esc(biomes[b]) + '">' + CK.esc(biomes[b]) + '</option>';
+  }
+  biomeSel.innerHTML = bopts;
+
+  // Type chips
+  var types = uniq(data.map(function(c){ return typeOf(c); }));
+  function renderTypeChips(){
+    var h = '<button class="tool-chip' + (state.type === 'All' ? ' is-active' : '') + '" type="button" data-v="All" aria-pressed="' + (state.type === 'All') + '">All</button>';
+    for(var t = 0; t < types.length; t++){
+      h += '<button class="tool-chip' + (state.type === types[t] ? ' is-active' : '') + '" type="button" data-v="' + CK.esc(types[t]) + '" aria-pressed="' + (state.type === types[t]) + '">' + CK.esc(types[t]) + '</button>';
     }
+    typeBox.innerHTML = h;
+  }
+  typeBox.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('.tool-chip') : null;
+    if(!btn) return;
+    state.type = btn.getAttribute('data-v');
+    renderTypeChips();
+    render();
   });
+
+  function matches(c){
+    if(state.biome !== 'All' && String(c.biome || '') !== state.biome) return false;
+    if(state.type !== 'All' && typeOf(c) !== state.type) return false;
+    if(state.q){
+      var hay = (c.name + ' ' + c.biome + ' ' + (c.note || '')).toLowerCase();
+      if(c.drops){ for(var d = 0; d < c.drops.length; d++){ hay += ' ' + c.drops[d].item; } }
+      if(hay.indexOf(state.q) === -1) return false;
+    }
+    return true;
+  }
+
+  function barRow(label, val, max){
+    var n = val || 0;
+    var w = Math.max(3, Math.round(n / max * 100));
+    var fill = CK.barColor(n, max);
+    return '<div class="tool-flex tool-mt-sm">'
+      + '<span class="tool-tag">' + label + ' ' + n + '</span>'
+      + '<div class="tool-bar" style="flex:1"><div class="' + fill + '" style="width:' + w + '%"></div></div>'
+      + '</div>';
+  }
+
+  function render(){
+    var list = [];
+    for(var i = 0; i < data.length; i++){ if(matches(data[i])) list.push(data[i]); }
+    list.sort(function(a, b){
+      if(state.sort === 'hp') return hpOf(b) - hpOf(a);
+      if(state.sort === 'dmg') return dmgOf(b) - dmgOf(a);
+      return String(a.name).localeCompare(String(b.name));
+    });
+
+    // stats strip
+    var sMaxHp = 0, sMaxDmg = 0;
+    for(var s = 0; s < list.length; s++){
+      if(hpOf(list[s]) > sMaxHp) sMaxHp = hpOf(list[s]);
+      if(dmgOf(list[s]) > sMaxDmg) sMaxDmg = dmgOf(list[s]);
+    }
+    statsEl.innerHTML =
+      '<div class="tool-stat"><div class="tool-stat__num">' + list.length + '</div><div class="tool-stat__label">Shown</div></div>'
+      + '<div class="tool-stat"><div class="tool-stat__num">' + sMaxHp + '</div><div class="tool-stat__label">Max HP (filtered)</div></div>'
+      + '<div class="tool-stat"><div class="tool-stat__num">' + sMaxDmg + '</div><div class="tool-stat__label">Max damage (filtered)</div></div>';
+    countEl.textContent = 'Showing ' + list.length + ' of ' + data.length + ' creatures';
+
+    if(list.length === 0){
+      gridEl.innerHTML = '<div class="tool-empty" style="grid-column:1/-1">No creature matches your filters — try clearing the search or picking “All”.</div>';
+      return;
+    }
+
+    var html = '';
+    for(var k = 0; k < list.length; k++){
+      var c = list[k];
+      html += '<div class="tool-card">'
+        + '<div class="tool-card__title">' + CK.esc(c.name) + ' <span class="tool-badge tool-badge--blue" style="vertical-align:2px">' + CK.esc(typeOf(c)) + '</span></div>'
+        + '<div class="tool-card__meta">' + CK.esc(c.biome || '') + '</div>'
+        + barRow('HP', hpOf(c), maxHp)
+        + barRow('DMG', dmgOf(c), maxDmg);
+      if(c.drops && c.drops.length){
+        html += '<div style="margin-top:8px">';
+        for(var d = 0; d < c.drops.length; d++){
+          html += '<span class="tool-tag">' + CK.esc(c.drops[d].item) + ' · ' + CK.esc(c.drops[d].chance) + '</span>';
+        }
+        html += '</div>';
+      }
+      if(c.note){ html += '<p class="tool-card__desc">' + CK.esc(c.note) + '</p>'; }
+      html += '</div>';
+    }
+    gridEl.innerHTML = html;
+  }
+
+  qInp.addEventListener('input', CK.debounce(function(){
+    state.q = qInp.value.trim().toLowerCase();
+    render();
+  }, 150));
+  qInp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); state.q = qInp.value.trim().toLowerCase(); render(); }
+  });
+  biomeSel.addEventListener('change', function(){ state.biome = biomeSel.value; render(); });
+  sortSel.addEventListener('change', function(){ state.sort = sortSel.value; render(); });
+
+  renderTypeChips();
+  render();
 })();
 </script>

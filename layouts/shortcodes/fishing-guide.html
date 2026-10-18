@@ -1,60 +1,134 @@
-{{/* P2-4 Fishing Guide：水域下拉筛选 + 鱼种表 + 概率条（data/fishing.yaml 驱动） */}}
-<div id="fish-guide" style="margin:18px 0">
-  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
-    <label style="color:#a9b8b0;font-size:14px">Water type</label>
-    <select id="fish-water" style="background:#0f1713;color:#f2cc7a;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px">
-      <option value="All">All waters</option>
-      {{ range site.Data.fishing.waters }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}
-    </select>
-    <input id="fish-q" type="search" placeholder="Search fish name..." style="background:#0f1713;color:#fff;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px;flex:1;min-width:180px">
-  </div>
-  <div id="fish-list">
-    {{ range site.Data.fishing.waters }}
-    <div class="fish-w" data-water="{{ .name }}" style="margin-bottom:14px;border:1px solid #2e423a;border-radius:8px;overflow:hidden">
-      <div style="background:#1a2621;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-        <strong style="color:#f2cc7a;font-size:15px">{{ .name }}</strong>
-        <span style="color:#6d7f76;font-size:12.5px">{{ .type }}</span>
-      </div>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">
-        <tbody>
-          {{ range .fish }}
-          <tr class="fish-row" data-name="{{ .name }}" style="border-top:1px solid #2e423a">
-            <td style="padding:8px 12px;color:#fff;width:45%">{{ .name }}</td>
-            <td style="padding:8px 12px;color:#a9b8b0;width:12%">{{ .chance }}</td>
-            <td style="padding:8px 12px;width:43%"><div style="height:8px;background:#0f1713;border-radius:4px;overflow:hidden"><div class="fish-bar" data-pct="{{ .chance }}" style="height:100%;width:0%;background:#5aa9a9;transition:width .3s"></div></div></td>
-          </tr>
-          {{ end }}
-        </tbody>
-      </table>
+{{/* Fishing Guide：水域下拉筛选 + 搜索 + 每水域概率表（.tool-table）+ 概率条着色 + 表头排序 + Copy（data/fishing.yaml 驱动） */}}
+{{ $data := site.Data.fishing }}
+{{ $id := printf "fish-%s" (md5 .Page.Title | truncate 8) }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div>
+      <div class="tool-app__title">Fishing Guide</div>
+      <div class="tool-app__desc">Drop tables per water type. Higher fishing power = faster catches; sort any table by fish name or chance.</div>
     </div>
-    {{ end }}
   </div>
-  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Fishing power must exceed the water type's requirement to catch anything; higher power = faster catches · source: corekeeper.atma.gg/en/Fishing · game version {{ site.Params.gameVersion | default "latest" }}</div>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Filter</div>
+    <div class="tool-panel" style="margin-bottom:12px">
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-water">Water type</label>
+        <select class="tool-select" id="{{ $id }}-water" aria-label="Filter by water type">
+          <option value="All">All waters</option>
+          {{ range $data.waters }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}
+        </select>
+      </div>
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search fish</label>
+        <input class="tool-input" id="{{ $id }}-q" type="search" placeholder="Search fish name..." aria-label="Search fish by name">
+      </div>
+    </div>
+    <div class="tool-flex">
+      <button class="tool-btn tool-btn--gold" id="{{ $id }}-copy" aria-label="Copy filtered fish list">Copy filtered list</button>
+      <span class="tool-count" id="{{ $id }}-count"></span>
+    </div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Catch tables</div>
+    <div id="{{ $id }}-waters"></div>
+    <div class="tool-empty tool-hidden" id="{{ $id }}-empty">No fish match your filter.</div>
+  </div>
+
+  <div class="tool-footnote">Fishing power must exceed the water type's requirement to catch anything; higher power = faster catches · source: corekeeper.atma.gg/en/Fishing · game version {{ site.Params.gameVersion | default "latest" }}</div>
 </div>
 <script>
 (function(){
-  function pct(v){ return parseFloat(String(v).replace("%","")); }
-  function paintBars(scope){
-    (scope||document).querySelectorAll(".fish-bar").forEach(function(b){
-      b.style.width = Math.min(100, pct(b.getAttribute("data-pct"))) + "%";
+  var id = '{{ $id }}';
+  var data = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('{{ $data | jsonify | base64Encode }}'), function(c){ return c.charCodeAt(0); })));
+  var root = document.getElementById(id);
+  if(!root) return;
+  function qs(s){ return document.getElementById(s.slice(1)); }
+
+  var watersEl = qs('#' + id + '-waters'),
+      waterSel = qs('#' + id + '-water'),
+      searchEl = qs('#' + id + '-q'),
+      countEl = qs('#' + id + '-count'),
+      emptyEl = qs('#' + id + '-empty');
+
+  /* ---- build per-water tables ---- */
+  var waters = data.waters || [];
+  waters.forEach(function(w){
+    var rows = '';
+    w.fish.forEach(function(f){
+      var p = CK.pct(f.chance);
+      var cls = CK.barColor(p, 100);
+      var clsFull = (cls === 'tool-bar__fill') ? 'tool-bar__fill' : 'tool-bar__fill ' + cls;
+      rows += '<tr class="fish-row" data-name="' + CK.esc(f.name) + '">';
+      rows += '<td>' + CK.esc(f.name) + '</td>';
+      rows += '<td class="num">' + CK.esc(f.chance) + '</td>';
+      rows += '<td><div class="tool-bar"><div class="' + clsFull + '" style="width:' + Math.min(100, p) + '%"></div></div></td>';
+      rows += '</tr>';
     });
-  }
-  function filter(){
-    var water = document.getElementById("fish-water").value;
-    var q = document.getElementById("fish-q").value.trim().toLowerCase();
-    document.querySelectorAll("#fish-list .fish-w").forEach(function(w){
-      var showW = (water === "All" || w.getAttribute("data-water") === water);
+    var sec = document.createElement('div');
+    sec.className = 'tool-mb';
+    sec.setAttribute('data-water', CK.esc(w.name));
+    sec.innerHTML =
+      '<div class="tool-flex--between" style="margin-bottom:6px">' +
+        '<strong style="color:#fff;font-size:14.5px">' + CK.esc(w.name) + '</strong>' +
+        '<span class="tool-badge tool-badge--blue">' + CK.esc(w.type) + '</span>' +
+      '</div>' +
+      '<div class="tool-table-wrap"><table class="tool-table">' +
+        '<thead><tr><th class="sortable" data-col="0">Fish</th><th class="sortable" data-col="1">Chance</th><th style="width:42%">Rate</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table></div>';
+    watersEl.appendChild(sec);
+  });
+
+  /* ---- sortable headers (delegation per table) ---- */
+  watersEl.addEventListener('click', function(e){
+    var th = e.target.closest ? e.target.closest('th.sortable') : null;
+    if(!th) return;
+    var table = th.closest('table');
+    var col = parseInt(th.getAttribute('data-col'), 10);
+    CK.sortTable(table, col);
+  });
+
+  /* ---- filter ---- */
+  function applyFilter(){
+    var water = waterSel.value;
+    var qq = searchEl.value.trim().toLowerCase();
+    var shown = 0;
+    watersEl.querySelectorAll('[data-water]').forEach(function(wsec){
+      var showW = (water === 'All' || wsec.getAttribute('data-water') === water);
       var any = false;
-      w.querySelectorAll(".fish-row").forEach(function(r){
-        var showR = showW && (!q || r.getAttribute("data-name").toLowerCase().indexOf(q) >= 0);
-        r.style.display = showR ? "" : "none";
-        if (showR) any = true;
+      wsec.querySelectorAll('.fish-row').forEach(function(r){
+        var showR = showW && (!qq || r.getAttribute('data-name').toLowerCase().indexOf(qq) >= 0);
+        r.style.display = showR ? '' : 'none';
+        if(showR){ any = true; shown++; }
       });
-      w.style.display = any ? "" : "none";
+      wsec.style.display = any ? '' : 'none';
     });
+    countEl.textContent = shown + ' fish shown';
+    emptyEl.classList.toggle('tool-hidden', shown > 0);
   }
-  document.getElementById("fish-water").addEventListener("change", filter);
-  document.getElementById("fish-q").addEventListener("input", filter);
-  paintBars();
+  waterSel.addEventListener('change', applyFilter);
+  searchEl.addEventListener('input', CK.debounce(applyFilter, 120));
+  searchEl.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ searchEl.blur(); } });
+
+  /* ---- copy filtered list ---- */
+  qs('#' + id + '-copy').addEventListener('click', function(){
+    var lines = [];
+    watersEl.querySelectorAll('[data-water]').forEach(function(wsec){
+      if(wsec.style.display === 'none') return;
+      var strong = wsec.querySelector('strong');
+      var wname = strong ? strong.textContent : '';
+      wsec.querySelectorAll('.fish-row').forEach(function(r){
+        if(r.style.display === 'none') return;
+        var name = r.cells[0].textContent;
+        var chance = r.cells[1].textContent;
+        lines.push(wname + ' — ' + name + ' (' + chance + ')');
+      });
+    });
+    CK.copy(lines.join('\n'), this);
+  });
+
+  applyFilter();
 })();
 </script>

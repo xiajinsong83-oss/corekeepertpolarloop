@@ -1,37 +1,190 @@
 {{ $data := site.Data.bosses.bosses }}
-{{ $id := printf "boss-finder-%s" (md5 .Page.Title | truncate 8) }}
-<div class="tool-app" style="border:1px solid #2e423a;background:#1a2621;padding:16px;margin:14px 0">
-  <label for="{{ $id }}-select" style="font-size:15px;color:#fff;font-weight:700;display:block;margin-bottom:8px">Select a boss</label>
-  <select id="{{ $id }}-select" style="width:100%;padding:12px;font-size:16px;background:#101613;color:#e9efe9;border:1px solid #2e423a;margin-bottom:12px">
-    <option value="">— Choose a boss —</option>
-    {{ range $data }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}
-  </select>
-  <div id="{{ $id }}-result" style="display:none"></div>
+{{ $id := printf "bossfinder-%s" (md5 .Page.Title | truncate 8 | replaceRE "[^a-zA-Z0-9]" "") }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <span class="tool-app__title">Boss drop finder</span>
+    <span class="tool-badge tool-badge--dim">{{ len $data }} bosses</span>
+  </div>
+  <p class="tool-app__desc">Search bosses by name, biome or drop item, filter by biome and tier, then select a card to see the full drop table and unlock condition.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Search &amp; filter</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-q">Search</label>
+        <input class="tool-input" id="{{ $id }}-q" type="text" placeholder="Name, biome or drop item…" aria-label="Search bosses by name, biome or drop item">
+      </div>
+    </div>
+    <div class="tool-label">Biome</div>
+    <div class="tool-flex tool-mt-sm" id="{{ $id }}-biomechips" role="group" aria-label="Filter by biome"></div>
+    <div class="tool-label tool-mt">Tier</div>
+    <div class="tool-flex tool-mt-sm" id="{{ $id }}-tierchips" role="group" aria-label="Filter by tier"></div>
+  </div>
+
+  <div class="tool-flex--between tool-mb">
+    <span class="tool-count" id="{{ $id }}-count"></span>
+  </div>
+  <div class="tool-grid" id="{{ $id }}-cards"></div>
+
+  <div class="tool-result tool-mt">
+    <div class="tool-result__title">Drop table</div>
+    <div id="{{ $id }}-out">
+      <div class="tool-empty">Select a boss card above to see its drop table, chance and unlock condition.</div>
+    </div>
+  </div>
 </div>
 <script>
 (function(){
-  var data = {{ jsonify $data }};
-  var sel = document.getElementById('{{ $id }}-select');
-  var out = document.getElementById('{{ $id }}-result');
-  if(!sel || !out) return;
-  sel.addEventListener('change', function(){
-    var name = sel.value;
-    if(!name){ out.style.display='none'; out.innerHTML=''; return; }
-    var b = null;
-    for(var i=0;i<data.length;i++){ if(data[i].name===name){ b=data[i]; break; } }
-    if(!b){ out.style.display='none'; return; }
-    var h = '<div style="border-bottom:1px solid #2e423a;padding-bottom:10px;margin-bottom:10px">';
-    h += '<div style="font-size:18px;color:#f2cc7a;font-weight:700">'+b.name+'</div>';
-    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Biome:</b> '+b.biome+' · <b style="color:#fff">Tier:</b> '+b.tier+'</div>';
-    h += '<div style="font-size:13.5px;color:#a9b8b0;margin-top:4px"><b style="color:#fff">Unlock:</b> '+b.unlock+'</div></div>';
-    h += '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="background:#101613"><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Drop</th><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Chance</th><th style="border:1px solid #2e423a;padding:8px;text-align:left;color:#fff">Note</th></tr></thead><tbody>';
-    for(var j=0;j<b.drops.length;j++){
-      var d=b.drops[j];
-      h += '<tr><td style="border:1px solid #2e423a;padding:8px;color:#e9efe9">'+d.item+'</td><td style="border:1px solid #2e423a;padding:8px;color:#7fd6a0">'+d.chance+'</td><td style="border:1px solid #2e423a;padding:8px;color:#a9b8b0">'+d.note+'</td></tr>';
+  var RAW = "{{ $data | jsonify | base64Encode }}";
+  var data = [];
+  try {
+    var bin = atob(RAW);
+    var bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+    data = JSON.parse(new TextDecoder().decode(bytes));
+  } catch(e){ data = []; }
+  var root = document.getElementById('{{ $id }}');
+  if(!root) return;
+  var qInp      = root.querySelector('#{{ $id }}-q');
+  var biomeBox  = root.querySelector('#{{ $id }}-biomechips');
+  var tierBox   = root.querySelector('#{{ $id }}-tierchips');
+  var countEl   = root.querySelector('#{{ $id }}-count');
+  var cardsEl   = root.querySelector('#{{ $id }}-cards');
+  var outEl     = root.querySelector('#{{ $id }}-out');
+  if(!qInp || !biomeBox || !tierBox || !countEl || !cardsEl || !outEl) return;
+
+  var state = { q: '', biome: 'All', tier: 'All', selected: -1 };
+
+  function baseBiome(b){ return String(b.biome || '').split(' (')[0].trim(); }
+  function uniq(arr){
+    var seen = {}, out = [];
+    for(var i = 0; i < arr.length; i++){ if(!seen[arr[i]]){ seen[arr[i]] = 1; out.push(arr[i]); } }
+    return out;
+  }
+
+  // Build chips
+  var biomes = uniq(data.map(function(b){ return baseBiome(b); }));
+  var tiers  = uniq(data.map(function(b){ return String(b.tier || 'Other'); }));
+
+  function chip(label, value, group){
+    return '<button class="tool-chip' + (state[group] === value ? ' is-active' : '') + '" type="button" data-group="' + group + '" data-value="' + CK.esc(value) + '" aria-pressed="' + (state[group] === value) + '">' + CK.esc(label) + '</button>';
+  }
+  function renderChips(){
+    var bh = chip('All', 'All', 'biome');
+    for(var i = 0; i < biomes.length; i++){ bh += chip(biomes[i], biomes[i], 'biome'); }
+    biomeBox.innerHTML = bh;
+    var th = chip('All', 'All', 'tier');
+    for(var t = 0; t < tiers.length; t++){ th += chip(tiers[t], tiers[t], 'tier'); }
+    tierBox.innerHTML = th;
+  }
+  function onChipClick(e){
+    var btn = e.target.closest ? e.target.closest('.tool-chip') : null;
+    if(!btn) return;
+    state[btn.getAttribute('data-group')] = btn.getAttribute('data-value');
+    renderChips();
+    renderCards();
+  }
+  biomeBox.addEventListener('click', onChipClick);
+  tierBox.addEventListener('click', onChipClick);
+
+  function matches(b, i){
+    if(state.biome !== 'All' && baseBiome(b) !== state.biome) return false;
+    if(state.tier !== 'All' && String(b.tier || 'Other') !== state.tier) return false;
+    if(state.q){
+      var hay = (b.name + ' ' + b.biome + ' ' + (b.unlock || '')).toLowerCase();
+      if(b.drops){
+        for(var d = 0; d < b.drops.length; d++){ hay += ' ' + b.drops[d].item; }
+      }
+      if(hay.indexOf(state.q) === -1) return false;
     }
-    h += '</tbody></table>';
-    out.innerHTML = h;
-    out.style.display='block';
+    return true;
+  }
+
+  function renderCards(){
+    var html = '', shown = 0;
+    for(var i = 0; i < data.length; i++){
+      if(!matches(data[i], i)) continue;
+      shown++;
+      var b = data[i];
+      html += '<div class="tool-card tool-card--click' + (state.selected === i ? ' is-selected' : '') + '" data-i="' + i + '" tabindex="0" role="button" aria-label="View drop table for ' + CK.esc(b.name) + '">'
+        + '<div class="tool-card__title">' + CK.esc(b.name) + '</div>'
+        + '<div class="tool-card__meta">' + CK.esc(b.biome || '') + '</div>'
+        + '<div class="tool-card__foot"><span class="tool-badge">' + CK.esc(b.tier || '') + '</span>'
+        + '<span class="tool-count">' + (b.drops ? b.drops.length : 0) + ' drops</span></div>'
+        + '</div>';
+    }
+    if(shown === 0){
+      html = '<div class="tool-empty" style="grid-column:1/-1">No boss matches your filters — try clearing the search or picking “All”.</div>';
+    }
+    cardsEl.innerHTML = html;
+    countEl.textContent = 'Showing ' + shown + ' of ' + data.length + ' bosses';
+
+    var cards = cardsEl.querySelectorAll('.tool-card--click');
+    for(var c = 0; c < cards.length; c++){
+      (function(el){
+        function choose(){ selectBoss(parseInt(el.getAttribute('data-i'), 10)); }
+        el.addEventListener('click', choose);
+        el.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); choose(); }
+        });
+      })(cards[c]);
+    }
+  }
+
+  function chanceCell(c){
+    var n = CK.pct(c);
+    if(isFinite(n) && n >= 0){
+      var w = Math.max(4, Math.min(100, n));
+      var fill = CK.barColor(n, 100);
+      return '<div class="tool-flex">'
+        + '<div class="tool-bar" style="flex:1"><div class="' + fill + '" style="width:' + w + '%"></div></div>'
+        + '<span class="num">' + CK.esc(c) + '</span></div>';
+    }
+    return '<span class="tool-badge tool-badge--dim">' + CK.esc(c || '—') + '</span>';
+  }
+
+  function selectBoss(i){
+    state.selected = i;
+    renderCards();
+    var b = data[i];
+    if(!b){ return; }
+
+    var lines = b.name;
+    var h = '<div class="tool-flex tool-flex--between tool-mb">'
+      + '<div><div class="tool-app__title">' + CK.esc(b.name) + '</div>'
+      + '<div class="tool-card__meta">' + CK.esc(b.biome || '') + ' · ' + CK.esc(b.tier || '') + '</div></div>'
+      + '<button class="tool-btn" type="button" id="{{ $id }}-copy">Copy drop list</button></div>';
+
+    h += '<p class="tool-card__desc"><strong style="color:#fff">Unlock:</strong> ' + CK.esc(b.unlock || '—') + '</p>';
+
+    h += '<div class="tool-table-wrap tool-mt"><table class="tool-table"><thead><tr>'
+      + '<th>Drop</th><th>Chance</th><th>Note</th></tr></thead><tbody>';
+    if(b.drops && b.drops.length){
+      for(var d = 0; d < b.drops.length; d++){
+        var dr = b.drops[d];
+        lines += '\n' + b.name + ' — ' + dr.item + ' (' + dr.chance + ')';
+        h += '<tr><td>' + CK.esc(dr.item) + '</td><td>' + chanceCell(dr.chance) + '</td><td>' + CK.esc(dr.note || '') + '</td></tr>';
+      }
+    } else {
+      h += '<tr><td colspan="3">No drop data recorded.</td></tr>';
+    }
+    h += '</tbody></table></div>';
+    outEl.innerHTML = h;
+
+    var copyBtn = outEl.querySelector('#{{ $id }}-copy');
+    if(copyBtn){
+      copyBtn.addEventListener('click', function(){ CK.copy(lines, copyBtn); });
+    }
+  }
+
+  qInp.addEventListener('input', CK.debounce(function(){
+    state.q = qInp.value.trim().toLowerCase();
+    renderCards();
+  }, 150));
+  qInp.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); state.q = qInp.value.trim().toLowerCase(); renderCards(); }
   });
+
+  renderChips();
+  renderCards();
 })();
 </script>
