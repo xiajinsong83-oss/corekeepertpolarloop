@@ -73,6 +73,19 @@
       {{ end }}
     </ul>
 
+    <!-- 最新 Wiki 编辑（P1-1 聚合，来自 data/wiki_updates.json） -->
+    <h2 class="section-title">Latest Wiki Updates</h2>
+    <ul class="postlist">
+      {{ $wu := site.Data.wiki_updates.updates | default slice }}
+      {{ range first 5 $wu }}
+      <li>
+        <a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
+        <div class="meta">{{ .ts | replaceRE "^(.{10}).*" "$1" }} · by {{ .user }}</div>
+      </li>
+      {{ end }}
+    </ul>
+    <div style="font-size:12.5px;color:#6d7f76;margin-top:8px">Community edits mirrored from the official wiki (atma.gg) — see <a href="/wiki-updates/">all updates</a>.</div>
+
     <!-- 首页广告位 2（slot 9761643165） -->
     {{ partial "ad2.html" . }}
   </div>
