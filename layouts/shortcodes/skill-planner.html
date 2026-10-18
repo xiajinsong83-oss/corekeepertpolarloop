@@ -1,0 +1,49 @@
+{{/* P2-4 Skill Planner：12 技能等级滑块 → 实时加成 + 技能点（data/skills.yaml 驱动） */}}
+<div id="skill-planner" style="margin:18px 0">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px">
+    <div>
+      <div style="font-size:13px;color:#6d7f76">Total skill points (every 5th level +1)</div>
+      <div id="sp-points" style="font-size:26px;color:#f2cc7a;font-weight:800">0 / 20</div>
+    </div>
+    <button onclick="spReset()" style="background:#2e423a;color:#fff;border:1px solid #4a6357;padding:8px 14px;border-radius:5px;cursor:pointer">Reset all</button>
+  </div>
+  <div id="sp-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">
+    {{ range site.Data.skills.skills }}
+    <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong style="color:#fff;font-size:15px">{{ .name }}</strong>
+        <span id="sp-out-{{ .name | urlize }}" style="color:#f2cc7a;font-weight:700;font-size:14px">0</span>
+      </div>
+      <input type="range" min="0" max="100" value="0" step="1" data-name="{{ .name }}" data-per="{{ .perLevel }}" style="width:100%;accent-color:#f2cc7a" oninput="spUpdate(this)">
+      <div style="font-size:12px;color:#6d7f76;margin-top:4px">{{ .perLevel }} · {{ .maxBonus }} at 100</div>
+      <div style="font-size:12px;color:#a9b8b0;margin-top:6px;line-height:1.5">{{ .how }}</div>
+    </div>
+    {{ end }}
+  </div>
+  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Source: corekeeper.atma.gg/en/Skills · game version {{ site.Params.gameVersion | default "latest" }}</div>
+</div>
+<script>
+(function(){
+  var map = {};
+  {{ range site.Data.skills.skills }}map["{{ .name | urlize }}"] = "{{ .name }}";{{ end }}
+  window.spUpdate = function(el){
+    var key = el.getAttribute("data-name").toLowerCase().replace(/[^a-z0-9]+/g,"-");
+    document.getElementById("sp-out-"+key).textContent = el.value + " / 100";
+    spRecalc();
+  };
+  window.spRecalc = function(){
+    var points = 0;
+    var inputs = document.querySelectorAll("#sp-list input[type=range]");
+    inputs.forEach(function(i){ points += Math.floor(Number(i.value)/5); });
+    document.getElementById("sp-points").textContent = points + " / 20";
+  };
+  window.spReset = function(){
+    document.querySelectorAll("#sp-list input[type=range]").forEach(function(i){
+      i.value = 0;
+      var key = i.getAttribute("data-name").toLowerCase().replace(/[^a-z0-9]+/g,"-");
+      document.getElementById("sp-out-"+key).textContent = "0";
+    });
+    spRecalc();
+  };
+})();
+</script>

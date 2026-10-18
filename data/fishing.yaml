@@ -1,0 +1,77 @@
+# Core Keeper Fishing data (P2-4) — source: corekeeper.atma.gg/en/Fishing, verified 2026-10-18
+# 水域类型决定掉落表；钓鱼力量需超过水域要求才能钓到东西
+waters:
+  - name: "Dirt Biome"
+    type: "Normal water anywhere outside labeled biomes"
+    fish:
+      - { name: "Orange Cave Guppy", chance: "37%" }
+      - { name: "Blue Cave Guppy", chance: "29%" }
+      - { name: "Rock Jaw", chance: "21%" }
+      - { name: "Gem Crab", chance: "13%" }
+  - name: "Clay Caves & Larva Hive"
+    type: "Yellow water anywhere, or labeled Clay Caves"
+    fish:
+      - { name: "Yellow Blister Head", chance: "37%" }
+      - { name: "Green Blister Head", chance: "29%" }
+      - { name: "Devil Worm", chance: "21%" }
+      - { name: "Vampire Eel", chance: "13%" }
+  - name: "Forgotten Ruins"
+    type: "Normal water in labeled Forgotten Ruins"
+    fish:
+      - { name: "Dagger Fin", chance: "37%" }
+      - { name: "Pink Palace Fish", chance: "29%" }
+      - { name: "Teal Palace Fish", chance: "21%" }
+      - { name: "Crown Squid", chance: "13%" }
+  - name: "Azeos' Wilderness"
+    type: "Normal water in labeled Azeos' Wilderness"
+    fish:
+      - { name: "Azure Feather Fish", chance: "37%" }
+      - { name: "Emerald Feather Fish", chance: "29%" }
+      - { name: "Spirit Veil", chance: "21%" }
+      - { name: "Astral Jelly", chance: "13%" }
+  - name: "Mold Biome"
+    type: "Moldy water"
+    fish:
+      - { name: "Mold Shark", chance: "50%" }
+      - { name: "Rot Fish", chance: "37%" }
+      - { name: "Black Steel Urchin", chance: "13%" }
+  - name: "The Sunken Sea"
+    type: "Seawater"
+    fish:
+      - { name: "Bottom Tracer", chance: "32%" }
+      - { name: "Silver Dart", chance: "22%" }
+      - { name: "Golden Dart", chance: "22%" }
+      - { name: "Pink Coralotl", chance: "12%" }
+      - { name: "White Coralotl", chance: "12%" }
+  - name: "The Desert of Beginnings"
+    type: "Normal water in labeled Desert of Beginnings"
+    fish:
+      - { name: "Solid Spikeback", chance: "26.32%" }
+      - { name: "Sandy Spikeback", chance: "26.32%" }
+      - { name: "Brown Dune Tail", chance: "18.8%" }
+      - { name: "Gray Dune Tail", chance: "18.8%" }
+      - { name: "Tornis Kingfish", chance: "9.77%" }
+  - name: "Molten Quarry"
+    type: "Lava"
+    fish:
+      - { name: "Dark Lava Eater", chance: "28.17%" }
+      - { name: "Bright Lava Eater", chance: "28.17%" }
+      - { name: "Elder Dragonfish", chance: "18.78%" }
+      - { name: "Verdant Dragonfish", chance: "18.78%" }
+      - { name: "Starlight Nautilus", chance: "6.1%" }
+  - name: "The Shimmering Frontier"
+    type: "Shimmering water"
+    fish:
+      - { name: "Beryll Angle Fish", chance: "29.63%" }
+      - { name: "Glistening Deepstalker", chance: "25.93%" }
+      - { name: "Jasper Angle Fish", chance: "18.52%" }
+      - { name: "Splendid Deepstalker", chance: "14.81%" }
+      - { name: "Cosmic Form", chance: "11.11%" }
+  - name: "The Passage"
+    type: "Grimy water"
+    fish:
+      - { name: "Terra Trilobite", chance: "28.57%" }
+      - { name: "Litho Trilobite", chance: "23.81%" }
+      - { name: "Pinkhorn Pico", chance: "19.05%" }
+      - { name: "Greenhorn Pico", chance: "19.05%" }
+      - { name: "Riftian Lampfish", chance: "9.52%" }

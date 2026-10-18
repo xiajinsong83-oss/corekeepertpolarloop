@@ -1,0 +1,73 @@
+{{/* P2-4 Achievement Tracker：成就勾选 + localStorage + 进度条 + 分类过滤（data/achievements.yaml 驱动） */}}
+<div id="ach-tracker" style="margin:18px 0">
+  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <div style="font-size:13px;color:#6d7f76">Completion</div>
+    <div style="flex:1;min-width:160px">
+      <div style="height:10px;background:#0f1713;border-radius:5px;overflow:hidden"><div id="ach-bar" style="height:100%;width:0%;background:#f2cc7a;transition:width .2s"></div></div>
+    </div>
+    <div id="ach-pct" style="font-size:24px;color:#f2cc7a;font-weight:800">0%</div>
+    <button onclick="achReset()" style="background:#2e423a;color:#fff;border:1px solid #4a6357;padding:8px 14px;border-radius:5px;cursor:pointer">Reset</button>
+  </div>
+  <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="ach-f" data-cat="All" style="padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid #f2cc7a;background:#1a2621;color:#f2cc7a;font-weight:700">All</button>
+    {{ $cats := slice }}
+    {{ range site.Data.achievements.achievements }}{{ $cats = $cats | append .category }}{{ end }}
+    {{ range $cats | uniq }}
+    <button class="ach-f" data-cat="{{ . }}" style="padding:6px 14px;border-radius:20px;cursor:pointer;border:1px solid #2e423a;background:#1a2621;color:#a9b8b0">{{ . }}</button>
+    {{ end }}
+  </div>
+  <div id="ach-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">
+    {{ range site.Data.achievements.achievements }}
+    <label style="display:flex;gap:10px;align-items:flex-start;border:1px solid #2e423a;background:#1a2621;padding:10px 12px;border-radius:8px;cursor:pointer" data-cat="{{ .category }}">
+      <input type="checkbox" class="ach-cb" data-name="{{ .name }}" style="margin-top:3px;accent-color:#f2cc7a">
+      <span>
+        <span style="display:block;color:#fff;font-weight:700;font-size:14px">{{ .name }}</span>
+        <span style="display:block;color:#a9b8b0;font-size:12.5px;margin-top:3px;line-height:1.45">{{ .desc }}</span>
+        <span style="display:inline-block;margin-top:6px;font-size:11px;padding:2px 8px;border-radius:10px;background:#0f1713;color:#f2cc7a">{{ .category }}</span>
+      </span>
+    </label>
+    {{ end }}
+  </div>
+  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Progress is saved locally in your browser · source: corekeeper.atma.gg/en/Achievements · game version {{ site.Params.gameVersion | default "latest" }}</div>
+</div>
+<script>
+(function(){
+  var KEY = "ck-ach-v1";
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e){}
+  function paint(){
+    var boxes = document.querySelectorAll("#ach-grid .ach-cb");
+    var done = 0, total = boxes.length;
+    boxes.forEach(function(b){
+      var on = !!state[b.getAttribute("data-name")];
+      b.checked = on;
+      if (on) done++;
+    });
+    var pct = total ? Math.round(done/total*100) : 0;
+    document.getElementById("ach-pct").textContent = pct + "%";
+    document.getElementById("ach-bar").style.width = pct + "%";
+  }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+  document.querySelectorAll("#ach-grid .ach-cb").forEach(function(b){
+    b.addEventListener("change", function(){
+      state[this.getAttribute("data-name")] = this.checked;
+      save(); paint();
+    });
+  });
+  document.querySelectorAll(".ach-f").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var cat = this.getAttribute("data-cat");
+      document.querySelectorAll(".ach-f").forEach(function(x){ x.style.borderColor="#2e423a"; x.style.color="#a9b8b0"; });
+      this.style.borderColor="#f2cc7a"; this.style.color="#f2cc7a";
+      document.querySelectorAll("#ach-grid label").forEach(function(l){
+        l.style.display = (cat === "All" || l.getAttribute("data-cat") === cat) ? "flex" : "none";
+      });
+    });
+  });
+  window.achReset = function(){
+    if (!confirm("Reset all achievement progress?")) return;
+    state = {}; save(); paint();
+  };
+  paint();
+})();
+</script>

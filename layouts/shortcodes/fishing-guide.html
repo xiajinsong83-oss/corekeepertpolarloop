@@ -1,0 +1,60 @@
+{{/* P2-4 Fishing Guide：水域下拉筛选 + 鱼种表 + 概率条（data/fishing.yaml 驱动） */}}
+<div id="fish-guide" style="margin:18px 0">
+  <div style="border:1px solid #2e423a;background:#1a2621;padding:12px;border-radius:8px;margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <label style="color:#a9b8b0;font-size:14px">Water type</label>
+    <select id="fish-water" style="background:#0f1713;color:#f2cc7a;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px">
+      <option value="All">All waters</option>
+      {{ range site.Data.fishing.waters }}<option value="{{ .name }}">{{ .name }}</option>{{ end }}
+    </select>
+    <input id="fish-q" type="search" placeholder="Search fish name..." style="background:#0f1713;color:#fff;border:1px solid #4a6357;padding:8px 12px;border-radius:5px;font-size:14px;flex:1;min-width:180px">
+  </div>
+  <div id="fish-list">
+    {{ range site.Data.fishing.waters }}
+    <div class="fish-w" data-water="{{ .name }}" style="margin-bottom:14px;border:1px solid #2e423a;border-radius:8px;overflow:hidden">
+      <div style="background:#1a2621;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <strong style="color:#f2cc7a;font-size:15px">{{ .name }}</strong>
+        <span style="color:#6d7f76;font-size:12.5px">{{ .type }}</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tbody>
+          {{ range .fish }}
+          <tr class="fish-row" data-name="{{ .name }}" style="border-top:1px solid #2e423a">
+            <td style="padding:8px 12px;color:#fff;width:45%">{{ .name }}</td>
+            <td style="padding:8px 12px;color:#a9b8b0;width:12%">{{ .chance }}</td>
+            <td style="padding:8px 12px;width:43%"><div style="height:8px;background:#0f1713;border-radius:4px;overflow:hidden"><div class="fish-bar" data-pct="{{ .chance }}" style="height:100%;width:0%;background:#5aa9a9;transition:width .3s"></div></div></td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+    {{ end }}
+  </div>
+  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Fishing power must exceed the water type's requirement to catch anything; higher power = faster catches · source: corekeeper.atma.gg/en/Fishing · game version {{ site.Params.gameVersion | default "latest" }}</div>
+</div>
+<script>
+(function(){
+  function pct(v){ return parseFloat(String(v).replace("%","")); }
+  function paintBars(scope){
+    (scope||document).querySelectorAll(".fish-bar").forEach(function(b){
+      b.style.width = Math.min(100, pct(b.getAttribute("data-pct"))) + "%";
+    });
+  }
+  function filter(){
+    var water = document.getElementById("fish-water").value;
+    var q = document.getElementById("fish-q").value.trim().toLowerCase();
+    document.querySelectorAll("#fish-list .fish-w").forEach(function(w){
+      var showW = (water === "All" || w.getAttribute("data-water") === water);
+      var any = false;
+      w.querySelectorAll(".fish-row").forEach(function(r){
+        var showR = showW && (!q || r.getAttribute("data-name").toLowerCase().indexOf(q) >= 0);
+        r.style.display = showR ? "" : "none";
+        if (showR) any = true;
+      });
+      w.style.display = any ? "" : "none";
+    });
+  }
+  document.getElementById("fish-water").addEventListener("change", filter);
+  document.getElementById("fish-q").addEventListener("input", filter);
+  paintBars();
+})();
+</script>
