@@ -139,3 +139,30 @@ creatures:
       - { item: "Ancient Gemstone", chance: "1.55%" }
       - { item: "Corrupt Warden Mask", chance: "0.78%" }
     note: "Poison on hit reduces healing taken by 75%; immune to poison"
+  - name: "Drape Ray"
+    icon: "/img/app-icons/creature-drape-ray.png"
+    biome: "The Passage"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Luminous flying critter; catch with Bug Net, feed to Strolly Poly / Dodo / Orex"
+  - name: "Snoot Fly"
+    icon: "/img/app-icons/creature-snoot-fly.png"
+    biome: "Various (flying critter)"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Mosquito-like flying critter; catch with Bug Net, feed to farm animals"
+  - name: "Crimson Wing"
+    icon: "/img/app-icons/creature-crimson-wing.png"
+    biome: "Azeos' Wilderness / The Sunken Sea"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Deep-red butterfly critter; catch with Bug Net, feed to Strolly Poly / Dodo / Orex"

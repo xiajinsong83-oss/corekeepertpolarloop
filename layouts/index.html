@@ -73,18 +73,30 @@
       {{ end }}
     </ul>
 
-    <!-- 最新 Wiki 编辑（P1-1 聚合，来自 data/wiki_updates.json） -->
+    <!-- 最新 Wiki 编辑（P1-1 聚合，来自 data/wiki_updates.json；条目跳转本站对应词条页/栏目页，不直跳外站） -->
     <h2 class="section-title">Latest Wiki Updates</h2>
     <ul class="postlist">
       {{ $wu := site.Data.wiki_updates.updates | default slice }}
+      {{ $localMap := dict }}
+      {{ range site.Data.creatures.creatures }}{{ $localMap = merge $localMap (dict .name (printf "/database/creatures/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.items.items }}{{ $localMap = merge $localMap (dict .name (printf "/database/items/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.biomes.biomes }}{{ $localMap = merge $localMap (dict .name (printf "/database/biomes/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.bosses.bosses }}{{ $localMap = merge $localMap (dict .name (printf "/database/bosses/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ $localMap = merge $localMap (dict "Bosses" "/database/bosses/") }}
+      {{ $localMap = merge $localMap (dict "Biomes" "/database/biomes/") }}
+      {{ $critterRe := "[Ff]ly|[Ww]ing|[Ff]airy|[Ss]nail|[Nn]ewt|[Pp]incher|[Bb]ug|[Ww]orm|[Mm]anyleg|[Ll]arvlet|[Ss]niffling|[Oo]rex|[Ll]eafhopper|[Ee]arthworm|[Bb]lackbug|[Gg]em [Ss]nail|[Ll]ittle [Dd]eath" }}
+      {{ $creatureFallback := "/database/creatures/" }}
       {{ range first 5 $wu }}
+      {{ $target := index $localMap .title }}
+      {{ if not $target }}{{ if .title | findRE $critterRe }}{{ $target = $creatureFallback }}{{ else }}{{ $target = "/wiki/" }}{{ end }}{{ end }}
       <li>
-        <a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>
+        <a href="{{ $target }}">{{ .title }}</a>
+        {{ if eq $target $creatureFallback }}<span style="font-size:11px;color:#6d7f76;border:1px solid #2e423a;padding:0 6px;margin-left:6px">creatures</span>{{ end }}
         <div class="meta">{{ .ts | replaceRE "^(.{10}).*" "$1" }} · by {{ .user }}</div>
       </li>
       {{ end }}
     </ul>
-    <div style="font-size:12.5px;color:#6d7f76;margin-top:8px">Community edits mirrored from the official wiki (atma.gg) — see <a href="/wiki-updates/">all updates</a>.</div>
+    <div style="font-size:12.5px;color:#6d7f76;margin-top:8px">Community edits mirrored from the official wiki (atma.gg) — each entry opens the matching page here on Core Keeper Hub. <a href="/wiki-updates/">See all updates</a>.</div>
 
     <!-- P2-1 社区热议（Reddit 聚合，数据由管道填充；未抓到数据时整块隐藏） -->
     {{ $rh := site.Data.reddit_hot.posts | default slice }}
