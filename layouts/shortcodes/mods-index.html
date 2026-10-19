@@ -1,0 +1,31 @@
+{{/* P2-2 模组索引：官方双平台 + 安装步骤 + 资源 + 平台警告（data/mods.yaml 驱动） */}}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:18px 0">
+  {{ range site.Data.mods.mods_platforms }}
+  {{ $p := . }}
+  <div style="border:1px solid #2e423a;background:#1a2621;border-radius:8px;padding:16px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      {{ with $p.icon }}<img src="{{ . }}" alt="{{ $p.name }}" style="width:44px;height:44px;image-rendering:pixelated;background:#000;border-radius:4px">{{ end }}
+      <h3 style="font-size:18px;color:#f2cc7a;margin:0">{{ $p.name }}</h3>
+    </div>
+    <p style="font-size:13.5px;color:#a9b8b0;margin:0 0 10px">{{ $p.desc }}</p>
+    <ol style="font-size:13.5px;color:#c9d4cf;margin:0 0 12px;padding-left:20px">
+      {{ range $p.steps }}<li style="margin-bottom:5px">{{ . }}</li>{{ end }}
+    </ol>
+    <a href="{{ $p.url }}" target="_blank" rel="noopener" style="display:inline-block;background:#f2cc7a;color:#1a2621;padding:8px 16px;border-radius:5px;font-weight:700;font-size:14px;text-decoration:none">Open {{ $p.name }} →</a>
+  </div>
+  {{ end }}
+</div>
+
+<h2 style="font-size:22px;color:#fff;margin:24px 0 10px">Important notes</h2>
+<ul style="font-size:14px;color:#c9d4cf;margin:0 0 18px;padding-left:20px">
+  {{ range site.Data.mods.warnings }}<li style="margin-bottom:8px;color:#e0b36a">{{ . }}</li>{{ end }}
+</ul>
+
+<h2 style="font-size:22px;color:#fff;margin:24px 0 10px">Official resources</h2>
+<div style="font-size:14px;color:#a9b8b0;line-height:1.9">
+  {{ range site.Data.mods.resources }}
+  <div style="margin-bottom:6px"><a href="{{ .url }}" target="_blank" rel="noopener" style="color:#f2cc7a;font-weight:700">{{ .name }}</a><br><span style="font-size:13px;color:#6d7f76">{{ .desc }}</span></div>
+  {{ end }}
+</div>
+
+<div style="font-size:12.5px;color:#6d7f76;margin-top:20px;border-top:1px solid #2e423a;padding-top:10px">Verified against official docs modding.corekeepergame.com · game version {{ site.Params.gameVersion | default "latest" }} · updated {{ site.Params.dataUpdatedAt | default "—" }}</div>
