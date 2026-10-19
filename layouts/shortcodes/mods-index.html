@@ -60,8 +60,8 @@
     </div>
     <div style="font-size:13px;color:#a9b8b0;line-height:1.55;flex:1">{{ $m.desc }}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px">
-      <a href="{{ $m.url }}" target="_blank" rel="noopener" style="color:#f2cc7a;font-weight:700;font-size:13.5px;text-decoration:none">View on {{ if eq $m.platform "steam" }}Steam{{ else }}mod.io{{ end }} →</a>
-      {{ if $m.source }}<span style="font-size:11px;color:#6d7f76">source: <a href="{{ $m.source }}" target="_blank" rel="noopener nofollow" style="color:#6d7f76;text-decoration:underline">verify</a></span>{{ end }}
+      <a href="{{ printf "/mods/%s/" ($m.name | lower | replaceRE "[^a-z0-9]+" "-") }}" style="color:#f2cc7a;font-weight:700;font-size:13.5px;text-decoration:none">Read the guide →</a>
+      <span style="font-size:11px;color:#6d7f76">source: <a href="{{ $m.url }}" target="_blank" rel="noopener nofollow" style="color:#6d7f76;text-decoration:underline">{{ if eq $m.platform "steam" }}Steam{{ else }}mod.io{{ end }}</a></span>
     </div>
   </div>
   {{ end }}
