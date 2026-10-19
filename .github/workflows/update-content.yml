@@ -5,8 +5,8 @@ name: Update Content
 
 on:
   schedule:
-    # 分钟位错开整点（17 分），避免与大量定时任务撞车
-    - cron: "17 */6 * * *"
+    # 每 3 天自动更新一次（用户要求：3 天节奏，每次随机 3 条栏目内容）；分钟位错开整点避免撞车
+    - cron: "17 4 */3 * *"
   workflow_dispatch: # 手动触发兜底（GitHub 可能暂停长期无 commit 的 cron）
 
 permissions:
