@@ -65,6 +65,33 @@
       {{ end }}
     </div>
 
+    <!-- 最新补丁（版本时间线：从 news 过滤补丁/热修，图文卡片） -->
+    {{ $patchKw := "[Pp]atch|[Hh]otfix|[Ss]tability|[Mm]ajor [Uu]pdate|[Mm]inor [Uu]pdate|[Uu]pdate [Dd]rops|[Uu]pdate is [Ll]ive|[Uu]pdate," }}
+    {{ $verRe := "1\\.[0-9]+\\.[0-9]+(?:\\.[0-9]+)?" }}
+    {{ $patchList := slice }}
+    {{ range where site.RegularPages "Section" "news" }}
+      {{ if .Title | findRE $patchKw }}{{ $patchList = $patchList | append . }}{{ end }}
+    {{ end }}
+    {{ $patchSorted := sort $patchList "Date" "desc" }}
+    {{ if gt (len $patchSorted) 0 }}
+    <h2 class="section-title">Latest Patches <span style="font-size:12px;color:#6d7f76;font-weight:400">— version timeline</span></h2>
+    <div class="grid g3">
+      {{ range first 6 $patchSorted }}
+      {{ $ver := "" }}
+      {{ with .Title | findRE $verRe }}{{ $ver = index . 0 }}{{ end }}
+      <a class="card card-media" href="{{ .RelPermalink }}">
+        <img src="/img/app-icons/patch-notes.png" alt="{{ .Title }} icon">
+        <div>
+          <h3 class="card-title">{{ .Title }}</h3>
+          <p class="clamp2">{{ .Description | default "Official Core Keeper patch notes and hotfix changelog." }}</p>
+          <div class="card-meta">{{ with .Date }}{{ .Format "2006-01-02" }}{{ end }}{{ if $ver }} · <span style="font-family:monospace">{{ $ver }}</span>{{ end }}</div>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+    <div style="font-size:12.5px;color:#6d7f76;margin-top:8px">Auto-tracked from the official Steam announcement feed. <a href="/patches/">See full patch timeline</a>.</div>
+    {{ end }}
+
     <!-- 最新攻略（图文卡片，图标取自所属分类） -->
     <h2 class="section-title">Latest Guides</h2>
     <div class="grid g3">
