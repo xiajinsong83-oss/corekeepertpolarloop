@@ -347,3 +347,228 @@ creatures:
       - { item: "Marbled Meat", chance: "100%" }
     note: "Cavernous cattle farm animal in the Moss Sub Biome of The Forgotten Ruins; eats all critters except glowbugs; drops Marbled Meat, produces Orex Truffle; sell value 1"
   # source: https://corekeeper.atma.gg/en/Orex
+  # source: https://corekeeper.atma.gg/en/Mold_Tentacle
+  - name: "Mold Tentacle"
+    icon: "/img/app-icons/creature-mold-tentacle.png"
+    biome: "Mold Biome (sub-biome of Azeos' Wilderness)"
+    type: "Hostile"
+    hp: "1,095"
+    damage: "173 (ranged stun projectile)"
+    drops:
+      - { item: "Ancient Coin", chance: "13.51%" }
+      - { item: "Fungal Bone", chance: "6.76%" }
+      - { item: "Puffungi Seed", chance: "6.76%" }
+      - { item: "Tome of the Dead", chance: "1.35%" }
+      - { item: "Mold Ring", chance: "0.68%" }
+    note: "Lobs a white projectile that hard-stuns 1-2s; groups can stun-lock; immune to mold infection"
+  # source: https://corekeeper.atma.gg/en/Electro-Pest
+  - name: "Electro-Pest"
+    icon: "/img/app-icons/creature-electro-pest.png"
+    biome: "The Forgotten Ruins (Abiotic Factor Facility scene)"
+    type: "Hostile"
+    hp: "405"
+    damage: "数据待核（wiki 页为 Stub，未列攻击数值）"
+    drops:
+      - { item: "Scrap Parts", chance: "57.54%" }
+      - { item: "Fiber", chance: "23.01%" }
+      - { item: "Pest Egg", chance: "11.51%" }
+      - { item: "Bottled Anomaly", chance: "2.3%" }
+      - { item: "Quill Rifle", chance: "2.3%" }
+    note: "Rare Abiotic Facility pest; max 8 per world and never respawns; not the pet Electro-Pet"
+  # source: https://corekeeper.atma.gg/en/Bomb_Scarab
+  - name: "Bomb Scarab"
+    icon: "/img/app-icons/creature-bomb-scarab.png"
+    biome: "The Desert of Beginnings"
+    type: "Hostile"
+    hp: "1,950"
+    damage: "236 (melee dash) / explosion damage unknown"
+    drops:
+      - { item: "Galaxite Ore", chance: "22.26%" }
+      - { item: "Scrap Parts", chance: "22.26%" }
+      - { item: "Blasting Dung", chance: "10.69% (1-3)" }
+      - { item: "Bomb", chance: "8.9% (3-5)" }
+      - { item: "Shellzooka", chance: "0.89%" }
+    note: "Flies over void and water, dashes through players, then channels and explodes at low HP breaking walls"
+  # source: https://corekeeper.atma.gg/en/Nilipede
+  - name: "Nilipede"
+    icon: "/img/app-icons/creature-nilipede.png"
+    biome: "The Shimmering Frontier"
+    type: "Hostile"
+    hp: "2,670"
+    damage: "数据待核（wiki 页为 Stub，未列攻击数值）"
+    drops:
+      - { item: "Marbled Meat", chance: "26.32%" }
+      - { item: "Gleam Wood Seed", chance: "26.32%" }
+      - { item: "Ricochet Shuriken", chance: "5.26%" }
+      - { item: "Ninja Cowl", chance: "3.95%" }
+      - { item: "Nilipede Figurine", chance: "2.63%" }
+    note: "Tanky crystal centipede of the Shimmering Frontier; source of the Ninja armor set"
+  # source: https://corekeeper.atma.gg/en/Sulfur_Worm
+  - name: "Sulfur Worm"
+    icon: "/img/app-icons/creature-sulfur-worm.png"
+    biome: "The Passage"
+    type: "Hostile"
+    hp: "3,075"
+    damage: "数据待核（wiki 页为 Stub，未列攻击数值）"
+    drops:
+      - { item: "Cytoplasm", chance: "49.63% (1-2)" }
+      - { item: "Sulfur Bud", chance: "49.63% (1-2)" }
+      - { item: "Sulfur Worm Figurine", chance: "0.74%" }
+    note: "Burrowing Passage worm; drops the basic Passage crafting materials Cytoplasm and Sulfur Bud"
+  # source: https://corekeeper.atma.gg/en/Colossal_Amoeba
+  - name: "Colossal Amoeba"
+    icon: "/img/app-icons/creature-colossal-amoeba.png"
+    biome: "The Passage"
+    type: "Hostile"
+    hp: "5,535"
+    damage: "数据待核（wiki 页 Behavior 节为空，未列攻击数值）"
+    drops:
+      - { item: "Cytoplasm", chance: "85.11% (3-5)" }
+      - { item: "Sulfur Bomb", chance: "12.77%" }
+      - { item: "Squishy Egg", chance: "1.28%" }
+      - { item: "Colossal Amoeba Figurine", chance: "0.85%" }
+    note: "Giant tanky blob of The Passage; 5,535 HP, reliable Cytoplasm and Sulfur Bomb source"
+  # source: https://corekeeper.atma.gg/en/Caveling_Hunter
+  - name: "Caveling Hunter"
+    icon: "/img/app-icons/creature-caveling-hunter.png"
+    biome: "Azeos' Wilderness"
+    type: "Hostile"
+    hp: "870"
+    damage: "106 (melee) / 152 (musket range)"
+    drops:
+      - { item: "Lush Moss", chance: "2.97%" }
+      - { item: "Ancient Feather", chance: "2.25%" }
+      - { item: "Ancient Gemstone", chance: "1.78%" }
+    note: "Sneaky sniper that disguises as a Wilderness Bush; keeps range with a slow-firing but fast-projectile Flintlock Musket"
+  # source: https://corekeeper.atma.gg/en/Caveling_Spearman
+  - name: "Caveling Spearman"
+    icon: "/img/app-icons/creature-caveling-spearman.png"
+    biome: "The Clay Caves"
+    type: "Hostile"
+    hp: "270"
+    damage: "74 (melee)"
+    drops:
+      - { item: "Fiber", chance: "22.91%" }
+      - { item: "Larva Meat", chance: "22.62%" }
+      - { item: "Clay Moss", chance: "4.3%" }
+    note: "Clay-caves spear fighter that respawns on Clay Moss; close-range melee counterpart to the spear-throwing Skirmisher"
+  # source: https://corekeeper.atma.gg/en/Caveling_Mummy
+  - name: "Caveling Mummy"
+    icon: "/img/app-icons/creature-caveling-mummy.png"
+    biome: "The Desert of Beginnings"
+    type: "Hostile"
+    hp: "1,836"
+    damage: "数据待核（wiki 页面攻击表为空）"
+    drops:
+      - { item: "Zealot's Scimitar", chance: "2.76%" }
+      - { item: "Puppet Ring", chance: "2.76%" }
+      - { item: "Pajama Shirt", chance: "2.76%" }
+      - { item: "Pajama Cap", chance: "2.76%" }
+      - { item: "Pajama Pants", chance: "2.76%" }
+      - { item: "Ancient Gemstone", chance: "1.84%" }
+      - { item: "Caveling Mummy Figurine", chance: "0.55%" }
+    note: "Mold-infected mummy wandering the Desert of Beginnings; drops Zealot gear and the pajama set"
+  # source: https://corekeeper.atma.gg/en/Infected_Caveling
+  - name: "Infected Caveling"
+    icon: "/img/app-icons/creature-infected-caveling.png"
+    biome: "Mold Biome (Azeos' Wilderness)"
+    type: "Hostile"
+    hp: "931"
+    damage: "194 (lunge melee)"
+    drops:
+      - { item: "Scrap Parts", chance: "8.61%" }
+      - { item: "Puffungi Seed", chance: "2.15%" }
+      - { item: "Fungal Bone", chance: "2.15%" }
+    note: "Slow zombie-like mold caveling that lunges; chance to poison on hit (cuts enemy healing by 75%); immune to mold infection"
+  # source: https://corekeeper.atma.gg/en/Orange_Slime
+  - name: "Orange Slime"
+    icon: "/img/app-icons/creature-orange-slime.png"
+    biome: "The Undergrounds / The Clay Caves"
+    type: "Neutral"
+    hp: "105"
+    damage: "31 (jump attack)"
+    drops:
+      - { item: "Slime", chance: "58.52%" }
+    note: "Passive slime blob on Ground Slime until attacked; immune to slime slow and acid; one of the weakest mobs"
+  # source: https://corekeeper.atma.gg/en/Blue_Slime
+  - name: "Blue Slime"
+    icon: "/img/app-icons/creature-blue-slime.png"
+    biome: "The Sunken Sea"
+    type: "Hostile"
+    hp: "1,350"
+    damage: "194 (jump attack)"
+    drops:
+      - { item: "Slippery Slime", chance: "94.79%" }
+    note: "Aggressive Sunken Sea slime that applies slippery movement on hit and knocks players skidding across the ground"
+  - name: "Shrooman"
+    icon: "/img/app-icons/creature-shrooman.png"
+    biome: "The Undergrounds"
+    type: "Hostile"
+    hp: "105"
+    damage: "39 (dash)"
+    drops:
+      - { item: "Mushroom", chance: "45.99%" }
+      - { item: "Scrap Parts", chance: "10.7%" }
+      - { item: "Shrooman Cap", chance: "1.07%" }
+      - { item: "Shrooman Figurine", chance: "0.32%" }
+    note: "Weak mushroom mob on Fungal Soil; slowly charges and rams opponents"
+  # source: https://corekeeper.atma.gg/en/Caveling_Spearman
+  - name: "Tentacle"
+    icon: "/img/app-icons/creature-tentacle.png"
+    biome: "The Sunken Sea"
+    type: "Hostile"
+    hp: "945"
+    damage: "194 (ranged)"
+    drops:
+      - { item: "Octarine Ore", chance: "13.83%" }
+      - { item: "Coral Wood", chance: "13.83%" }
+      - { item: "Tentacle Whip", chance: "1.38%" }
+      - { item: "Tentacle Figurine", chance: "0.41%" }
+    note: "Found only in Sunken Sea water; lobs small white jellyfish projectiles at range"
+  - name: "Big Larva"
+    icon: "/img/app-icons/creature-big-larva.png"
+    biome: "The Clay Caves / Larva Hive Biome"
+    type: "Hostile"
+    hp: "412"
+    damage: "93 (melee)"
+    drops:
+      - { item: "Larva Meat", chance: "82.79%" }
+      - { item: "Grub Kapok Seed", chance: "2.52%" }
+      - { item: "Shiny Larva Meat", chance: "0.5%" }
+    note: "Larva that aggros on torches and player base objects; respawns on Chrysalis; immune to slow and acid"
+  # source: https://corekeeper.atma.gg/en/Clay_Burrower
+  - name: "Clay Burrower"
+    icon: "/img/app-icons/creature-clay-burrower.png"
+    biome: "The Clay Caves"
+    type: "Hostile"
+    hp: "405"
+    damage: "数据待核（wiki Behavior 节为空，未列攻击数值）"
+    drops:
+      - { item: "Marbled Meat", chance: "28.99%" }
+      - { item: "Root Seed", chance: "28.99%" }
+      - { item: "Slingshot", chance: "5.8%" }
+      - { item: "Clay Burrower Figurine", chance: "2.9%" }
+      - { item: "Pot Lid", chance: "2.17%" }
+    note: "Burrowing Clay Caves enemy; 1-2 drops per kill; source of the Slingshot and Pot Lid"
+  # source: https://corekeeper.atma.gg/en/Shrooman_Brute
+  - name: "Shrooman Brute"
+    icon: "/img/app-icons/creature-shrooman-brute.png"
+    biome: "The Undergrounds"
+    type: "Hostile"
+    hp: "540"
+    damage: "数据待核（wiki Dash 攻击表未列数值；冲锋撞击）"
+    drops:
+      - { item: "Mushroom", chance: "53.05% (3-5)" }
+      - { item: "Stoneskin Potion", chance: "26.53%" }
+      - { item: "Giant Mushroom", chance: "2.65%" }
+    note: "Slow-charging mushroom brute; shell reduces incoming damage to 1; stuns when it rams a wall"
+  # source: https://corekeeper.atma.gg/en/Yellow_Glowbug
+  - name: "Yellow Glowbug"
+    icon: "/img/app-icons/creature-yellow-glowbug.png"
+    biome: "The Undergrounds / The Clay Caves / The Desert of Beginnings"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Stationary yellow-light flying critter seen in swarms as dancing lights; catch with Bug Net, sell 1, can be placed as a light source; NOT eaten by Strolly Poly / Dodo / Orex"
