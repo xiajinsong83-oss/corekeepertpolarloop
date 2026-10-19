@@ -18,6 +18,7 @@ Core Keeper Hub - Reddit 社区热议聚合脚本（P2-1，方案 C）
 
 import json
 import os
+import random
 import sys
 import time
 import urllib.request
@@ -123,9 +124,12 @@ def main():
         print(f"!! Guard: only {len(posts)} items (< {MIN_ITEMS}), keeping old file")
         return 1
 
+    # 每次随机选取 3 条栏目内容（用户要求）
+    picked = random.sample(posts, min(3, len(posts)))
+    print(f"==> Randomly picked {len(picked)} reddit posts for this round")
     payload = {
         "checkedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "posts": posts[:12],
+        "posts": picked,
     }
     tmp = DATA_JSON + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:

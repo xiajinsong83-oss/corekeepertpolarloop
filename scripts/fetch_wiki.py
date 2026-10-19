@@ -16,6 +16,7 @@ Core Keeper Hub - atma.gg Wiki 变动聚合脚本（P1-1）
 
 import json
 import os
+import random
 import sys
 import time
 import urllib.request
@@ -85,6 +86,10 @@ def main():
     if len(updates) < MIN_ITEMS:
         print(f"!! Guard: only {len(updates)} items (< {MIN_ITEMS}), keeping old file")
         return 1
+
+    # 每次随机选取 3 条栏目内容（用户要求）
+    updates = random.sample(updates, min(3, len(updates)))
+    print(f"==> Randomly picked {len(updates)} wiki updates for this round")
 
     payload = {
         "checkedAt": __import__("time").strftime("%Y-%m-%dT%H:%M:%SZ", __import__("time").gmtime()),

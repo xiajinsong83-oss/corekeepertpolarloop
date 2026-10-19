@@ -18,6 +18,7 @@ Core Keeper Hub - Steam 官方新闻抓取脚本（P0-2 Patch Notes 自动追踪
 
 import html
 import json
+import random
 import os
 import re
 import sys
@@ -159,6 +160,10 @@ def main():
             file=sys.stderr,
         )
         sys.exit(1)
+
+    # 每次随机选取 3 条栏目内容（用户要求：控制单轮更新量）
+    items = random.sample(items, min(3, len(items)))
+    print(f"==> Randomly picked {len(items)} news items for this round")
 
     # 读取既有 json（若有），跳过已收录条目
     # 去重指纹：guid（RSS URL / json-gid）+ 兜底 (norm_title, norm_date) 防止跨源重复
