@@ -57,3 +57,51 @@ biomes:
     danger: "Very High"
     resources: ["Endgame materials", "Titan arenas"]
     note: "Endgame area; reachable after main progression"
+  # source: https://corekeeper.atma.gg/en/Larva_Hive_Biome
+  - name: "Larva Hive Biome"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Sub-biome of The Clay Caves"
+    distance: "Within inner ring (~330 tiles, Hive Mother)"
+    danger: "Medium"
+    resources: ["Larva Hive Block", "Chrysalis", "Ground Acid Slime", "Larva Meat", "The Hive Mother"]
+    note: "Maze-like organic dungeon; slimes do not spawn here"
+  # source: https://corekeeper.atma.gg/en/Mold_Biome
+  - name: "Mold Biome"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Sub-biome of Azeos' Wilderness"
+    distance: "Within outer ring (Main Mold Dungeon ~750 tiles)"
+    danger: "High"
+    resources: ["Mold Ground", "Fungal Bone", "Mold Tree", "Mold Vein Necklace", "Mold Ring"]
+    note: "Fungus-infested dungeon; Mold Ground slows players by up to 75%"
+  # source: https://corekeeper.atma.gg/en/Forlorn_Metropolis
+  - name: "Forlorn Metropolis"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Sub-biome of The Sunken Sea"
+    distance: "Within outer ring"
+    danger: "High"
+    resources: ["Octarine Ore", "Urban Moss", "Coral Wood", "Mechanical Part", "Phantom Spark materials"]
+    note: "Ruined hi-tech dungeon; Caveling Scholars support Core Sentry"
+  # source: https://corekeeper.atma.gg/en/Molten_Quarry
+  - name: "Molten Quarry"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Sub-biome of The Desert of Beginnings"
+    distance: "Within outer ring (~650 tiles, Igneous)"
+    danger: "High"
+    resources: ["Ground Magma Slime", "Lava", "Galaxite Ore", "Cipher Parchment", "Ancient Forge"]
+    note: "Volcanic area; home of Igneous the Molten Mass and the Ancient Forge"
+  # source: https://corekeeper.atma.gg/en/The_Shimmering_Frontier
+  - name: "The Shimmering Frontier"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Ring around the outer biomes"
+    distance: "≈1200+ tiles"
+    danger: "Very High"
+    resources: ["Solarite Ore", "Gleam Wood", "Crystal Block", "Jungle Emerald", "Ocean Sapphire", "Desert Ruby"]
+    note: "Bright blue crystal biome; source of Solarite and unique gems"
+  # source: https://corekeeper.atma.gg/en/Breaker%27s_Reach
+  - name: "Breaker's Reach"
+    icon: "/img/app-icons/biomes.png"
+    ring: "Beyond The Passage (far north)"
+    distance: "≈1450+ tiles"
+    danger: "Very High"
+    resources: ["Relucite Ore", "Corrupted Alloy", "Rust Pile", "Void materials", "Glowing Mushroom"]
+    note: "Mechanical/void late-game biome from the Void & Voltage update"

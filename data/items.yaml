@@ -402,3 +402,367 @@ items:
     category: "Tool"
     type: "Utility"
     note: "Locates the Larva Hive arena"
+
+# === P3 扩量：Armor（source: corekeeper.atma.gg/en/Armor，基础等级属性） ===
+# source: https://corekeeper.atma.gg/en/Copper_Helm
+  - name: "Copper Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 3
+    durability: 90
+    effects: "+8 max health · +4 armor"
+# source: https://corekeeper.atma.gg/en/Bronze_Helm
+  - name: "Bronze Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 5
+    durability: 90
+    effects: "+12 max health · +6 armor · +5% mining damage"
+# source: https://corekeeper.atma.gg/en/Iron_Helm
+  - name: "Iron Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 7
+    durability: 90
+    effects: "+15 max health · +10 armor · +4.8% damage"
+# source: https://corekeeper.atma.gg/en/Moldweb_Helm
+  - name: "Moldweb Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 10
+    durability: 90
+    effects: "+24 max health · +13 armor · +5.2% melee attack speed"
+# source: https://corekeeper.atma.gg/en/Octarine_Helm
+  - name: "Octarine Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 12
+    durability: 90
+    effects: "+29 max health · +15 armor · +6% mining speed"
+# source: https://corekeeper.atma.gg/en/Galaxite_Helm
+  - name: "Galaxite Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 14
+    durability: 90
+    effects: "+34 max health · +18 armor · +14% critical hit damage"
+# source: https://corekeeper.atma.gg/en/King_Slime_Crown
+  - name: "King Slime Crown"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    lvl: 9
+    durability: 90
+    effects: "+23 max health · +11 armor · +3 glow · +2% critical hit chance"
+# source: https://corekeeper.atma.gg/en/Copper_Breastplate
+  - name: "Copper Breastplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 3
+    durability: 100
+    effects: "+10 max health · +7 armor"
+# source: https://corekeeper.atma.gg/en/Bronze_Breastplate
+  - name: "Bronze Breastplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 5
+    durability: 100
+    effects: "+18 max health · +9 armor · +7.4% physical melee damage"
+# source: https://corekeeper.atma.gg/en/Iron_Breastplate
+  - name: "Iron Breastplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 7
+    durability: 100
+    effects: "+25 max health · +12 armor · +7.2% damage"
+# source: https://corekeeper.atma.gg/en/Moldweb_Breastplate
+  - name: "Moldweb Breastplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 10
+    durability: 100
+    effects: "+32 max health · +16 armor · +12% damage against bosses"
+# source: https://corekeeper.atma.gg/en/Octarine_Breastplate
+  - name: "Octarine Breastplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 12
+    durability: 100
+    effects: "+37 max health · +22 armor · +7.5% melee attack speed"
+# source: https://corekeeper.atma.gg/en/Omoroth's_Chestplate
+  - name: "Omoroth's Chestplate"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 13
+    durability: 100
+    effects: "+41 max health · +20 armor · +7.1% damage · +6.2% melee and range attack speed"
+# source: https://corekeeper.atma.gg/en/Solarite_Cuirass
+  - name: "Solarite Cuirass"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Chest"
+    lvl: 16
+    durability: 100
+    effects: "+52 max health · +26 armor · +7.8% melee and range attack speed · +6 health on melee hit"
+# source: https://corekeeper.atma.gg/en/Copper_Pants
+  - name: "Copper Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    lvl: 3
+    durability: 95
+    effects: "+9 max health · +6 armor"
+# source: https://corekeeper.atma.gg/en/Bronze_Pants
+  - name: "Bronze Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    lvl: 5
+    durability: 95
+    effects: "+14 max health · +8 armor · +6% physical range damage"
+# source: https://corekeeper.atma.gg/en/Iron_Pants
+  - name: "Iron Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    lvl: 7
+    durability: 95
+    effects: "+20 max health · +12 armor · +5.8% damage"
+# source: https://corekeeper.atma.gg/en/Hivebone_Pants
+  - name: "Hivebone Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    lvl: 9
+    durability: 95
+    effects: "+26 max health · +14 armor · +4.8% melee and range attack speed · +10 thorns damage"
+# source: https://corekeeper.atma.gg/en/Moldweb_Pants
+  - name: "Moldweb Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    lvl: 10
+    durability: 95
+    effects: "+32 max health · +17 armor · +10.4% physical melee damage"
+
+# === P3 扩量：Accessories（source: corekeeper.atma.gg/en/Accessories，基础等级属性） ===
+# source: https://corekeeper.atma.gg/en/Copper_Cross_Necklace
+  - name: "Copper Cross Necklace"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Necklace"
+    lvl: 2
+    effects: "+4% critical hit chance"
+# source: https://corekeeper.atma.gg/en/Iron_Chunk_Necklace
+  - name: "Iron Chunk Necklace"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Necklace"
+    lvl: 7
+    effects: "+12 armor"
+# source: https://corekeeper.atma.gg/en/Gold_Crystal_Necklace
+  - name: "Gold Crystal Necklace"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Necklace"
+    lvl: 8
+    effects: "+8% magic damage · +8.3% minion damage"
+# source: https://corekeeper.atma.gg/en/Octarine_Necklace
+  - name: "Octarine Necklace"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Necklace"
+    lvl: 12
+    effects: "+5.6% melee and range attack speed"
+# source: https://corekeeper.atma.gg/en/Omoroth's_Necklace
+  - name: "Omoroth's Necklace"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Necklace"
+    lvl: 13
+    effects: "+7 armor · +4% dodge chance · +7.1% damage · +10% mining damage · +3.5% movement speed · +4 blue glow"
+# source: https://corekeeper.atma.gg/en/Wooden_Ring
+  - name: "Wooden Ring"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Ring"
+    lvl: 10
+    effects: "+29 max health"
+# source: https://corekeeper.atma.gg/en/Lucky_Ring
+  - name: "Lucky Ring"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Ring"
+    lvl: 12
+    effects: "+7% chance to gain an additional ore from ore walls · +7% chance to get a valuable or non-fish item on the hook when fishing"
+# source: https://corekeeper.atma.gg/en/Octarine_Ring
+  - name: "Octarine Ring"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Ring"
+    lvl: 12
+    effects: "+6% melee and range attack speed"
+# source: https://corekeeper.atma.gg/en/Puppet_Ring
+  - name: "Puppet Ring"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Ring"
+    lvl: 10
+    effects: "+1 max minion count · +24% minion attack speed"
+# source: https://corekeeper.atma.gg/en/Small_Backpack
+  - name: "Small Backpack"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Backpack"
+    lvl: 2
+    effects: "+6 max health"
+# source: https://corekeeper.atma.gg/en/Small_Lantern
+  - name: "Small Lantern"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Lantern"
+    lvl: 2
+    effects: "+3 glow"
+# source: https://corekeeper.atma.gg/en/Lantern
+  - name: "Lantern"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Lantern"
+    lvl: 6
+    effects: "+4 glow · +9 max health"
+# source: https://corekeeper.atma.gg/en/Pearl_Lantern
+  - name: "Pearl Lantern"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Lantern"
+    lvl: 12
+    effects: "+5 blue glow · +7% movement speed · +1.6 mana every sec"
+# source: https://corekeeper.atma.gg/en/Wooden_Shield
+  - name: "Wooden Shield"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Off-hand"
+    lvl: 2
+    effects: "+6 armor · Off-hand use: reduce incoming damage by 70%"
+# source: https://corekeeper.atma.gg/en/Iron_Shield
+  - name: "Iron Shield"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Off-hand"
+    lvl: 7
+    effects: "+14 max health · +12 armor · Off-hand use: reduce incoming damage by 70%"
+# source: https://corekeeper.atma.gg/en/Spicy_Lure
+  - name: "Spicy Lure"
+    icon: "/img/app-icons/item-accessory.png"
+    category: "Accessory"
+    type: "Lure"
+    effects: "Fish (and other things) bite +9% faster"
+
+# === P3 扩量：Potions & Consumables（source: corekeeper.atma.gg/en/Consumables） ===
+# source: https://corekeeper.atma.gg/en/Keen_Potion
+  - name: "Keen Potion"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+30% physical range damage for 1 min"
+# source: https://corekeeper.atma.gg/en/Arcane_Potion
+  - name: "Arcane Potion"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+30% magic damage for 1 min"
+# source: https://corekeeper.atma.gg/en/Pact_of_Power_Potion
+  - name: "Pact of Power Potion"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+30% minion damage for 1 min"
+# source: https://corekeeper.atma.gg/en/Stoneskin_Potion
+  - name: "Stoneskin Potion"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+58 armor for 1 min"
+# source: https://corekeeper.atma.gg/en/Guardian's_Potion
+  - name: "Guardian's Potion"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+12% reduced damage taken from bosses for 1 min"
+# source: https://corekeeper.atma.gg/en/Cave_Coffee
+  - name: "Cave Coffee"
+    icon: "/img/app-icons/item-potion.png"
+    category: "Potion"
+    type: "Potion"
+    effects: "+23.1% movement speed for 20 sec"
+# source: https://corekeeper.atma.gg/en/Mug_of_Coffee
+  - name: "Mug of Coffee"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Snack"
+    effects: "+7.4% melee and range attack speed for 40 sec"
+# source: https://corekeeper.atma.gg/en/Kizz_Cola
+  - name: "Kizz Cola"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Snack"
+    effects: "+9% critical hit chance for 40 sec"
+# source: https://corekeeper.atma.gg/en/Hot_Punch
+  - name: "Hot Punch"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Snack"
+    effects: "+7.6% melee and range attack speed for 30 sec"
+# source: https://corekeeper.atma.gg/en/Glazed_Heart_Berry
+  - name: "Glazed Heart Berry"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Snack"
+    food: "+10 food"
+    effects: "+65 max health for 10 min"
+# source: https://corekeeper.atma.gg/en/Winter_Dinner
+  - name: "Winter Dinner"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Snack"
+    food: "+39 food"
+    effects: "+2.5 health every sec for 20 sec · +25 max health for 10 min · +11.8% damage for 10 min · +12 armor for 5 min"
+# source: https://corekeeper.atma.gg/en/Pet_Pellet
+  - name: "Pet Pellet"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Pet candy"
+    effects: "Feed to equipped pet to boost its experience by 50"
+# source: https://corekeeper.atma.gg/en/Dodo_Egg
+  - name: "Dodo Egg"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Ingredient"
+    food: "+10 food"
+    effects: "+4.3 health every sec for 20 sec"
+# source: https://corekeeper.atma.gg/en/Marbled_Meat
+  - name: "Marbled Meat"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Ingredient"
+    food: "+13 food"
+    effects: "+2.6 health every sec for 20 sec"
+# source: https://corekeeper.atma.gg/en/Meadow_Milk
+  - name: "Meadow Milk"
+    icon: "/img/app-icons/item-food.png"
+    category: "Consumable"
+    type: "Ingredient"
+    food: "+11 food"
+    effects: "+22.9% armor for 20 sec"
