@@ -166,3 +166,184 @@ creatures:
     drops:
       - { item: "none", chance: "—" }
     note: "Deep-red butterfly critter; catch with Bug Net, feed to Strolly Poly / Dodo / Orex"
+  - name: "Ice Wind"
+    icon: "/img/app-icons/creature-ice-wind.png"
+    biome: "The Sunken Sea"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Blue butterfly creating cold air streams; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Ice_Wind
+  - name: "Citrus Pinion"
+    icon: "/img/app-icons/creature-citrus-pinion.png"
+    biome: "Azeos' Wilderness"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Erratic bright-colored butterfly; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Citrus_Pinion
+  - name: "Dream Messenger"
+    icon: "/img/app-icons/creature-dream-messenger.png"
+    biome: "Azeos' Wilderness"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Good-dream butterfly seen among sleeping creatures; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Dream_Messenger
+  - name: "Dusk Fairy"
+    icon: "/img/app-icons/creature-dusk-fairy.png"
+    biome: "Azeos' Wilderness"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Tiny butterfly with delicate wings; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Dusk_Fairy
+  - name: "Void Larvlet"
+    icon: "/img/app-icons/creature-void-larvlet.png"
+    biome: "数据待核（atma.gg 页未标注生成区域）"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Tiny void larva added in Void & Voltage; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Void_Larvlet
+  - name: "Sniffling"
+    icon: "/img/app-icons/creature-sniffling.png"
+    biome: "数据待核（atma.gg 页未标注生成区域）"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Skittish debris rodent added in Void & Voltage; Bug Net catchable; sell 1; feeds Strolly Poly or Dodo"
+  # source: https://corekeeper.atma.gg/en/Sniffling
+  - name: "Shadow Newt"
+    icon: "/img/app-icons/creature-shadow-newt.png"
+    biome: "Data pending verification（数据待核）"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Dark newt critter with unseeing eyes; spawn location not stated on wiki page; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo / Orex"
+  # source: https://corekeeper.atma.gg/en/Shadow_Newt
+  - name: "Gem Snail"
+    icon: "/img/app-icons/creature-gem-snail.png"
+    biome: "The Shimmering Frontier"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "Crystal Snail", chance: "10.0%" }
+      - { item: "Large Sun Crystal", chance: "7.58%" }
+    note: "Small gem-shelled snail of the Shimmering Frontier; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo"
+  # source: https://corekeeper.atma.gg/en/Gem_Snail
+  - name: "Manyleg"
+    icon: "/img/app-icons/creature-manyleg.png"
+    biome: "The Desert of Beginnings"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Desert centipede-like critter with uncountable legs; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo"
+  # source: https://corekeeper.atma.gg/en/Manyleg
+  - name: "Little Death"
+    icon: "/img/app-icons/creature-little-death.png"
+    biome: "The Desert of Beginnings"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Small scorpion critter of the Desert of Beginnings, harmless to humans; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo"
+  # source: https://corekeeper.atma.gg/en/Little_Death
+  - name: "Sun Pincher"
+    icon: "/img/app-icons/creature-sun-pincher.png"
+    biome: "The Sunken Sea"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Red-yellow crab critter of the Sunken Sea with claws raised; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo / Orex"
+  # source: https://corekeeper.atma.gg/en/Sun_Pincher
+  - name: "Moon Pincher"
+    icon: "/img/app-icons/creature-moon-pincher.png"
+    biome: "The Sunken Sea"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Blue-purple crab critter of the Sunken Sea with claws raised; catch with Bug Net, sell 1, feed to Strolly Poly / Dodo / Orex"
+  # source: https://corekeeper.atma.gg/en/Moon_Pincher
+  - name: "Leafhopper"
+    icon: "/img/app-icons/creature-leafhopper.png"
+    biome: "Azeos' Wilderness"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Nervous jumping critter in Azeos' Wilderness; catch with Bug Net, feed to Strolly Poly / Dodo / Orex; sell value 1"
+  # source: https://corekeeper.atma.gg/en/Leafhopper
+  - name: "Pest Bug"
+    icon: "/img/app-icons/creature-pest-bug.png"
+    biome: "The Forgotten Ruins"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Fast dark crawling critter in The Forgotten Ruins; catch with Bug Net, feed to Strolly Poly / Dodo / Orex; sell value 1"
+  # source: https://corekeeper.atma.gg/en/Pest_Bug
+  - name: "Larvlet"
+    icon: "/img/app-icons/creature-larvlet.png"
+    biome: "The Clay Caves"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Tiny pink larva in The Clay Caves (also 50% chance 2-5 from Cocoon); catch with Bug Net, feed to Strolly Poly / Dodo; sell value 1; crafted into Sticky Lure"
+  # source: https://corekeeper.atma.gg/en/Larvlet
+  - name: "Earthworm"
+    icon: "/img/app-icons/creature-earthworm.png"
+    biome: "The Undergrounds / The Clay Caves / Azeos' Wilderness"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Segmented pink worm in The Undergrounds / Clay Caves / Azeos' Wilderness; catch with Bug Net, feed to Strolly Poly / Dodo; sell value 1; crafted into Sweet Lure"
+  # source: https://corekeeper.atma.gg/en/Earthworm
+  - name: "Blackbug"
+    icon: "/img/app-icons/creature-blackbug.png"
+    biome: "Various (spawns from destroying wood and wooden crates)"
+    type: "Critter"
+    hp: "n/a"
+    damage: "0"
+    drops:
+      - { item: "none", chance: "—" }
+    note: "Tiny dark bug spawned by destroying wood/crates; catch with Bug Net, feed to Strolly Poly / Dodo / Orex; sell value 1; crafted into Spicy Lure"
+  # source: https://corekeeper.atma.gg/en/Blackbug
+  - name: "Orex"
+    icon: "/img/app-icons/creature-orex.png"
+    biome: "The Forgotten Ruins (Moss Sub Biome)"
+    type: "Cattle"
+    hp: "n/a"
+    damage: "n/a"
+    drops:
+      - { item: "Marbled Meat", chance: "100%" }
+    note: "Cavernous cattle farm animal in the Moss Sub Biome of The Forgotten Ruins; eats all critters except glowbugs; drops Marbled Meat, produces Orex Truffle; sell value 1"
+  # source: https://corekeeper.atma.gg/en/Orex
