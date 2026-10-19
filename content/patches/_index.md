@@ -7,4 +7,6 @@ keywords: ["Core Keeper patch notes", "Core Keeper changelog", "Core Keeper upda
 
 Every Core Keeper patch and hotfix, collected automatically from the official Steam announcements. Each entry links back to the original announcement — we summarize, we don't copy the full changelog.
 
+{{< patches-list >}}
+
 {{< ad >}}

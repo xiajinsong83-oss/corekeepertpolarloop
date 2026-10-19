@@ -21,6 +21,19 @@
       </li>
       {{ end }}
     </ul>
+    {{ else if gt (len .Sections) 0 }}
+    <!-- 无直属页但有子栏目：按子栏目分组列出其下页面，避免栏目页空白 -->
+    {{ range .Sections }}
+    <h2 class="section-title">{{ .Title }}</h2>
+    <ul class="postlist">
+      {{ range .RegularPages }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ with .Description }}<div class="meta">{{ . }}</div>{{ end }}
+      </li>
+      {{ end }}
+    </ul>
+    {{ end }}
     {{ end }}
   </div>
 </main>

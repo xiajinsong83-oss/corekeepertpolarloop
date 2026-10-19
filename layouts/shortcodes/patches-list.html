@@ -1,0 +1,18 @@
+{{/* patches-list — 补丁版本时间线：从 news 栏目的补丁/热修文章按版本倒序排列（链接本站文章） */}}
+{{ $kw := "[Pp]atch|[Hh]otfix|[Ss]tability|[Mm]ajor [Uu]pdate|[Mm]inor [Uu]pdate|[Uu]pdate [Dd]rops|[Uu]pdate is [Ll]ive|[Uu]pdate," }}
+{{ $verRe := "1\\.[0-9]+\\.[0-9]+(?:\\.[0-9]+)?" }}
+{{ $list := slice }}
+{{ range where site.RegularPages "Section" "news" }}
+  {{ if .Title | findRE $kw }}{{ $list = $list | append . }}{{ end }}
+{{ end }}
+{{ $sorted := sort $list "Date" "desc" }}
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin:18px 0">
+  {{ range $sorted }}
+  <a href="{{ .RelPermalink }}" style="display:block;border:1px solid #2e423a;background:#1a2621;border-radius:8px;padding:14px 16px;text-decoration:none;transition:border-color .15s" onmouseover="this.style.borderColor='#f2cc7a'" onmouseout="this.style.borderColor='#2e423a'">
+    <div style="font-size:13px;color:#6d7f76;font-family:monospace">{{ .Date.Format "2006-01-02" }} · {{ .Params.gametag | default "Patch" }}</div>
+    <div style="color:#f2cc7a;font-weight:700;font-size:15px;line-height:1.4;margin-top:6px">{{ .Title }}</div>
+  </a>
+  {{ else }}
+  <div style="color:#a9b8b0;font-size:14px">No patch notes synced yet — they appear automatically when Steam publishes the next update.</div>
+  {{ end }}
+</div>
