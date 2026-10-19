@@ -1,0 +1,188 @@
+# Core Keeper Boss 配装生成器数据
+# 数据来源：官方 Wiki corekeeper.atma.gg 各 Boss 页面 "Recommended gear" 段落
+# + 本地 data/items.yaml 中对应 tier 的装备/药水/食物条目
+# 推荐逻辑：装备 tier 与 Boss 所在游戏阶段（矿石/工作台 tier）严格对齐
+# - Glurch: copper/tin 阶段（Dirt，开局约 65 格）
+# - Ghorm: iron 阶段（Clay Caves/Forgotten Ruins 环道，约 220 格）
+# - Hive Mother: iron/gold 阶段（Larva Hive，约 330 格）
+# - Malugaz: scarlet 阶段可选 Boss（Forgotten Ruins，约 350 格）
+# - Azeos: scarlet 阶段（Wilderness，约 600 格）
+# - Omoroth: octarine 阶段（Sunken Sea，约 1100 格）
+# - Ra-Akar: galaxite/solarite 阶段（Desert of Beginnings，约 1000 格）
+# 每条推荐 item 必须能在本地 items.yaml 或 atma.gg 找到；无法核实的注明 "数据待核"
+
+bossLoadouts:
+  - name: "Glurch the Abominable Mass"
+    biome: "The Undergrounds (Dirt)"
+    tier: "Early — Copper/Tin"
+    recommended:
+      weapon:
+        item: "Tin Sword"
+        note: "Wiki 推荐 Copper 或 ideally Tin；Tin 伤害更高且开局即可在 Tin Workbench 打造（本地 items.yaml 有配方）"
+      armor:
+        item: "Copper Helm + Copper Breastplate + Copper Pants"
+        note: "Dirt 阶段唯一成套可造护甲；若已挖到 Tin 可升级，Glurch 仅 2,459 HP，铜套足够"
+      accessory:
+        item: "Copper Cross Necklace"
+        note: "Wiki 要求移动速度加成/任意饰品；早期无 Swift Ring，铜项链是开局唯一项链，用来补防御位"
+      food:
+        item: "Cooked food with Bomb Pepper"
+        note: "Bomb Pepper 提供 +21% 移速（本地 items.yaml 有原料）；Glurch 场地覆盖 Ground Slime 减速，移速是第一优先级"
+      potion:
+        item: "Stoneskin Potion"
+        note: "Wiki 提到 looted Healing Potions 是安全网；Healing Potion 在 atma.gg /en/Consumables 确认存在但本地 items.yaml 未收录，故优先推荐本地已有的 Stoneskin Potion（+58 护甲）"
+    notes: "Glurch 跳前会闪白，是闪避信号；30% 血量后狂暴。近战贴脸输出、落地瞬间反打；远程可站在 14 格距离的 dead zone 白嫖。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Glurch"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Glurch
+
+  - name: "Ghorm the Devourer"
+    biome: "The Clay Caves / The Forgotten Ruins (环道)"
+    tier: "Early — Iron"
+    recommended:
+      weapon:
+        item: "Iron Sword"
+        note: "Wiki 原文：Iron Anvil armor and weapons or better；Iron Sword 在 Iron Anvil 打造（本地 items.yaml）。通关 Hive Mother 后可换 Grubzooka（穿甲多段），数据待核（本地未收录）"
+      armor:
+        item: "Iron Helm + Iron Breastplate + Iron Pants"
+        note: "Wiki 明确推荐 Iron Anvil 套件；本地 items.yaml 三件齐全。副手可带 Iron Shield 扛冲撞"
+      accessory:
+        item: "Iron Chunk Necklace"
+        note: "Wiki 推荐 Swift Ring / Swift Feather 补移速（本地未收录，数据待核）；本地可用 Iron Chunk Necklace 过渡，Larva Ring（Ghorm 掉落）可免疫地面粘液减速"
+      food:
+        item: "Cooked food with Bomb Pepper"
+        note: "移速风筝核心；Wiki 另建议 Yellow Blister Head 解粘液减速（本地未收录，数据待核）"
+      potion:
+        item: "Stoneskin Potion"
+        note: "Wiki：more sustain needed from Healing Potions；Healing Potion 见 atma.gg /en/Consumables；本地上 Stoneskin Potion 增加容错"
+    notes: "Ghorm 沿环道 4 分钟一圈，70% 血量后狂暴直冲玩家。最稳打法是沿轨道铺 100+ Spike Trap（本地 recipes 可造），或用 20-30 炸弹；纯近战需沿轨道边跑边打尾。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Ghorm"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Ghorm
+
+  - name: "Hive Mother"
+    biome: "Larva Hive (Clay Caves)"
+    tier: "Early — Iron/Gold"
+    recommended:
+      weapon:
+        item: "Iron Bow"
+        note: "Wiki 推荐 ranged：Slingshot / Flintlock Musket / Hand Mortar / Fireball Staff / Iron Bow；本地 Iron Bow 与 Fireball Staff 均可造，远程在战壕里白嫖是最稳打法"
+      armor:
+        item: "Iron Helm + Iron Breastplate + Iron Pants"
+        note: "Wiki：Iron Anvil 护甲 and/or Carapace Armor（Ghorm Boss Statue）；Carapace 本地未收录（数据待核），铁套是本地可造的最高防御"
+      accessory:
+        item: "Iron Chunk Necklace"
+        note: "Wiki 推荐 Ring of Rock / 防御向戒指项链；本地用 Iron Chunk Necklace 过渡，Clot Ring（Hive Mother 掉落）后续可换"
+      food:
+        item: "Cooked Carrock + Bomb Pepper"
+        note: "Wiki：Carrock +23 护甲、蘑菇回 HP、Bomb Pepper +21% 移速；Carrock 与 Bomb Pepper 本地 items.yaml 均有原料。配菜里加 Green Blister Head 可免疫酸液（本地未收录，数据待核）"
+      potion:
+        item: "Stoneskin Potion"
+        note: "Wiki 原文建议 Stoneskin Potions（+34 护甲 60s）叠食物 buff；本地 items.yaml 已收录。另备 Healing Potion（atma.gg 确认）"
+    notes: "酸弹落点有红圈预警，60% 血量后狂暴。在巢室外挖一圈战壕，站 15 格外用远程武器白嫖，五个蛋孵化器优先清。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Hive_Mother"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Hive_Mother
+
+  - name: "Malugaz the Corrupted"
+    biome: "The Forgotten Ruins"
+    tier: "Mid — Scarlet (Optional)"
+    recommended:
+      weapon:
+        item: "Scarlet Sword"
+        note: "Wiki 原文：Scarlet equipment or higher；Scarlet Sword 在 Scarlet Workbench 打造（本地 items.yaml）。二形态近战追击，高 DPS 武器可缩短狂暴窗口"
+      armor:
+        item: "Scarlet-tier armor"
+        note: "Wiki 要求 Scarlet 或更高；本地 items.yaml 未收录 Scarlet 套件（数据待核），可临时用 Iron/Octarine 套过渡，但强烈建议先做 Scarlett 甲再进门"
+      accessory:
+        item: "Gold Crystal Necklace"
+        note: "Wiki 要求 Boss 减伤/护甲/血量向饰品；本地 Gold Crystal Necklace 是 scarlet 阶段前可造的最高级项链，Skull Ring / Skull Necklace（Malugaz 掉落）属战后奖励"
+      food:
+        item: "Cooked Carrock"
+        note: "Wiki 原文 Carrock + Puffungi；Carrock 本地有（+23 护甲），Puffungi 本地未收录（数据待核）"
+      potion:
+        item: "Guardian's Potion"
+        note: "Wiki：至少带 30 瓶 Healing Potion + 一打 Stoneskin Potion；本地已收录 Stoneskin Potion 与 Guardian's Potion（+12% Boss 减伤），后者对双形态 Boss 收益更高；Healing Potion 见 atma.gg"
+    notes: "双形态：一形态站桩喷火/火圈，打 2 秒就撤；二形态近战冲锋，躲完冲锋反打。 Arena 外摆 Spike Trap + 酸液可 AFK 磨死（cheese 打法）。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Malugaz"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Malugaz
+
+  - name: "Azeos the Sky Titan"
+    biome: "Azeos' Wilderness"
+    tier: "Mid — Scarlet"
+    recommended:
+      weapon:
+        item: "Scarlet Sword"
+        note: "Wiki 原文：Scarlet equipment or higher；Azeos 无近战攻击，纯靠雷束，武器选择以 DPS 尽快砸掉治疗水晶为目标。Scarlet Dagger（毒）是 wiki 推荐的另一选项，本地未收录（数据待核）"
+      armor:
+        item: "Scarlet-tier armor"
+        note: "同上；本地 items.yaml 未收录 Scarlett 套（数据待核），Octarine 套需先打 Omoroth 阶段，故 scarlet 阶段临时用 Octarine 以下套装容错"
+      accessory:
+        item: "Gold Crystal Necklace"
+        note: "Wiki：移速加成或近战伤害加成；本地 Gold Crystal Necklace 是该阶段可造的最高项链，Azeos' Dash Feather / Sky Ring 属掉落"
+      food:
+        item: "Cooked food with Bomb Pepper"
+        note: "Wiki 原文 Bomb Pepper + any；雷束前三种模式有缝隙可穿，高移速是躲第四种随机雷束的关键"
+      potion:
+        item: "Stoneskin Potion"
+        note: "雷束单发 130 伤害，+58 护甲可显著降低暴毙率；本地 items.yaml 已收录。另带 Healing Potion（atma.gg）"
+    notes: "竞技场太小，先用土块把缺口填上扩大场地。看到治疗水晶立刻切镐子或用炸弹敲掉；40% 血量后雷束加速。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Azeos"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Azeos
+
+  - name: "Omoroth the Sea Titan"
+    biome: "The Sunken Sea"
+    tier: "Late — Octarine"
+    recommended:
+      weapon:
+        item: "Iron Bow"
+        note: "Wiki 原文：Range weapon；在船上无法举盾/冲刺，远程站桩输出最稳。Iron Bow 是本地可造最高级远程，Fireball Staff（魔法）也可，配合 Arcane Potion"
+      armor:
+        item: "Octarine Helm + Octarine Breastplate"
+        note: "Wiki 原文：Reinforced octarine equipment or higher；本地 items.yaml 有 Octarine Helm / Breastplate / Necklace / Ring（Octarine Pants 未收录，数据待核）。Omoroth 掉落的 Omoroth's Chestplate 是战后升级"
+      accessory:
+        item: "Omoroth's Necklace"
+        note: "Wiki：range damage boost then defensive；本地 Octarine Necklace 是战前可造版，Omoroth's Necklace / Omoroth's Ring 是战后掉落。建议船上装备 Off-hand 换成输出装"
+      food:
+        item: "Cooked Heart Berry"
+        note: "本地 items.yaml 有心 Berry 等 8 种晚期作物；Sunrice / Lunacorn 给血量/伤害 buff，按 farm 进度选；wiki 未强制指定菜品"
+      potion:
+        item: "Keen Potion"
+        note: "远程武器对应 Keen Potion（+30% 远程伤害 1 分钟），本地 items.yaml 已收录；若用 Fireball Staff 则换 Arcane Potion"
+    notes: "召唤时用 Expert Lure 钓漩涡，召唤完立刻换 Off-hand。狂暴前优先清触手，狂暴后贴竞技场边缘站，让触手刷在场外。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Omoroth"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Omoroth
+
+  - name: "Ra-Akar the Sand Titan"
+    biome: "The Desert of Beginnings"
+    tier: "Late — Galaxite/Solarite"
+    recommended:
+      weapon:
+        item: "Galaxite Dagger"
+        note: "Wiki 原文：Melee and range weapons；Galaxite Dagger 是本地 items.yaml 收录的晚期近战武器，可搭配 Iron Bow 远程补刀。Crystal Spearhead（Ra-Akar 掉落）属战后"
+      armor:
+        item: "Galaxite Helm + Solarite Cuirass"
+        note: "Wiki 原文：Reinforced galaxite equipment or higher；本地 items.yaml 有 Galaxite Helm 与 Solarite Cuirass（Solarite 是 galaxite 之后阶段）；Scarab 套装属 Ra-Akar 掉落"
+      accessory:
+        item: "Omoroth's Necklace"
+        note: "本地可从 Omoroth 战后续用；Octarine Ring 也可。Ra-Akar's Necklace / Ring of Sand 属掉落奖励"
+      food:
+        item: "Cooked Carrock"
+        note: "沙爆 195 / 追踪弹 258 伤害，高血量高护甲才硬吃；Carrock +23 护甲，本地 items.yaml 有原料"
+      potion:
+        item: "Guardian's Potion"
+        note: "+12% Boss 减伤 1 分钟，对单发 258 的追踪弹收益极高；本地 items.yaml 已收录，叠 Stoneskin Potion"
+    notes: "不要硬挡追踪弹，跑+冲刺躲开。沙爆有外向/内向/顺时针三种 AoE，看清缝隙穿。50% 血量后狂暴，频率明显上升。"
+    sources:
+      - "https://corekeeper.atma.gg/en/Ra-Akar"
+      - "https://corekeeper.atma.gg/en/Consumables"
+    # source: https://corekeeper.atma.gg/en/Ra-Akar

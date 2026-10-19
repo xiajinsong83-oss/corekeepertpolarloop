@@ -766,3 +766,75 @@ items:
     type: "Ingredient"
     food: "+11 food"
     effects: "+22.9% armor for 20 sec"
+
+# === P4 追加：crafting-simulator 演示用常见配方（source: https://corekeeper.atma.gg/en/Crafting，2026-10-19 核对） ===
+# 仅追加新条目；Chest 为 By Hand 徒手合成
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Chest"
+    icon: "/img/app-icons/building.png"
+    type: "Storage"
+    workbench: "Crafting (by hand)"
+    materials:
+      - { item: "Wood", qty: 5 }
+    use: "Basic storage chest, crafted without a station"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Wood Chest"
+    icon: "/img/app-icons/building.png"
+    type: "Storage"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Wood", qty: 6 }
+    use: "Larger wooden storage chest"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Wood Helm"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Helm"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Wood", qty: 4 }
+    use: "Early-game wooden head protection"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Wood Pants"
+    icon: "/img/app-icons/item-armor.png"
+    category: "Armor"
+    type: "Pants"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Wood", qty: 5 }
+    use: "Early-game wooden leg protection"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Furnace"
+    icon: "/img/app-icons/building.png"
+    type: "Station"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Dirt Block", qty: 20 }
+    use: "Smelts ore into bars (Copper/Tin/Iron)"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Cooking Pot"
+    icon: "/img/app-icons/building.png"
+    type: "Station"
+    workbench: "Basic Workbench"
+    materials:
+      - { item: "Wood", qty: 2 }
+      - { item: "Copper Bar", qty: 4 }
+    use: "Cook raw ingredients into meals"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Copper Anvil"
+    icon: "/img/app-icons/building.png"
+    type: "Station"
+    workbench: "Copper Workbench"
+    materials:
+      - { item: "Copper Bar", qty: 8 }
+    use: "Station for copper-tier armor and weapons"
+# source: https://corekeeper.atma.gg/en/Crafting
+  - name: "Tin Workbench"
+    icon: "/img/app-icons/building.png"
+    type: "Station"
+    workbench: "Copper Workbench"
+    materials:
+      - { item: "Wood", qty: 10 }
+      - { item: "Copper Bar", qty: 6 }
+      - { item: "Tin Bar", qty: 10 }
+    use: "Station for tin-tier tools and gear"

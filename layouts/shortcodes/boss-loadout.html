@@ -1,0 +1,122 @@
+{{ $data := (index site.Data "boss-loadouts").bossLoadouts }}
+{{ $id := printf "bossloadout-%s" (md5 .Page.Title | truncate 8 | replaceRE "[^a-zA-Z0-9]" "") }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <span class="tool-app__title">Boss loadout generator</span>
+    <span class="tool-badge tool-badge--dim">{{ len $data }} bosses</span>
+  </div>
+  <p class="tool-app__desc">Pick a main boss to see a ready-made loadout — weapon, armor, accessories, food and potions matched to the biome's tier — plus a short tactics note. Use the copy button to grab the whole plan.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Choose a boss</div>
+    <div class="tool-flex" id="{{ $id }}-cards" role="group" aria-label="Boss cards"></div>
+  </div>
+
+  <div class="tool-result tool-mt">
+    <div class="tool-result__title">Recommended loadout</div>
+    <div id="{{ $id }}-out">
+      <div class="tool-empty">Select a boss card above to see the recommended weapon, armor, accessories, food and potions.</div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var RAW = "{{ $data | jsonify | base64Encode }}";
+  var data = [];
+  try {
+    var bin = atob(RAW);
+    var bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+    data = JSON.parse(new TextDecoder().decode(bytes));
+  } catch(e){ data = []; }
+  var root = document.getElementById('{{ $id }}');
+  if(!root) return;
+  var cardsEl = root.querySelector('#{{ $id }}-cards');
+  var outEl   = root.querySelector('#{{ $id }}-out');
+  if(!cardsEl || !outEl) return;
+
+  var state = { selected: -1 };
+
+  function renderCards(){
+    var html = '';
+    for(var i = 0; i < data.length; i++){
+      var b = data[i];
+      html += '<div class="tool-card tool-card--click' + (state.selected === i ? ' is-selected' : '') + '" data-i="' + i + '" tabindex="0" role="button" aria-label="View loadout for ' + CK.esc(b.name) + '">'
+        + '<div class="tool-card__title">' + CK.esc(b.name) + '</div>'
+        + '<div class="tool-card__meta">' + CK.esc(b.biome || '') + '</div>'
+        + '<div class="tool-card__foot"><span class="tool-badge">' + CK.esc(b.tier || '') + '</span></div>'
+        + '</div>';
+    }
+    cardsEl.innerHTML = html;
+    var cards = cardsEl.querySelectorAll('.tool-card--click');
+    for(var c = 0; c < cards.length; c++){
+      (function(el){
+        function choose(){ selectBoss(parseInt(el.getAttribute('data-i'), 10)); }
+        el.addEventListener('click', choose);
+        el.addEventListener('keydown', function(e){
+          if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); choose(); }
+        });
+      })(cards[c]);
+    }
+  }
+
+  function slotCard(label, slot){
+    if(!slot || !slot.item){
+      return '<div class="tool-card"><div class="tool-card__title">' + CK.esc(label) + '</div>'
+        + '<div class="tool-card__meta">No recommendation recorded.</div></div>';
+    }
+    var h = '<div class="tool-card"><div class="tool-card__title">' + CK.esc(label) + '</div>'
+      + '<div class="tool-card__meta"><strong style="color:#fff">' + CK.esc(slot.item) + '</strong></div>';
+    if(slot.note){ h += '<p class="tool-card__desc">' + CK.esc(slot.note) + '</p>'; }
+    h += '</div>';
+    return h;
+  }
+
+  function selectBoss(i){
+    state.selected = i;
+    renderCards();
+    var b = data[i];
+    if(!b){ outEl.innerHTML = '<div class="tool-empty">No data for this boss.</div>'; return; }
+    var r = b.recommended || {};
+
+    var lines = b.name + ' (' + (b.biome || '') + ' · ' + (b.tier || '') + ')';
+    lines += '\nWeapon:    ' + (r.weapon ? r.weapon.item : '—');
+    lines += '\nArmor:     ' + (r.armor  ? r.armor.item  : '—');
+    lines += '\nAccessory: ' + (r.accessory ? r.accessory.item : '—');
+    lines += '\nFood:      ' + (r.food   ? r.food.item   : '—');
+    lines += '\nPotion:    ' + (r.potion ? r.potion.item : '—');
+    if(b.notes){ lines += '\n\nTactics: ' + b.notes; }
+    if(b.sources && b.sources.length){ lines += '\n\nSources: ' + b.sources.join(', '); }
+
+    var h = '<div class="tool-flex tool-flex--between tool-mb">'
+      + '<div><div class="tool-app__title">' + CK.esc(b.name) + '</div>'
+      + '<div class="tool-card__meta">' + CK.esc(b.biome || '') + ' · ' + CK.esc(b.tier || '') + '</div></div>'
+      + '<button class="tool-btn" type="button" id="{{ $id }}-copy">Copy loadout</button></div>';
+
+    h += '<div class="tool-grid">'
+      + slotCard('Weapon', r.weapon)
+      + slotCard('Armor', r.armor)
+      + slotCard('Accessory', r.accessory)
+      + slotCard('Food', r.food)
+      + slotCard('Potion', r.potion)
+      + '</div>';
+
+    if(b.notes){
+      h += '<p class="tool-card__desc tool-mt"><strong style="color:#fff">Tactics:</strong> ' + CK.esc(b.notes) + '</p>';
+    }
+    if(b.sources && b.sources.length){
+      h += '<p class="tool-card__desc"><strong style="color:#fff">Sources:</strong> ';
+      for(var s = 0; s < b.sources.length; s++){
+        h += '<a href="' + CK.esc(b.sources[s]) + '" target="_blank" rel="noopener">' + CK.esc(b.sources[s]) + '</a>';
+        if(s < b.sources.length - 1){ h += ', '; }
+      }
+      h += '</p>';
+    }
+
+    outEl.innerHTML = h;
+    var copyBtn = outEl.querySelector('#{{ $id }}-copy');
+    if(copyBtn){ copyBtn.addEventListener('click', function(){ CK.copy(lines, copyBtn); }); }
+  }
+
+  renderCards();
+})();
+</script>

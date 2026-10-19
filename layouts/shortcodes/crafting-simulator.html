@@ -1,0 +1,339 @@
+{{ $data := site.Data.items.items }}
+{{ $id := printf "craftsim-%s" (md5 .Page.Title | truncate 8 | replaceRE "[^a-zA-Z0-9]" "") }}
+<div class="tool-app" id="{{ $id }}">
+  <div class="tool-app__head">
+    <div class="tool-app__title">Crafting Simulator</div>
+    <span class="tool-badge tool-badge--green">inventory bottleneck · wiki v1.3.0.6</span>
+  </div>
+  <p class="tool-app__desc">Pick a target item, type in what you already carry — ore, bars, wood, whatever — and see <strong>how many you can actually craft right now</strong>, which material is the bottleneck, and exactly what to gather next. Unlike the plain recipe calculator, this simulates your current stock against the full multi-level crafting chain.</p>
+
+  <div class="tool-op">
+    <div class="tool-op__title">Target &amp; stock</div>
+    <div class="tool-panel">
+      <div class="tool-field tool-field--grow">
+        <label class="tool-label" for="{{ $id }}-search">Target item</label>
+        <input id="{{ $id }}-search" class="tool-input" list="{{ $id }}-list" placeholder="Search craftable… e.g. Tin Workbench" autocomplete="off" aria-label="Search craftable target item">
+        <datalist id="{{ $id }}-list">
+          {{ range $data }}{{ if .materials }}{{ if gt (len .materials) 0 }}<option value="{{ .name }}">{{ .type }}</option>{{ end }}{{ end }}{{ end }}
+        </datalist>
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="{{ $id }}-goal">Goal quantity</label>
+        <div class="tool-flex">
+          <button type="button" class="tool-btn tool-btn--ghost" id="{{ $id }}-gminus" aria-label="Decrease goal quantity">−</button>
+          <input id="{{ $id }}-goal" class="tool-number" type="number" min="1" max="999" value="1" aria-label="Goal quantity">
+          <button type="button" class="tool-btn tool-btn--ghost" id="{{ $id }}-gplus" aria-label="Increase goal quantity">+</button>
+        </div>
+      </div>
+    </div>
+    <div id="{{ $id }}-invbox"></div>
+  </div>
+
+  <div class="tool-result">
+    <div class="tool-result__title">Simulation result</div>
+    <div id="{{ $id }}-empty" class="tool-empty">Pick a craftable target above, then enter your current stock in the materials list — the simulator computes the max craftable count, the bottleneck step and the gathering gap.</div>
+    <div id="{{ $id }}-body" class="tool-hidden"></div>
+  </div>
+
+  <div class="tool-footnote">Recipe data: community wiki (corekeeper.atma.gg), game 1.3.0.6 · stock input = what is already in your inventory (raw ore/wood counts together with bars/intermediates).</div>
+</div>
+<script>
+(function(){
+  var RAW = "{{ $data | jsonify | base64Encode }}";
+  var data = [];
+  try {
+    var bin = atob(RAW);
+    var bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+    data = JSON.parse(new TextDecoder().decode(bytes));
+  } catch(e){ data = []; }
+
+  var byName = {}, craftable = {};
+  for (var i = 0; i < data.length; i++){
+    byName[data[i].name] = data[i];
+    if (data[i].materials && data[i].materials.length){ craftable[data[i].name] = data[i]; }
+  }
+
+  var root = document.getElementById('{{ $id }}');
+  if(!root) return;
+  var search = root.querySelector('#{{ $id }}-search');
+  var goalInp = root.querySelector('#{{ $id }}-goal');
+  var gminus = root.querySelector('#{{ $id }}-gminus');
+  var gplus = root.querySelector('#{{ $id }}-gplus');
+  var invBox = root.querySelector('#{{ $id }}-invbox');
+  var empty = root.querySelector('#{{ $id }}-empty');
+  var out = root.querySelector('#{{ $id }}-body');
+  if(!search || !goalInp || !invBox || !empty || !out) return;
+
+  var inv = {};           // stock inventory {itemName: qty}
+  var currentTarget = '';
+  var lastText = '';
+
+  function normGoal(){
+    var n = parseInt(goalInp.value, 10);
+    if (isNaN(n) || n < 1) n = 1;
+    if (n > 999) n = 999;
+    goalInp.value = n;
+    return n;
+  }
+
+  // Expand the full requirement tree for `q` units of target (DFS, ring-protected).
+  // Returns { nodes:[{name,qty,depth,workbench,leaf}], req:{name:qtyPerUnit} }
+  function expand(name, q, depth, visiting, nodes, req){
+    var node = byName[name];
+    var isCraft = node && node.materials && node.materials.length && !visiting[name];
+    nodes.push({ name: name, qty: q, depth: depth, workbench: node ? (node.workbench || '') : '', leaf: !isCraft });
+    if (!isCraft){
+      req[name] = (req[name] || 0) + q;
+      return;
+    }
+    visiting[name] = true;
+    for (var j = 0; j < node.materials.length; j++){
+      expand(node.materials[j].item, q * node.materials[j].qty, depth + 1, visiting, nodes, req);
+    }
+    delete visiting[name];
+  }
+
+  function buildTree(name){
+    var nodes = [], req = {};
+    expand(name, 1, 0, {}, nodes, req);
+    return { nodes: nodes, req: req };
+  }
+
+  // Bottom-up production capacity is computed directly in simulate().
+
+  function simulate(target, G){
+    var tree = buildTree(target);
+    var nodes = tree.nodes, req = tree.req;
+    // depth per node name (deepest occurrence)
+    var depthOf = {};
+    nodes.forEach(function(nd){ depthOf[nd.name] = Math.max(depthOf[nd.name] || 0, nd.depth); });
+    var names = Object.keys(req).sort(function(a,b){ return depthOf[b] - depthOf[a]; });
+
+    var cap = {};
+    for (var i = 0; i < names.length; i++){
+      var nm = names[i];
+      var have = inv[nm] || 0;
+      var node = byName[nm];
+      if (node && node.materials && node.materials.length){
+        var room = Infinity;
+        for (var j = 0; j < node.materials.length; j++){
+          var c = node.materials[j].item, q = node.materials[j].qty;
+          var avail = cap[c] != null ? cap[c] : (inv[c] || 0);
+          var r = Math.floor(avail / q);
+          if (r < room) room = r;
+        }
+        if (!isFinite(room)) room = 0;
+        cap[nm] = have + room;
+      } else {
+        cap[nm] = have;
+      }
+    }
+
+    var M = cap[target] || 0;
+
+    // Bottleneck: direct children of target, tightest room
+    var bot = null;
+    var tNode = byName[target];
+    if (tNode && tNode.materials && M < G){
+      var best = Infinity;
+      for (var k = 0; k < tNode.materials.length; k++){
+        var cc = tNode.materials[k].item, qq = tNode.materials[k].qty;
+        var cr = Math.floor((cap[cc] != null ? cap[cc] : (inv[cc] || 0)) / qq);
+        if (cr < best){ best = cr; bot = { name: cc, qty: qq, room: cr }; }
+      }
+    }
+
+    // Gap to reach goal G
+    var gaps = [];
+    for (var g = 0; g < names.length; g++){
+      var gn = names[g];
+      if (gn === target) continue;
+      var need = req[gn] * G;
+      var supply = cap[gn] || 0;
+      if (supply < need){
+        gaps.push({ name: gn, need: need, supply: supply, short: need - supply,
+                    raw: !(byName[gn] && byName[gn].materials && byName[gn].materials.length) });
+      }
+    }
+    gaps.sort(function(a,b){ return b.short - a.short; });
+
+    return { nodes: nodes, req: req, cap: cap, M: M, bot: bot, gaps: gaps, depthOf: depthOf };
+  }
+
+  function renderInvEditor(target){
+    var tree = buildTree(target);
+    // leaves (raw) first, then intermediates
+    var rows = [];
+    var seen = {};
+    tree.nodes.forEach(function(nd){
+      if (nd.name === target || seen[nd.name]) return;
+      seen[nd.name] = 1;
+      rows.push(nd);
+    });
+    rows.sort(function(a,b){ return (a.leaf === b.leaf ? b.qty - a.qty : (a.leaf ? -1 : 1)); });
+
+    var h = '<div class="tool-label tool-mt">Your current stock (leave 0 if none)</div>';
+    h += '<div class="tool-panel tool-mt-sm"><div class="tool-flex" style="flex-wrap:wrap;gap:8px 16px">';
+    rows.forEach(function(nd){
+      var val = inv[nd.name] || 0;
+      h += '<div class="tool-field" style="min-width:150px">'
+        + '<label class="tool-label" for="{{ $id }}-inv-' + CK.esc(nd.name) + '">'
+        + CK.esc(nd.name) + ' <span class="tool-count">×' + nd.qty + '/craft' + (nd.leaf ? ' · raw' : ' · @ ' + CK.esc(nd.workbench || '')) + '</span></label>'
+        + '<input class="tool-number" type="number" min="0" max="9999" value="' + val + '" data-item="' + CK.esc(nd.name) + '" aria-label="Stock of ' + CK.esc(nd.name) + '">'
+        + '</div>';
+    });
+    h += '</div></div>';
+    invBox.innerHTML = h;
+
+    var inputs = invBox.querySelectorAll('input[data-item]');
+    for (var t = 0; t < inputs.length; t++){
+      inputs[t].addEventListener('input', CK.debounce(function(e){
+        var v = parseInt(e.target.value, 10);
+        inv[e.target.getAttribute('data-item')] = isNaN(v) || v < 0 ? 0 : v;
+        render();
+      }, 120));
+    }
+  }
+
+  function buildText(target, G, sim){
+    var lines = [target + ' — goal: ' + G + ', you can craft ' + sim.M + ' now'];
+    if (sim.bot && sim.M < G){
+      lines.push('Bottleneck: ' + sim.bot.name + ' (supports only ' + sim.bot.room + ' of ' + G + ')');
+    } else if (sim.M >= G){
+      lines.push('Goal reachable with current stock.');
+    }
+    if (sim.gaps.length){
+      lines.push('Gap to gather:');
+      sim.gaps.forEach(function(gp){
+        lines.push('- ' + gp.name + ': need ' + gp.need + ', have ' + gp.supply + ', short ' + gp.short + (gp.raw ? ' (gather)' : ' (craft)'));
+      });
+    }
+    lines.push('');
+    lines.push('Crafting chain:');
+    sim.nodes.forEach(function(nd){
+      var ind = '';
+      for (var d = 0; d < nd.depth; d++){ ind += '  '; }
+      var con = nd.depth > 0 ? '└─ ' : '';
+      lines.push(ind + con + nd.name + ' × ' + nd.qty + (nd.leaf ? '' : ' @ ' + (nd.workbench || '')));
+    });
+    return lines.join('\n');
+  }
+
+  function render(){
+    var name = search.value.trim();
+    if (!name){
+      empty.classList.remove('tool-hidden');
+      out.classList.add('tool-hidden');
+      out.innerHTML = '';
+      invBox.innerHTML = '';
+      currentTarget = '';
+      lastText = '';
+      return;
+    }
+    var it = craftable[name];
+    if (!it){
+      empty.classList.add('tool-hidden');
+      out.classList.remove('tool-hidden');
+      out.innerHTML = '<div class="tool-error">Unknown or non-craftable item: “' + CK.esc(name) + '”. Pick a suggestion from the dropdown.</div>';
+      invBox.innerHTML = '';
+      currentTarget = '';
+      lastText = '';
+      return;
+    }
+    if (currentTarget !== name){
+      currentTarget = name;
+      renderInvEditor(name);
+    }
+    var G = normGoal();
+    var sim = simulate(name, G);
+
+    var pct = G > 0 ? Math.min(100, Math.round(sim.M / G * 100)) : 0;
+    var h = '';
+
+    // headline stats
+    h += '<div class="tool-stats tool-mb">';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + sim.M + '</div><div class="tool-stat__label">Craftable now</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + pct + '%</div><div class="tool-stat__label">Of goal (' + G + ')</div></div>';
+    h += '<div class="tool-stat"><div class="tool-stat__num">' + (sim.bot ? CK.esc(sim.bot.name) : '—') + '</div><div class="tool-stat__label">Bottleneck</div></div>';
+    h += '</div>';
+
+    // progress bar
+    h += '<div class="tool-progress tool-mb" role="img" aria-label="' + pct + ' percent of goal"><div class="tool-progress__fill" style="width:' + pct + '%"></div><div class="tool-progress__label">' + sim.M + ' / ' + G + '</div></div>';
+
+    if (sim.M >= G){
+      h += '<div class="tool-msg tool-green-soft tool-mb">You have enough materials to craft <strong>' + CK.esc(name) + ' × ' + G + '</strong> — no gathering needed.</div>';
+    } else {
+      h += '<div class="tool-msg tool-gold-soft tool-mb">You can craft <strong>' + sim.M + '</strong> now. '
+        + (sim.bot ? 'The chain stalls at <strong>' + CK.esc(sim.bot.name) + '</strong> — ' + Math.floor((sim.cap[sim.bot.name]||0)) + ' available vs ' + (G * sim.bot.qty) + ' needed for ' + G + '.' : '') + '</div>';
+    }
+
+    // gap table (sortable via CK.sortTable)
+    h += '<div class="tool-card__title tool-mt">Gap to reach your goal</div>';
+    if (sim.gaps.length){
+      h += '<div class="tool-table-wrap tool-mt-sm"><table class="tool-table" id="{{ $id }}-gaptable"><thead><tr>'
+        + '<th scope="col" style="cursor:pointer">Material</th>'
+        + '<th scope="col" style="cursor:pointer">Need for ' + G + '</th>'
+        + '<th scope="col" style="cursor:pointer">You can supply</th>'
+        + '<th scope="col" style="cursor:pointer">Short by</th>'
+        + '<th scope="col">Source</th></tr></thead><tbody>';
+      sim.gaps.forEach(function(gp){
+        h += '<tr><td>' + CK.esc(gp.name) + '</td><td class="num">' + gp.need + '</td><td class="num">' + gp.supply + '</td>'
+          + '<td class="num"><span class="tool-badge tool-badge--danger">-' + gp.short + '</span></td>'
+          + '<td>' + (gp.raw ? '<span class="tool-badge">gather</span>' : '<span class="tool-badge tool-badge--blue">craft</span>') + '</td></tr>';
+      });
+      h += '</tbody></table></div>';
+    } else {
+      h += '<div class="tool-empty tool-mt-sm">No gaps — all required materials are covered by your stock.</div>';
+    }
+
+    // production tree with per-node status
+    h += '<div class="tool-card__title tool-mt">Full crafting chain (stock-aware)</div>';
+    h += '<div class="tool-tree tool-mt-sm">';
+    sim.nodes.forEach(function(nd){
+      var ind = '';
+      for (var d = 0; d < nd.depth; d++){ ind += '  '; }
+      var con = nd.depth > 0 ? '└─ ' : '';
+      var cls = nd.leaf ? 'tool-tree__leaf' : 'tool-tree__node';
+      var tag = nd.leaf ? ' <span class="tool-tree__tag">(raw)</span>' : ' <span class="tool-tree__tag">@ ' + CK.esc(nd.workbench || '') + '</span>';
+      var avail = sim.cap[nd.name] != null ? sim.cap[nd.name] : (inv[nd.name] || 0);
+      var needG = sim.req[nd.name] * G;
+      var status;
+      if (nd.name === name){
+        status = ' <span class="tool-badge tool-badge--green">have ' + avail + '</span>';
+      } else if (avail >= needG){
+        status = ' <span class="tool-badge">ok</span>';
+      } else {
+        status = ' <span class="tool-badge tool-badge--danger">short ' + Math.ceil(needG - avail) + '</span>';
+      }
+      h += '<div>' + ind + con + '<span class="' + cls + '">' + CK.esc(nd.name) + '</span> × ' + nd.qty + tag + status + '</div>';
+    });
+    h += '</div>';
+
+    h += '<div class="tool-mt"><button class="tool-btn tool-btn--gold" type="button" id="{{ $id }}-copy">Copy plan</button></div>';
+
+    empty.classList.add('tool-hidden');
+    out.classList.remove('tool-hidden');
+    out.innerHTML = h;
+    lastText = buildText(name, G, sim);
+
+    // sortable gap table
+    var gtable = out.querySelector('#{{ $id }}-gaptable');
+    if (gtable){
+      var ths = gtable.querySelectorAll('th');
+      for (var s = 0; s < ths.length; s++){
+        (function(th, col){
+          th.addEventListener('click', function(){ CK.sortTable(gtable, col); });
+        })(ths[s], s);
+      }
+    }
+    var copyBtn = out.querySelector('#{{ $id }}-copy');
+    if (copyBtn){ copyBtn.addEventListener('click', function(){ if (lastText){ CK.copy(lastText, copyBtn); } }); }
+  }
+
+  search.addEventListener('input', CK.debounce(render, 150));
+  search.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ render(); } });
+  goalInp.addEventListener('input', CK.debounce(render, 120));
+  gminus.addEventListener('click', function(){ normGoal(); goalInp.value = Math.max(1, parseInt(goalInp.value,10)-1); render(); });
+  gplus.addEventListener('click', function(){ normGoal(); goalInp.value = Math.min(999, parseInt(goalInp.value,10)+1); render(); });
+})();
+</script>
