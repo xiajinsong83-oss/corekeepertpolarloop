@@ -49,34 +49,49 @@
       {{ end }}
     </div>
 
-    <!-- 最新更新（P0-2 自动追踪管道：Steam 官方新闻，每 6 小时刷新） -->
+    <!-- 最新更新（P0-2 自动追踪管道：Steam 官方新闻，图文卡片） -->
     <h2 class="section-title">Latest Updates</h2>
-    <ul class="postlist">
+    <div class="grid g3">
       {{ $news := where site.RegularPages "Section" "news" }}
-      {{ range first 5 $news }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        {{ with .Date }}<div class="meta">{{ .Format "2006-01-02" }}</div>{{ end }}
-      </li>
+      {{ range first 6 $news }}
+      <a class="card card-media" href="{{ .RelPermalink }}">
+        <img src="/img/app-icons/news.png" alt="{{ .Title }} icon">
+        <div>
+          <h3 class="card-title">{{ .Title }}</h3>
+          <p class="clamp2">{{ .Description | default "Latest official Core Keeper news and patch notes." }}</p>
+          <div class="card-meta">{{ with .Date }}{{ .Format "2006-01-02" }}{{ end }}{{ with .Params.type }} · {{ . }}{{ end }}</div>
+        </div>
+      </a>
       {{ end }}
-    </ul>
+    </div>
 
-    <!-- 最新攻略（Wiki 风格） -->
+    <!-- 最新攻略（图文卡片，图标取自所属分类） -->
     <h2 class="section-title">Latest Guides</h2>
-    <ul class="postlist">
+    <div class="grid g3">
       {{ $guides := where site.RegularPages "Section" "guides" }}
-      {{ range first 8 $guides }}
-      <li>
-        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        <div class="meta">{{ .Description }}</div>
-      </li>
+      {{ range first 9 $guides }}
+      {{ $icon := "/img/app-icons/guides.png" }}
+      {{ with .Parent.Params.icon }}{{ $icon = . }}{{ end }}
+      <a class="card card-media" href="{{ .RelPermalink }}">
+        <img src="{{ $icon }}" alt="{{ .Title }} icon">
+        <div>
+          <h3 class="card-title">{{ .Title }}</h3>
+          <p class="clamp2">{{ .Description | default "Core Keeper guide — tips, mechanics and strategies." }}</p>
+          <div class="card-meta">Guide{{ with .Date }} · {{ .Format "2006-01-02" }}{{ end }}</div>
+        </div>
+      </a>
       {{ end }}
-    </ul>
+    </div>
 
-    <!-- 最新 Wiki 编辑（P1-1 聚合，来自 data/wiki_updates.json；条目跳转本站对应词条页/栏目页，不直跳外站） -->
+    <!-- 最新 Wiki 编辑（P1-1 聚合，图文卡片；条目跳转本站对应词条页/栏目页，不直跳外站） -->
     <h2 class="section-title">Latest Wiki Updates</h2>
-    <ul class="postlist">
+    <div class="grid g3">
       {{ $wu := site.Data.wiki_updates.updates | default slice }}
+      {{ $iconMap := dict }}
+      {{ range site.Data.creatures.creatures }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/creature-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.items.items }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/item-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.biomes.biomes }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/biome-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ range site.Data.bosses.bosses }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/boss-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
       {{ $localMap := dict }}
       {{ range site.Data.creatures.creatures }}{{ $localMap = merge $localMap (dict .name (printf "/database/creatures/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
       {{ range site.Data.items.items }}{{ $localMap = merge $localMap (dict .name (printf "/database/items/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
@@ -86,16 +101,21 @@
       {{ $localMap = merge $localMap (dict "Biomes" "/database/biomes/") }}
       {{ $critterRe := "[Ff]ly|[Ww]ing|[Ff]airy|[Ss]nail|[Nn]ewt|[Pp]incher|[Bb]ug|[Ww]orm|[Mm]anyleg|[Ll]arvlet|[Ss]niffling|[Oo]rex|[Ll]eafhopper|[Ee]arthworm|[Bb]lackbug|[Gg]em [Ss]nail|[Ll]ittle [Dd]eath" }}
       {{ $creatureFallback := "/database/creatures/" }}
-      {{ range first 5 $wu }}
+      {{ range first 6 $wu }}
       {{ $target := index $localMap .title }}
+      {{ $icon := "/img/app-icons/database.png" }}
+      {{ if index $iconMap .title }}{{ $icon = index $iconMap .title }}{{ else if eq .title "Bosses" }}{{ $icon = "/img/app-icons/bosses.png" }}{{ $icon = $icon }}{{ else if eq .title "Biomes" }}{{ $icon = "/img/app-icons/biomes.png" }}{{ else if .title | findRE $critterRe }}{{ $icon = "/img/app-icons/creatures.png" }}{{ end }}
       {{ if not $target }}{{ if .title | findRE $critterRe }}{{ $target = $creatureFallback }}{{ else }}{{ $target = "/wiki/" }}{{ end }}{{ end }}
-      <li>
-        <a href="{{ $target }}">{{ .title }}</a>
-        {{ if eq $target $creatureFallback }}<span style="font-size:11px;color:#6d7f76;border:1px solid #2e423a;padding:0 6px;margin-left:6px">creatures</span>{{ end }}
-        <div class="meta">{{ .ts | replaceRE "^(.{10}).*" "$1" }} · by {{ .user }}</div>
-      </li>
+      <a class="card card-media" href="{{ $target }}">
+        <img src="{{ $icon }}" alt="{{ .title }} icon">
+        <div>
+          <h3 class="card-title">{{ .title }}</h3>
+          <p class="clamp2">Community wiki edit{{ if eq $target $creatureFallback }} · creature entry{{ end }} — see the full entry here on Core Keeper Hub.</p>
+          <div class="card-meta">{{ .ts | replaceRE "^(.{10}).*" "$1" }} · by {{ .user }}</div>
+        </div>
+      </a>
       {{ end }}
-    </ul>
+    </div>
     <div style="font-size:12.5px;color:#6d7f76;margin-top:8px">Community edits mirrored from the official wiki (atma.gg) — each entry opens the matching page here on Core Keeper Hub. <a href="/wiki-updates/">See all updates</a>.</div>
 
     <!-- P2-1 社区热议（Reddit 聚合，数据由管道填充；未抓到数据时整块隐藏） -->
