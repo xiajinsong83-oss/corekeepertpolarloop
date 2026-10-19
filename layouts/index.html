@@ -119,6 +119,11 @@
       {{ range site.Data.items.items }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/item-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
       {{ range site.Data.biomes.biomes }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/biome-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
       {{ range site.Data.bosses.bosses }}{{ $iconMap = merge $iconMap (dict .name (printf "/img/app-icons/boss-%s.png" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
+      {{ $noteMap := dict }}
+      {{ range site.Data.creatures.creatures }}{{ $n := .name }}{{ with .note }}{{ $noteMap = merge $noteMap (dict $n .) }}{{ end }}{{ end }}
+      {{ range site.Data.biomes.biomes }}{{ $n := .name }}{{ with .note }}{{ $noteMap = merge $noteMap (dict $n .) }}{{ end }}{{ end }}
+      {{ range site.Data.items.items }}{{ $n := .name }}{{ with .use }}{{ $noteMap = merge $noteMap (dict $n .) }}{{ end }}{{ end }}
+      {{ range site.Data.bosses.bosses }}{{ $n := .name }}{{ with .note }}{{ $noteMap = merge $noteMap (dict $n .) }}{{ end }}{{ end }}
       {{ $localMap := dict }}
       {{ range site.Data.creatures.creatures }}{{ $localMap = merge $localMap (dict .name (printf "/database/creatures/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
       {{ range site.Data.items.items }}{{ $localMap = merge $localMap (dict .name (printf "/database/items/%s/" (.name | lower | replaceRE "[^a-z0-9]+" "-"))) }}{{ end }}
@@ -131,13 +136,19 @@
       {{ range first 6 $wu }}
       {{ $target := index $localMap .title }}
       {{ $icon := "/img/app-icons/database.png" }}
-      {{ if index $iconMap .title }}{{ $icon = index $iconMap .title }}{{ else if eq .title "Bosses" }}{{ $icon = "/img/app-icons/bosses.png" }}{{ $icon = $icon }}{{ else if eq .title "Biomes" }}{{ $icon = "/img/app-icons/biomes.png" }}{{ else if .title | findRE $critterRe }}{{ $icon = "/img/app-icons/creatures.png" }}{{ end }}
+      {{ if index $iconMap .title }}{{ $icon = index $iconMap .title }}{{ else if eq .title "Bosses" }}{{ $icon = "/img/app-icons/bosses.png" }}{{ else if eq .title "Biomes" }}{{ $icon = "/img/app-icons/biomes.png" }}{{ else if .title | findRE $critterRe }}{{ $icon = "/img/app-icons/creatures.png" }}{{ end }}
       {{ if not $target }}{{ if .title | findRE $critterRe }}{{ $target = $creatureFallback }}{{ else }}{{ $target = "/wiki/" }}{{ end }}{{ end }}
+      {{ $desc := index $noteMap .title }}
+      {{ if not $desc }}
+        {{ if eq .title "Bosses" }}{{ $desc = printf "%d bosses indexed on Core Keeper Hub" (len site.Data.bosses.bosses) }}
+        {{ else if eq .title "Biomes" }}{{ $desc = printf "%d biomes indexed on Core Keeper Hub" (len site.Data.biomes.biomes) }}
+        {{ else }}{{ $desc = "Community wiki edit — the entry is tracked on this hub." }}{{ end }}
+      {{ end }}
       <a class="card card-media" href="{{ $target }}">
         <img src="{{ $icon }}" alt="{{ .title }} icon">
         <div>
           <h3 class="card-title">{{ .title }}</h3>
-          <p class="clamp2">Community wiki edit{{ if eq $target $creatureFallback }} · creature entry{{ end }} — see the full entry here on Core Keeper Hub.</p>
+          <p class="clamp2">{{ $desc }}{{ if .comment }} · <span style="color:#6d7f76">{{ .comment }}</span>{{ end }}</p>
           <div class="card-meta">{{ .ts | replaceRE "^(.{10}).*" "$1" }} · by {{ .user }}</div>
         </div>
       </a>
