@@ -1,0 +1,87 @@
+# Curated Core Keeper world seeds
+# Policy: community-submitted, verified worlds only — never invented.
+# Every entry below has a traceable community source URL in `source`.
+# version: the game version the seed was reported/tested on.
+#   The site's reference data version is 1.3.0.6; seeds reported on 1.0.0.0-era
+#   posts are kept because their major terrain features (biome angles, boss arcs,
+#   fixed meadows) are seed-deterministic, but always re-verify in 1.3.0.6.
+# See content/seeds/seed-guide.md for how seed generation works.
+
+seeds:
+  - name: "Starter Items Seed"
+    seed: "400957925946"
+    version: "1.0.0.0 (reported Sep 2024; re-verify on 1.3.0.6)"
+    tags: [starting]
+    desc: "Useful starter items spawn a short walk from the Core — a low-friction opening."
+    features:
+      - "Good starting loot within easy reach of spawn"
+      - "Stays inside The Undergrounds (0–140 tiles) for the first session"
+      - "No long tunnel dig needed to get going"
+    source: "https://primagames.com/gaming/best-seeds-and-world-generation-settings-in-core-keeper-and-what-they-do"
+
+  - name: "North Meadow Start"
+    seed: "1"
+    version: "1.0.0.0 (reported Sep 2024; re-verify on 1.3.0.6)"
+    tags: [starting, rare-terrain]
+    desc: "A peaceful Meadow sub-biome sits directly north of spawn — instant early livestock."
+    features:
+      - "Meadow sub-biome north of The Core"
+      - "Moolin (Meadow Milk) and Bambuck (Wool) spawn in the meadow"
+      - "No hostile mobs inside the meadow itself"
+    source: "https://primagames.com/gaming/best-seeds-and-world-generation-settings-in-core-keeper-and-what-they-do"
+
+  - name: "SE Meadow Start"
+    seed: "186511372992"
+    version: "1.0.0.0 (reported Sep 2024; re-verify on 1.3.0.6)"
+    tags: [starting, rare-terrain]
+    desc: "Meadow sub-biome southeast of spawn — alternative to the north-meadow seed."
+    features:
+      - "Meadow sub-biome southeast of The Core"
+      - "Early wool and milk without the inner-ring trek"
+      - "Good fallback if seed 1's north meadow feels cramped"
+    source: "https://primagames.com/gaming/best-seeds-and-world-generation-settings-in-core-keeper-and-what-they-do"
+
+  - name: "Meadow Cluster"
+    seed: "987654321000"
+    version: "1.0.0.0 (reported Sep 2024; re-verify on 1.3.0.6)"
+    tags: [rare-terrain, ranching]
+    desc: "Multiple meadows near spawn — the community's go-to ranching seed."
+    features:
+      - "Several Meadow sub-biomes clustered near the Core"
+      - "More Moolin / Bambuck spawns to trap and breed"
+      - "Ideal for an early wool-and-milk farm before iron gear"
+    source: "https://primagames.com/gaming/best-seeds-and-world-generation-settings-in-core-keeper-and-what-they-do"
+
+  - name: "Green Moolin Meadow"
+    seed: "919045411111"
+    version: "1.3.x (reported Apr 2026)"
+    tags: [rare-terrain, ranching]
+    desc: "Community seed reported to contain a meadow with the rare green Moolin variant."
+    features:
+      - "Meadow reported in the dirt-biome opening"
+      - "Rare green Moolin variant sighted by the reporter"
+      - "Shared on the official Core Keeper Discord trading channel"
+    source: "https://doublepost.link/guild/851842678340845600/thread/1492180954930745354/p/1492180954930745354/"
+
+  - name: "Waypoint Farm Seed"
+    seed: "164131586535"
+    version: "1.0.0.0 (reported Sep 2024; glitches may be patched in 1.3.0.6)"
+    tags: [rare-terrain, utility]
+    desc: "Community-reported Ancient Waypoint farming seed — use it to anchor a fast-travel network early."
+    features:
+      - "Ancient Waypoint positioned close to the opening"
+      - "Lets you build a charged waypoint loop before outer-ring travel"
+      - "The reported 'glitch' behavior may be patched — verify before relying on it"
+    source: "https://primagames.com/gaming/best-seeds-and-world-generation-settings-in-core-keeper-and-what-they-do"
+
+  - name: "Wisdom Oracle Card Seed"
+    seed: "582489510745"
+    version: "1.3.x (reported Jun 2026)"
+    tags: [rare-terrain, collector]
+    desc: "Sunken Sea city sewer scene with the 'Wisdom' Oracle Card, reported at coords -805, 37."
+    features:
+      - "Sewer scene inside a Sunken Sea city"
+      - "'Wisdom' Oracle Card collectible on site"
+      - "Reported coordinates: -805, 37"
+      - "Only large-metropolis scenes are seed-locked; small ones may differ"
+    source: "https://redditpp.com/r/CoreKeeperGame/comments/1uhtycr/"
