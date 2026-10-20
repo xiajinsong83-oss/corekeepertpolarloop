@@ -1,0 +1,86 @@
+{{/* 工具3：合成反推器 — 输入目标物品数量，递归展开材料直至基础材料总量 */}}
+<div id="ck-recipe-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Pick a craftable item and a quantity — this backtracker expands every intermediate ingredient (bars, planks, glass…) down to the raw materials you actually need to gather.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px">Item to craft
+      <input id="ck-item-search" placeholder="Type to filter…" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+      <select id="ck-item" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px;margin-top:6px"></select>
+    </label>
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;min-width:140px">Quantity
+      <input id="ck-qty" type="number" min="1" max="9999" value="1" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+    </label>
+  </div>
+  <div id="ck-recipe-out"></div>
+</div>
+<script>
+(function () {
+  var items = {{ jsonify site.Data.items.items }};
+  var byName = {};
+  var craftables = [];
+  items.forEach(function (x) {
+    byName[x.name] = x;
+    if (x.materials && x.materials.length) craftables.push(x);
+  });
+  craftables.sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+  var search = document.getElementById('ck-item-search');
+  var sel = document.getElementById('ck-item');
+  var qty = document.getElementById('ck-qty');
+  var out = document.getElementById('ck-recipe-out');
+
+  function fill(term) {
+    var t = (term || '').toLowerCase();
+    var list = craftables.filter(function (x) { return !t || x.name.toLowerCase().indexOf(t) !== -1; }).slice(0, 60);
+    var html = '';
+    list.forEach(function (x) { html += '<option value="' + x.name + '">' + x.name + ' (' + (x.workbench || 'Workbench') + ')</option>'; });
+    sel.innerHTML = html;
+  }
+
+  function expand(name, qty, depth, visited, base, mids) {
+    var it = byName[name];
+    if (depth > 4) { base[name] = (base[name] || 0) + qty; return; }
+    if (!it || !it.materials || !it.materials.length) { base[name] = (base[name] || 0) + qty; return; }
+    if (visited[name]) { base[name] = (base[name] || 0) + qty; return; }
+    visited[name] = true;
+    it.materials.forEach(function (m) {
+      var q = m.qty || m.count || 1;
+      mids[name] = { qty: (mids[name] ? mids[name].qty : 0) + (qty * q), workbench: it.workbench || '' };
+      expand(m.item, qty * q, depth + 1, visited, base, mids);
+    });
+  }
+
+  function render() {
+    var name = sel.value;
+    if (!name) { out.innerHTML = ''; return; }
+    var n = Math.max(1, parseInt(qty.value, 10) || 1);
+    var base = {}, mids = {};
+    expand(name, n, 0, {}, base, mids);
+    var html = '<div style="border:1px solid #2e423a;border-radius:6px;padding:12px 14px;background:#101613">'
+      + '<div style="font-size:15px;color:#fff;font-weight:700;margin-bottom:8px">' + name + ' × ' + n + '</div>';
+    if (Object.keys(mids).length) {
+      html += '<div style="font-size:12.5px;color:#7fd6a0;margin-bottom:6px">INTERMEDIATES TO CRAFT</div>'
+        + '<table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:10px">'
+        + '<tr style="color:#6d7f76;text-align:left"><th style="padding:4px 8px">Item</th><th style="padding:4px 8px">Total needed</th><th style="padding:4px 8px">Workbench</th></tr>';
+      Object.keys(mids).forEach(function (k) {
+        html += '<tr style="border-top:1px solid #2e423a"><td style="padding:4px 8px;color:#e6b34d">' + k + '</td><td style="padding:4px 8px;color:#fff;font-weight:600">' + mids[k].qty + '</td><td style="padding:4px 8px;color:#a9b8b0">' + mids[k].workbench + '</td></tr>';
+      });
+      html += '</table>';
+    }
+    html += '<div style="font-size:12.5px;color:#7fd6a0;margin-bottom:6px">RAW MATERIALS TO GATHER</div>'
+      + '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      + '<tr style="color:#6d7f76;text-align:left"><th style="padding:4px 8px">Material</th><th style="padding:4px 8px">Total</th></tr>';
+    Object.keys(base).sort().forEach(function (k) {
+      html += '<tr style="border-top:1px solid #2e423a"><td style="padding:4px 8px;color:#c9d4cf">' + k + '</td><td style="padding:4px 8px;color:#fff;font-weight:600">' + base[k] + '</td></tr>';
+    });
+    html += '</table>'
+      + '<div style="font-size:11.5px;color:#6d7f76;margin-top:8px">Recipes from data/items.yaml (atma.gg verified). Items without a published recipe are listed as raw. Loops are cut at depth 4.</div></div>';
+    out.innerHTML = html;
+  }
+
+  search.addEventListener('input', function () { fill(search.value); });
+  sel.addEventListener('change', render);
+  qty.addEventListener('input', render);
+  fill('');
+  render();
+})();
+</script>
