@@ -1,0 +1,68 @@
+{{/* 工具1：烹饪 Buff 搭配器 — 按目标增益筛选最优食物（数据：data/items.yaml 食物/消耗品） */}}
+<div id="ck-buff-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Pick the buff you want, and we list every food, snack and potion that provides it. Same-type buffs do <strong>not</strong> stack in Core Keeper — only the highest value applies, while different buff types can be combined freely.</div>
+  <div id="ck-buff-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>
+  <div id="ck-buff-list" style="display:flex;flex-direction:column;gap:10px"></div>
+  <div id="ck-buff-empty" style="color:#6d7f76;font-size:13.5px;display:none">No indexed food provides this buff yet — check the <a href="/tools/cooking-guide/" style="color:#e6b34d">Cooking Guide</a> for the full ingredient table.</div>
+</div>
+<script>
+(function () {
+  var items = {{ jsonify (where (site.Data.items.items) "category" "in" (slice "Food" "Consumable" "Potion")) }};
+  var BUFFS = [
+    ["Max Health", ["max health", "max hp"]],
+    ["Melee Damage", ["melee damage"]],
+    ["Range Damage", ["range damage"]],
+    ["Magic Damage", ["magic damage"]],
+    ["Minion Damage", ["minion damage"]],
+    ["Movement Speed", ["movement speed"]],
+    ["Crit Chance", ["critical hit chance", "crit"]],
+    ["Attack Speed", ["attack speed"]],
+    ["Armor", ["armor"]],
+    ["Health Regen", ["health every sec", "regen"]]
+  ];
+  var tabs = document.getElementById('ck-buff-tabs');
+  var list = document.getElementById('ck-buff-list');
+  var empty = document.getElementById('ck-buff-empty');
+  var active = 0;
+
+  function has(effects, kws) {
+    var e = (effects || '').toLowerCase();
+    for (var i = 0; i < kws.length; i++) if (e.indexOf(kws[i]) !== -1) return true;
+    return false;
+  }
+
+  function buildTabs() {
+    var html = '';
+    BUFFS.forEach(function (b, i) {
+      html += '<button data-i="' + i + '" style="background:' + (i === 0 ? '#e6b34d' : '#101613') + ';color:' + (i === 0 ? '#101613' : '#c9d4cf') + ';border:1px solid #2e423a;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer">' + b[0] + '</button>';
+    });
+    tabs.innerHTML = html;
+    tabs.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button');
+      if (!b) return;
+      active = parseInt(b.dataset.i, 10);
+      buildTabs(); render();
+    });
+  }
+
+  function render() {
+    var buff = BUFFS[active];
+    var hits = items.filter(function (x) { return has(x.effects, buff[1]); });
+    if (!hits.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    var html = '';
+    hits.forEach(function (x) {
+      html += '<div style="border:1px solid #2e423a;border-radius:6px;padding:11px 14px;background:#101613">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
+        + '<span style="font-size:14.5px;color:#fff;font-weight:600">' + x.name + '</span>'
+        + '<span style="font-size:11px;color:#7fd6a0;border:1px solid #2e423a;padding:1px 8px;border-radius:4px">' + (x.category || x.type || 'Food') + '</span></div>'
+        + '<div style="font-size:13px;color:#e6b34d;margin-top:6px;line-height:1.5">' + x.effects + '</div>'
+        + (x.source ? '<div style="font-size:11.5px;color:#6d7f76;margin-top:4px">' + x.source + '</div>' : '')
+        + '</div>';
+    });
+    list.innerHTML = html;
+  }
+
+  buildTabs(); render();
+})();
+</script>
