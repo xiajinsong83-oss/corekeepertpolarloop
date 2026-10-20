@@ -1,0 +1,56 @@
+{{/* 工具2：作物利润计算器 — crops.yaml 驱动，生长 10 分钟固定，利润/小时排行 */}}
+<div id="ck-crop-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Every crop takes a fixed <strong>10 minutes</strong> from watered seed to harvest (2 sprout + 4 grow + 4 mature). Profit below assumes manual harvest and self-grown seeds — adjust seed cost to your own runs.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;min-width:150px">Ground type
+      <select id="ck-ground" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+        <option value="All">All grounds</option>
+        <option value="Dirt">Dirt</option>
+        <option value="Beach">Beach</option>
+        <option value="Crystal">Crystal</option>
+      </select>
+    </label>
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;min-width:160px">Seed cost (per seed)
+      <input id="ck-seedcost" type="number" min="0" max="100" value="0" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+    </label>
+  </div>
+  <div id="ck-crop-table"></div>
+  <div style="font-size:12px;color:#6d7f76;margin-top:10px">Sell values verified from atma.gg item pages (2026-10). Golden crop base chance 3%; extra harvest chance scales with Gardening level (+0.4%/level). More crops pending verification.</div>
+</div>
+<script>
+(function () {
+  var crops = {{ jsonify site.Data.crops.crops }};
+  var GROW = 10; // minutes per harvest cycle
+  var PER_H = 60 / GROW;
+  var ground = document.getElementById('ck-ground');
+  var cost = document.getElementById('ck-seedcost');
+  var box = document.getElementById('ck-crop-table');
+
+  function render() {
+    var g = ground.value, seed = Math.max(0, parseFloat(cost.value) || 0);
+    var list = crops.filter(function (c) { return g === 'All' || c.ground === g; })
+      .map(function (c) {
+        var profit = c.sell - seed;
+        return { c: c, profit: profit, perHour: Math.max(0, profit) * PER_H };
+      })
+      .sort(function (a, b) { return b.perHour - a.perHour; });
+    if (!list.length) { box.innerHTML = '<div style="color:#6d7f76;font-size:13.5px">No verified crops for this ground yet — data pending.</div>'; return; }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:13.5px">'
+      + '<tr style="color:#6d7f76;text-align:left;border-bottom:1px solid #2e423a"><th style="padding:6px 8px">Crop</th><th style="padding:6px 8px">Ground</th><th style="padding:6px 8px">Sell</th><th style="padding:6px 8px">Seed cost</th><th style="padding:6px 8px">Profit/h</th><th style="padding:6px 8px">Note</th></tr>';
+    list.forEach(function (r) {
+      html += '<tr style="border-bottom:1px solid #16211b">'
+        + '<td style="padding:7px 8px;color:#fff;font-weight:600">' + r.c.name + '</td>'
+        + '<td style="padding:7px 8px;color:#a9b8b0">' + r.c.ground + '</td>'
+        + '<td style="padding:7px 8px;color:#e6b34d;font-weight:700">' + r.c.sell + '</td>'
+        + '<td style="padding:7px 8px;color:#a9b8b0">' + seed + '</td>'
+        + '<td style="padding:7px 8px;color:#7fd6a0;font-weight:700">' + r.perHour.toFixed(1) + '</td>'
+        + '<td style="padding:7px 8px;color:#6d7f76;font-size:12px">' + (r.c.note || '') + '</td></tr>';
+    });
+    html += '</table>';
+    box.innerHTML = html;
+  }
+  ground.addEventListener('change', render);
+  cost.addEventListener('input', render);
+  render();
+})();
+</script>

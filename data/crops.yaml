@@ -1,0 +1,30 @@
+# 作物数据（crops.yaml）— 来源 atma.gg 官方 Wiki（Gardening 页 + 单品页核实，2026-10-20）
+# 生长时间：所有作物从浇水种子到可收获固定 10 分钟（2 发芽 + 4 生长 + 4 成熟）
+# sell: 单品页 Sell value 实测；未核实的作物不收录（待下期补）
+# ground: 地块要求（空=任意可种植地块）
+crops:
+  - name: "Heart Berry"
+    seed: "Heart Berry Seed"
+    sell: 1
+    ground: "Dirt"
+    note: "Early-game staple; also used in healing potions."
+  - name: "Bloat Oat"
+    seed: "Bloat Oat Seed"
+    sell: 6
+    ground: "Dirt"
+    note: "Best early profit crop; cooking base for many recipes."
+  - name: "Pewpaya"
+    seed: "Pewpaya Seed"
+    sell: 5
+    ground: "Beach"
+    note: "Range-damage cooking ingredient."
+  - name: "Pinegrapple"
+    seed: "Pinegrapple Seed"
+    sell: 6
+    ground: "Beach"
+    note: "Melee-damage cooking ingredient."
+  - name: "Sunrice"
+    seed: "Sunrice Seed"
+    sell: 6
+    ground: "Crystal"
+    note: "Magic-damage cooking ingredient (crystal biome)."
