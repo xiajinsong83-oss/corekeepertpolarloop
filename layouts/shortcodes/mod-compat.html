@@ -1,0 +1,63 @@
+{{/* 工具6：Mod 版本兼容查询 — popular_mods.yaml 驱动：平台/分类/搜索过滤 + 站点版本基线提示 */}}
+<div id="ck-mod-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Filter the 22 most popular Core Keeper mods by platform and category. Compatibility is checked on each mod page — always confirm against your exact game build (site baseline: <strong>1.3.0.6</strong>).</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;align-items:center">
+    <select id="ck-mod-platform" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:13.5px">
+      <option value="All">All platforms</option>
+      <option value="mod.io">mod.io</option>
+      <option value="Steam Workshop">Steam Workshop</option>
+      <option value="Both">Both</option>
+    </select>
+    <select id="ck-mod-cat" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:13.5px">
+      <option value="All">All categories</option>
+    </select>
+    <input id="ck-mod-search" placeholder="Search mods…" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 12px;font-size:13.5px;flex:1;min-width:180px">
+  </div>
+  <div id="ck-mod-list"></div>
+</div>
+<script>
+(function () {
+  var mods = {{ jsonify site.Data.popular_mods.popular_mods }};
+  var platform = document.getElementById('ck-mod-platform');
+  var cat = document.getElementById('ck-mod-cat');
+  var search = document.getElementById('ck-mod-search');
+  var list = document.getElementById('ck-mod-list');
+
+  // fill categories
+  var cats = {};
+  mods.forEach(function (m) { var c = m.category || 'General'; cats[c] = 1; });
+  Object.keys(cats).sort().forEach(function (c) {
+    var o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    cat.appendChild(o);
+  });
+
+  function norm(s) { return (s || '').toLowerCase(); }
+  function render() {
+    var p = platform.value, c = cat.value, t = norm(search.value);
+    var rows = mods.filter(function (m) {
+      if (p !== 'All' && norm(m.platform) !== norm(p)) return false;
+      if (c !== 'All' && (m.category || 'General') !== c) return false;
+      if (t && norm(m.name).indexOf(t) === -1 && norm(m.desc).indexOf(t) === -1) return false;
+      return true;
+    });
+    if (!rows.length) { list.innerHTML = '<div style="color:#6d7f76;font-size:13.5px">No mods match these filters.</div>'; return; }
+    var html = '';
+    rows.forEach(function (m) {
+      html += '<div style="border:1px solid #2e423a;border-radius:6px;padding:11px 14px;background:#101613;margin-bottom:8px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
+        + '<span style="font-size:14.5px;color:#fff;font-weight:600">' + m.name + '</span>'
+        + '<span style="font-size:11px;color:#7fd6a0;border:1px solid #2e423a;padding:1px 8px;border-radius:4px">' + (m.platform || 'mod.io') + '</span></div>'
+        + '<div style="font-size:12.5px;color:#a9b8b0;margin-top:4px">' + (m.category || 'General') + (m.downloads ? ' · <span style="color:#e6b34d">' + m.downloads + '</span> downloads' : '') + '</div>'
+        + '<div style="font-size:12.5px;color:#c9d4cf;margin-top:4px;line-height:1.45">' + (m.desc || '') + '</div>'
+        + '<div style="font-size:11.5px;color:#6d7f76;margin-top:6px">Compatibility: check on the mod page — '
+        + (m.url ? '<a href="' + m.url + '" target="_blank" rel="noopener" style="color:#e6b34d">official page</a>' : 'mod page') + '</div></div>';
+    });
+    list.innerHTML = html;
+  }
+  platform.addEventListener('change', render);
+  cat.addEventListener('change', render);
+  search.addEventListener('input', render);
+  render();
+})();
+</script>

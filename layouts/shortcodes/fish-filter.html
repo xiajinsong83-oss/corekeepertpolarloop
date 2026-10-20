@@ -1,0 +1,73 @@
+{{/* 工具5：钓鱼图鉴筛选器 — 按水域/搜索/概率排序（数据：data/fishing.yaml） */}}
+<div id="ck-fish-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="font-size:13px;color:#a9b8b0;margin-bottom:12px">Browse every fish by water type — tick the biomes you fish in, search by name, and sort by catch chance to plan your collection.</div>
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;align-items:center">
+    <div id="ck-waters" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    <input id="ck-fish-search" placeholder="Search fish…" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 12px;font-size:13.5px;flex:1;min-width:180px">
+    <select id="ck-fish-sort" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:13.5px">
+      <option value="name">Sort: A–Z</option>
+      <option value="chance">Sort: catch chance</option>
+      <option value="water">Sort: water type</option>
+    </select>
+  </div>
+  <div id="ck-fish-count" style="font-size:12px;color:#6d7f76;margin-bottom:8px"></div>
+  <div id="ck-fish-list"></div>
+</div>
+<script>
+(function () {
+  var waters = {{ jsonify site.Data.fishing.waters }};
+  var all = [];
+  waters.forEach(function (w) {
+    (w.fish || []).forEach(function (f) {
+      all.push({ name: f.name, chance: parseFloat((f.chance || '0%').replace('%', '')), water: w.name });
+    });
+  });
+  var waterBox = document.getElementById('ck-waters');
+  var search = document.getElementById('ck-fish-search');
+  var sort = document.getElementById('ck-fish-sort');
+  var count = document.getElementById('ck-fish-count');
+  var list = document.getElementById('ck-fish-list');
+  var activeWaters = {};
+
+  waters.forEach(function (w) {
+    activeWaters[w.name] = true;
+    var b = document.createElement('button');
+    b.textContent = w.name;
+    b.dataset.w = w.name;
+    b.style.cssText = 'background:#e6b34d;color:#101613;border:1px solid #e6b34d;border-radius:6px;padding:6px 12px;font-size:12.5px;cursor:pointer';
+    b.addEventListener('click', function () {
+      activeWaters[w.name] = !activeWaters[w.name];
+      b.style.background = activeWaters[w.name] ? '#e6b34d' : '#101613';
+      b.style.color = activeWaters[w.name] ? '#101613' : '#6d7f76';
+      render();
+    });
+    waterBox.appendChild(b);
+  });
+
+  function render() {
+    var t = (search.value || '').toLowerCase();
+    var mode = sort.value;
+    var rows = all.filter(function (f) { return activeWaters[f.water] && (!t || f.name.toLowerCase().indexOf(t) !== -1); });
+    rows.sort(function (a, b) {
+      if (mode === 'chance') return b.chance - a.chance;
+      if (mode === 'water') return a.water.localeCompare(b.water) || a.name.localeCompare(b.name);
+      return a.name.localeCompare(b.name);
+    });
+    count.textContent = rows.length + ' fish across ' + waters.filter(function (w) { return activeWaters[w.name]; }).length + ' selected waters';
+    if (!rows.length) { list.innerHTML = '<div style="color:#6d7f76;font-size:13.5px">No fish match.</div>'; return; }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:13.5px">'
+      + '<tr style="color:#6d7f76;text-align:left;border-bottom:1px solid #2e423a"><th style="padding:6px 8px">Fish</th><th style="padding:6px 8px">Water</th><th style="padding:6px 8px">Catch chance</th></tr>';
+    rows.forEach(function (f) {
+      html += '<tr style="border-bottom:1px solid #16211b">'
+        + '<td style="padding:7px 8px;color:#fff;font-weight:600">' + f.name + '</td>'
+        + '<td style="padding:7px 8px;color:#a9b8b0">' + f.water + '</td>'
+        + '<td style="padding:7px 8px;color:#e6b34d;font-weight:600">' + f.chance + '%</td></tr>';
+    });
+    html += '</table>';
+    list.innerHTML = html;
+  }
+  search.addEventListener('input', render);
+  sort.addEventListener('change', render);
+  render();
+})();
+</script>
