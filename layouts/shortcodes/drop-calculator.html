@@ -1,0 +1,120 @@
+{{/* P2-4 掉落期望计算器：creatures/bosses 掉落表驱动，击杀 N 次概率计算（公式 1-(1-p)^n） */}}
+<div id="ck-drop-app" style="border:1px solid #2e423a;background:#1a2621;border-radius:10px;padding:18px;margin:18px 0">
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px">
+      Source
+      <select id="ck-src" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+        <optgroup label="Bosses">
+          {{ range site.Data.bosses.bosses }}<option value="boss:{{ .name }}">{{ .name }}</option>{{ end }}
+        </optgroup>
+        <optgroup label="Creatures">
+          {{ range site.Data.creatures.creatures }}<option value="creature:{{ .name }}">{{ .name }}</option>{{ end }}
+        </optgroup>
+      </select>
+    </label>
+    <label style="font-size:13.5px;color:#a9b8b0;display:flex;flex-direction:column;gap:4px;min-width:160px">
+      Kills
+      <input id="ck-kills" type="number" min="1" max="9999" value="10" style="background:#101613;color:#e8f0ea;border:1px solid #2e423a;border-radius:5px;padding:8px 10px;font-size:14px">
+    </label>
+  </div>
+
+  <div style="font-size:12.5px;color:#6d7f76;margin-bottom:12px">Probability tiers are <strong>community estimates</strong> (Common 50% · Uncommon 20% · Rare 5% · Ultra 1%). Drag any slider to match your luck — the math updates live.</div>
+
+  <div id="ck-drop-list" style="display:flex;flex-direction:column;gap:10px"></div>
+
+  <div id="ck-summary" style="margin-top:14px;padding:12px 14px;border:1px solid #2e423a;border-radius:6px;background:#101613;font-size:14px;color:#c9d4cf;display:none">
+    <div style="color:#f2cc7a;font-weight:700;margin-bottom:6px">At <span id="ck-kills-label">10</span> kills</div>
+    <div id="ck-summary-body"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var D = {
+    bosses: {{ jsonify (site.Data.bosses.bosses) }},
+    creatures: {{ jsonify (site.Data.creatures.creatures) }}
+  };
+  var TIER = { "100%": 1, "Guaranteed": 1, "Common": 0.5, "Uncommon": 0.2, "Rare": 0.05, "Ultra Rare": 0.01, "Ultra": 0.01 };
+  var TIER_LABEL = { "100%": "Guaranteed", "Guaranteed": "Guaranteed", "Common": "Common", "Uncommon": "Uncommon", "Rare": "Rare", "Ultra Rare": "Ultra Rare", "Ultra": "Ultra Rare" };
+  var src = document.getElementById('ck-src');
+  var kills = document.getElementById('ck-kills');
+  var list = document.getElementById('ck-drop-list');
+  var summary = document.getElementById('ck-summary');
+  var sb = document.getElementById('ck-summary-body');
+
+  function normalize(ch) {
+    var t = (ch || '').trim();
+    return TIER[t] !== undefined ? TIER[t] : 0.1;
+  }
+
+  function entry(name) {
+    var v = src.value.split(':');
+    var arr = v[0] === 'boss' ? D.bosses : D.creatures;
+    for (var i = 0; i < arr.length; i++) if (arr[i].name === v[1]) return arr[i];
+    return null;
+  }
+
+  function pct(p) { return (p * 100).toFixed(p >= 0.1 ? 0 : 1) + '%'; }
+
+  function render() {
+    var e = entry(src.value);
+    if (!e) return;
+    var drops = (e.drops || []).filter(function (d) { return d && d.item; });
+    var n = Math.max(1, parseInt(kills.value, 10) || 1);
+    var html = '';
+    var anyRare = false;
+    drops.forEach(function (d, i) {
+      var p = normalize(d.chance);
+      var atLeast = 1 - Math.pow(1 - p, n);
+      var expected = p * n;
+      var tier = TIER_LABEL[d.chance] || 'Common';
+      if (p < 0.2) anyRare = true;
+      html += '<div style="border:1px solid #2e423a;border-radius:6px;padding:10px 12px;background:#101613">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">'
+        + '<div style="font-size:14px;color:#fff;font-weight:600">' + d.item
+        + (d.note ? '<span style="color:#6d7f76;font-weight:400;font-size:12px;margin-left:6px">— ' + d.note + '</span>' : '') + '</div>'
+        + '<span style="font-size:11px;color:#7fd6a0;border:1px solid #2e423a;padding:1px 8px;border-radius:4px">' + tier + '</span></div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">'
+        + '<span style="font-size:12px;color:#6d7f76;min-width:52px">rate</span>'
+        + '<input type="range" min="0" max="100" step="0.5" value="' + (p * 100) + '" data-i="' + i + '" style="flex:1;accent-color:#f2cc7a">'
+        + '<span style="font-size:12.5px;color:#a9b8b0;min-width:44px;text-align:right">' + pct(p) + '</span></div>'
+        + '<div style="display:flex;gap:14px;margin-top:6px;font-size:13px;color:#c9d4cf;flex-wrap:wrap">'
+        + '<span>At least one: <strong style="color:#f2cc7a">' + pct(atLeast) + '</strong></span>'
+        + '<span>Expected: <strong style="color:#e6b34d">' + expected.toFixed(1) + '</strong></span>'
+        + '<span style="color:#6d7f76">1-(1-' + pct(p) + ') ^ ' + n + '</span></div>'
+        + '</div>';
+    });
+    if (!drops.length) {
+      html = '<div style="color:#6d7f76;font-size:13.5px">No drop table indexed for this entry yet — data pending.</div>';
+    }
+    list.innerHTML = html;
+
+    // summary
+    var body = '';
+    if (drops.length) {
+      body = '<table style="width:100%;border-collapse:collapse;font-size:13px">'
+        + '<tr style="color:#6d7f76;text-align:left"><th style="padding:4px 6px">Item</th><th style="padding:4px 6px">1+ drop</th><th style="padding:4px 6px">Expected</th></tr>';
+      drops.forEach(function (d, i) {
+        var p = normalize(d.chance);
+        var r = list.querySelector('[data-i="' + i + '"]');
+        if (r) p = parseFloat(r.value) / 100;
+        body += '<tr style="border-top:1px solid #2e423a"><td style="padding:4px 6px;color:#fff">' + d.item + '</td>'
+          + '<td style="padding:4px 6px;color:#f2cc7a;font-weight:600">' + pct(1 - Math.pow(1 - p, n)) + '</td>'
+          + '<td style="padding:4px 6px;color:#e6b34d">' + (p * n).toFixed(1) + '</td></tr>';
+      });
+      body += '</table>';
+      body += '<div style="font-size:12px;color:#6d7f76;margin-top:8px">Formula: P(at least one) = 1 − (1 − p)^n · expected drops = p × n. Drop rates in Core Keeper are not officially published; adjust sliders to observed values.</div>';
+    }
+    sb.innerHTML = body;
+    summary.style.display = drops.length ? 'block' : 'none';
+    document.getElementById('ck-kills-label').textContent = n;
+  }
+
+  src.addEventListener('change', render);
+  kills.addEventListener('input', render);
+  list.addEventListener('input', function (ev) {
+    if (ev.target && ev.target.tagName === 'INPUT' && ev.target.type === 'range') render();
+  });
+  render();
+})();
+</script>
