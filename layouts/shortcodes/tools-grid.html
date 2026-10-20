@@ -1,0 +1,56 @@
+{{/* tools 板块卡片网格：像素图标+标题+描述+数据标签，前端分类过滤 */}}
+{{ $catMap := dict
+  "cooking-buff-planner" "Calculators" "crop-profit-calculator" "Calculators" "drop-chance-calculator" "Calculators"
+  "crafting-simulator" "Calculators" "item-calculator" "Calculators" "mining-matrix" "Calculators"
+  "mod-compat-checker" "Calculators" "recipe-backtracker" "Calculators" "resource-efficiency" "Calculators"
+  "fishing-filter" "Calculators"
+  "base-layout-planner" "Planners" "boss-loadout" "Planners" "garden-planner" "Planners"
+  "seed-finder" "Planners" "skill-planner" "Planners"
+  "boss-drop-finder" "Lookups" "creature-lookup" "Lookups" "achievement-tracker" "Lookups"
+  "cooking-guide" "Guides" "fishing-guide" "Guides"
+  "pixel-art-tool" "Creators" }}
+{{ $tools := where site.RegularPages "Section" "tools" }}
+<div class="tool-app">
+  <div class="tool-app__head" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+    <button class="tool-btn tool-badge" data-cat="All" style="background:#e6b34d;color:#101613;border:1px solid #e6b34d;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer;font-weight:700">All ({{ len $tools }})</button>
+    {{ $cats := slice "Calculators" "Planners" "Lookups" "Guides" "Creators" }}
+    {{ range $cats }}
+      {{ $n := 0 }}{{ range $tools }}{{ if eq (index $catMap .File.ContentBaseName | default "Guides") . }}{{ $n = add $n 1 }}{{ end }}{{ end }}
+      <button class="tool-btn tool-badge" data-cat="{{ . }}" style="background:#101613;color:#c9d4cf;border:1px solid #2e423a;border-radius:6px;padding:7px 14px;font-size:13px;cursor:pointer">{{ . }} ({{ $n }})</button>
+    {{ end }}
+  </div>
+  <div class="tool-grid tool-grid--wide">
+    {{ range $tools }}
+    {{ $cat := index $catMap .File.ContentBaseName | default "Guides" }}
+    <a class="tool-card tool-card--click" href="{{ .RelPermalink }}" data-cat="{{ $cat }}" style="display:block;text-decoration:none">
+      {{ with .Params.icon }}<img src="{{ . }}" alt="" style="width:52px;height:52px;object-fit:cover;image-rendering:pixelated;background:#000;border:1px solid #2e423a;margin-bottom:8px">{{ end }}
+      <div class="tool-card__title">{{ .Title }}</div>
+      <div class="tool-card__meta">{{ $cat }}</div>
+      <div class="tool-card__desc clamp2">{{ .Description | default "Interactive Core Keeper tool." | truncate 110 }}</div>
+      <div class="tool-card__foot">
+        <span style="font-size:11px;color:#e6b34d;border:1px solid #2e423a;padding:2px 8px;border-radius:4px">Open tool →</span>
+      </div>
+    </a>
+    {{ end }}
+  </div>
+</div>
+<script>
+(function () {
+  var btns = document.querySelectorAll('[data-cat]');
+  var cards = document.querySelectorAll('.tool-card[data-cat]');
+  var counts = {};
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var c = b.dataset.cat;
+      btns.forEach(function (x) {
+        x.style.background = x === b ? '#e6b34d' : '#101613';
+        x.style.color = x === b ? '#101613' : '#c9d4cf';
+      });
+      cards.forEach(function (card) {
+        var show = c === 'All' || card.dataset.cat === c;
+        card.style.display = show ? 'block' : 'none';
+      });
+    });
+  });
+})();
+</script>

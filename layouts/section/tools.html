@@ -1,0 +1,13 @@
+{{ partial "head.html" . }}
+</head>
+<body>
+{{ partial "header.html" . }}
+<main class="site-main">
+  <div class="wrap">
+    <nav class="crumb"><a href="/">Home</a> · {{ .Title }}</nav>
+    {{ if .Content }}<div class="article" style="max-width:860px">{{ .Content }}</div>{{ end }}
+  </div>
+</main>
+{{ partial "footer.html" . }}
+</body>
+</html>
