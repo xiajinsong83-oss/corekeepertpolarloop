@@ -1,92 +1,12 @@
 {
-  "checkedAt": "2026-10-18T08:10:28Z",
+  "checkedAt": "2026-10-22T04:38:45Z",
   "updates": [
     {
-      "title": "Bosses",
-      "url": "https://corekeeper.atma.gg/en/Bosses",
-      "ts": "2026-10-17T02:38:46Z",
-      "user": "98.97.3.215",
-      "comment": "",
-      "type": "edit"
-    },
-    {
-      "title": "Biomes",
-      "url": "https://corekeeper.atma.gg/en/Biomes",
-      "ts": "2026-10-14T19:40:21Z",
-      "user": "Supermoon",
-      "comment": "Undo revision",
-      "type": "edit"
-    },
-    {
-      "title": "Drape Ray",
-      "url": "https://corekeeper.atma.gg/en/Drape_Ray",
-      "ts": "2026-10-13T21:10:13Z",
+      "title": "Manyleg",
+      "url": "https://corekeeper.atma.gg/en/Manyleg",
+      "ts": "2026-10-13T21:07:33Z",
       "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Snoot Fly",
-      "url": "https://corekeeper.atma.gg/en/Snoot_Fly",
-      "ts": "2026-10-13T21:10:01Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Crimson Wing",
-      "url": "https://corekeeper.atma.gg/en/Crimson_Wing",
-      "ts": "2026-10-13T21:09:49Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Ice Wind",
-      "url": "https://corekeeper.atma.gg/en/Ice_Wind",
-      "ts": "2026-10-13T21:09:37Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Citrus Pinion",
-      "url": "https://corekeeper.atma.gg/en/Citrus_Pinion",
-      "ts": "2026-10-13T21:09:17Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Dream Messenger",
-      "url": "https://corekeeper.atma.gg/en/Dream_Messenger",
-      "ts": "2026-10-13T21:09:04Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Dusk Fairy",
-      "url": "https://corekeeper.atma.gg/en/Dusk_Fairy",
-      "ts": "2026-10-13T21:08:50Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Void Larvlet",
-      "url": "https://corekeeper.atma.gg/en/Void_Larvlet",
-      "ts": "2026-10-13T21:08:29Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Sniffling",
-      "url": "https://corekeeper.atma.gg/en/Sniffling",
-      "ts": "2026-10-13T21:08:17Z",
-      "user": "MaddockC",
-      "comment": "Usage",
+      "comment": "/* Usage */",
       "type": "edit"
     },
     {
@@ -94,79 +14,7 @@
       "url": "https://corekeeper.atma.gg/en/Shadow_Newt",
       "ts": "2026-10-13T21:08:02Z",
       "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Gem Snail",
-      "url": "https://corekeeper.atma.gg/en/Gem_Snail",
-      "ts": "2026-10-13T21:07:47Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Manyleg",
-      "url": "https://corekeeper.atma.gg/en/Manyleg",
-      "ts": "2026-10-13T21:07:33Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Little Death",
-      "url": "https://corekeeper.atma.gg/en/Little_Death",
-      "ts": "2026-10-13T21:07:20Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Sun Pincher",
-      "url": "https://corekeeper.atma.gg/en/Sun_Pincher",
-      "ts": "2026-10-13T21:07:04Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Moon Pincher",
-      "url": "https://corekeeper.atma.gg/en/Moon_Pincher",
-      "ts": "2026-10-13T21:06:48Z",
-      "user": "MaddockC",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Leafhopper",
-      "url": "https://corekeeper.atma.gg/en/Leafhopper",
-      "ts": "2026-10-13T21:05:54Z",
-      "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Pest Bug",
-      "url": "https://corekeeper.atma.gg/en/Pest_Bug",
-      "ts": "2026-10-13T21:05:20Z",
-      "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Larvlet",
-      "url": "https://corekeeper.atma.gg/en/Larvlet",
-      "ts": "2026-10-13T21:05:01Z",
-      "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Earthworm",
-      "url": "https://corekeeper.atma.gg/en/Earthworm",
-      "ts": "2026-10-13T21:04:32Z",
-      "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Usage",
+      "comment": "/* Usage */",
       "type": "edit"
     },
     {
@@ -174,15 +22,7 @@
       "url": "https://corekeeper.atma.gg/en/Blackbug",
       "ts": "2026-10-13T21:03:36Z",
       "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Usage",
-      "type": "edit"
-    },
-    {
-      "title": "Orex",
-      "url": "https://corekeeper.atma.gg/en/Orex",
-      "ts": "2026-10-13T21:01:52Z",
-      "user": "2A06:5902:1623:1100:3425:6DE4:9191:9B4F",
-      "comment": "Diet",
+      "comment": "/* Usage */",
       "type": "edit"
     }
   ]
